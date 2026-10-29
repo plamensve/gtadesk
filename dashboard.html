@@ -48,17 +48,31 @@ h1{font-size:clamp(30px,4vw,45px);margin:28px 0 10px;letter-spacing:-.045em;line
 @media(max-width:950px){.cards{grid-template-columns:1fr 1fr}.hero{grid-template-columns:1fr}.hero-meta{text-align:left}}
 @media(max-width:700px){.shell{grid-template-columns:1fr}.sidebar{display:none}.mobile-menu{display:block;border:1px solid #dae5ee;border-radius:10px;background:white;padding:9px 12px}.main{padding:22px 18px 50px}.cards{grid-template-columns:1fr}.pill{font-size:11px}.hero{padding:25px}}
 </style>
-</head>
+<style id="gtadesk-ui-polish">
+.ui-icon{width:18px;height:18px;flex-shrink:0;vertical-align:middle;transition:transform .2s ease}
+button,a,input,select{transition:background-color .2s ease,border-color .2s ease,box-shadow .2s ease,transform .2s ease}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #74c7ee;outline-offset:3px}
+button:enabled:hover{filter:brightness(1.035)}
+button:enabled:active{transform:translateY(1px)}
+button:disabled{cursor:not-allowed}
+.panel,.card,.address-card{box-shadow:0 7px 24px rgba(24,62,86,.035)}
+.panel,.card,.address-card{transition:box-shadow .2s ease,border-color .2s ease,transform .2s ease}
+.card:hover,.address-card:hover{border-color:#b4d2e3;box-shadow:0 14px 30px rgba(24,62,86,.09)}
+.tabs button.active{box-shadow:0 8px 20px rgba(26,72,99,.15)}
+.nav .nav-link:hover{background:#e6f2f8}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23536e80' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:40px!important}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+</style></head>
 <body>
 <div id="loading" class="loading" role="status">Проверка на достъпа...</div>
 <div class="shell" id="app" hidden>
  <aside class="sidebar">
   <a class="brand" href="./dashboard.html"><span class="mark">G</span> GTA DESK</a>
   <div><div class="caption">Навигация</div><nav class="nav" aria-label="Основно меню">
-   <button class="active" aria-current="page"><span class="ico">⌂</span>Основен панел</button>
-   <a class="nav-link" href="./zaraex.html"><span class="ico">▦</span>ZaraEx инструменти</a>
-   <button disabled title="Предстои"><span class="ico">⟲</span>Автоматизации</button>
-   <button disabled title="Предстои"><span class="ico">◫</span>Инструменти за данни</button>
+   <button class="active" aria-current="page"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10H3zM9 20v-7h6v7"/></svg>Основен панел</button>
+   <a class="nav-link" href="./zaraex.html"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>ZaraEx инструменти</a>
+   <button disabled title="Предстои"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9A7 7 0 0 1 18 6l2 1M4 17l2 1a7 7 0 0 0 12.4-3"/></svg>Автоматизации</button>
+   <button disabled title="Предстои"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>Инструменти за данни</button>
   </nav></div>
   <div class="side-bottom"><div class="account-label">Влезли сте като</div><div class="account-email" id="account-email"></div><button class="logout" id="logout">Изход от профила</button></div>
  </aside>
@@ -67,7 +81,7 @@ h1{font-size:clamp(30px,4vw,45px);margin:28px 0 10px;letter-spacing:-.045em;line
   <h1>Основен панел</h1>
   <p class="lead">Тук ще намираш всички разработени прототипи и инструменти. Новите функционалности ще се появяват в отделни секции.</p>
   <div class="hero"><div><h2>Работната среда е готова</h2><p>GTA Desk е свързан със Supabase. Първите модули все още се разработват; ще ги добавяме постепенно към този панел.</p></div><div class="hero-meta">GTA Desk · Prototype workspace</div></div>
-  <h2 class="section-title">Модули</h2><p class="lead" style="margin-bottom:18px">Модулът ZaraEx е в процес на пренасяне от настолното приложение. Достъпна е първа уеб версия за тестове.</p><a href="./zaraex.html" style="display:inline-block;background:#20506c;color:#fff;border-radius:11px;padding:13px 18px;text-decoration:none;font-weight:700;margin-bottom:22px">Отвори ZaraEx инструменти →</a>
+  <h2 class="section-title">Модули</h2><p class="lead" style="margin-bottom:18px">Модулът ZaraEx е в процес на пренасяне от настолното приложение. Достъпна е първа уеб версия за тестове.</p><a href="./zaraex.html" style="display:inline-block;background:#20506c;color:#fff;border-radius:11px;padding:13px 18px;text-decoration:none;font-weight:700;margin-bottom:22px">Отвори ZaraEx инструменти <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
   <div class="cards">
    <section class="card"><div class="card-icon">▦</div><h3>Прототипи</h3><p>Разработка и тестване на нови уеб функционалности на едно място.</p><footer>Предстои добавяне</footer></section>
    <section class="card"><div class="card-icon">⟲</div><h3>Автоматизации</h3><p>Инструменти за автоматизиране на повтарящи се задачи и работни процеси.</p><footer>Предстои добавяне</footer></section>
