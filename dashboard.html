@@ -15,7 +15,7 @@ button{font:inherit;cursor:pointer}
 .caption{font-size:10px;text-transform:uppercase;letter-spacing:.15em;font-weight:750;color:#90a0ad;margin:0 10px 12px}
 .nav{display:grid;gap:5px}
 .nav button{border:0;background:transparent;text-align:left;padding:13px 14px;border-radius:12px;color:#66798a;font-size:14px;font-weight:600;display:flex;gap:13px;align-items:center}
-.nav button.active{background:#eaf3f8;color:#164762}
+.nav .nav-link{border:0;text-decoration:none;text-align:left;padding:13px 14px;border-radius:12px;color:#365f79;font-size:14px;font-weight:700;display:flex;gap:13px;align-items:center;background:#edf5fa}.nav button.active{background:#eaf3f8;color:#164762}
 .nav button:disabled{opacity:.48;cursor:not-allowed}
 .nav .ico{font-size:18px;width:23px;text-align:center}
 .side-bottom{margin-top:auto;border-top:1px solid #e7edf2;padding:20px 8px 0}
@@ -56,7 +56,7 @@ h1{font-size:clamp(30px,4vw,45px);margin:28px 0 10px;letter-spacing:-.045em;line
   <a class="brand" href="./dashboard.html"><span class="mark">G</span> GTA DESK</a>
   <div><div class="caption">Навигация</div><nav class="nav" aria-label="Основно меню">
    <button class="active" aria-current="page"><span class="ico">⌂</span>Основен панел</button>
-   <button disabled title="Предстои"><span class="ico">▦</span>Прототипи</button>
+   <a class="nav-link" href="./zaraex.html"><span class="ico">▦</span>ZaraEx инструменти</a>
    <button disabled title="Предстои"><span class="ico">⟲</span>Автоматизации</button>
    <button disabled title="Предстои"><span class="ico">◫</span>Инструменти за данни</button>
   </nav></div>
@@ -67,13 +67,13 @@ h1{font-size:clamp(30px,4vw,45px);margin:28px 0 10px;letter-spacing:-.045em;line
   <h1>Основен панел</h1>
   <p class="lead">Тук ще намираш всички разработени прототипи и инструменти. Новите функционалности ще се появяват в отделни секции.</p>
   <div class="hero"><div><h2>Работната среда е готова</h2><p>GTA Desk е свързан със Supabase. Първите модули все още се разработват; ще ги добавяме постепенно към този панел.</p></div><div class="hero-meta">GTA Desk · Prototype workspace</div></div>
-  <h2 class="section-title">Модули</h2>
+  <h2 class="section-title">Модули</h2><p class="lead" style="margin-bottom:18px">Модулът ZaraEx е в процес на пренасяне от настолното приложение. Достъпна е първа уеб версия за тестове.</p><a href="./zaraex.html" style="display:inline-block;background:#20506c;color:#fff;border-radius:11px;padding:13px 18px;text-decoration:none;font-weight:700;margin-bottom:22px">Отвори ZaraEx инструменти →</a>
   <div class="cards">
    <section class="card"><div class="card-icon">▦</div><h3>Прототипи</h3><p>Разработка и тестване на нови уеб функционалности на едно място.</p><footer>Предстои добавяне</footer></section>
    <section class="card"><div class="card-icon">⟲</div><h3>Автоматизации</h3><p>Инструменти за автоматизиране на повтарящи се задачи и работни процеси.</p><footer>Предстои добавяне</footer></section>
    <section class="card"><div class="card-icon">◫</div><h3>Инструменти за данни</h3><p>Помощни приложения за обработка, проверка и анализ на информация.</p><footer>Предстои добавяне</footer></section>
   </div>
-  <div class="notice">Това е началната версия на основния панел. Модулите са обозначени като предстоящи, докато не разработим съответната функционалност.</div>
+  <div class="notice">ZaraEx включва начални уеб инструменти за товарения, XML и PDF. Пълната съвместимост с оригиналния Windows .xls експорт все още не е реализирана.</div>
   <button id="mobile-logout" class="logout mobile-menu" style="margin-top:20px">Изход от профила</button>
  </main>
 </div>
