@@ -11,7 +11,7 @@
 </section>
 <section id="settings" hidden><div class="panel"><h2>Номенклатури</h2><p>Продукти, транспортни фирми, МПС, шофьори, петролни бази и лица, предаващи гориво.</p><div class="tabs" id="collections"></div><form id="item-form"><div class="fields" id="item-fields"></div><div class="actions"><button type="submit" id="save-item">Добави запис</button><button type="button" class="secondary" id="reset-item">Откажи редакцията</button></div></form><div class="status" id="item-status"></div><div class="scroll"><table><thead id="items-head"></thead><tbody id="items-list"></tbody></table></div></div></section>
 <section id="stay" hidden><div class="panel"><h2>НАП — декларация за престой</h2><p>Зареди изходен ЕДП XML и попълни данните за местоположението. Изходният документ следва структурата на оригиналния генератор; преди подаване е необходима проверка спрямо актуалната схема на НАП.</p>
-<div class="field"><label for="stay-source">Изходен ЕДП XML</label><input type="file" id="stay-source" accept=".xml,text/xml,application/xml"></div><form id="stay-form"><div class="fields" style="margin-top:18px"><div class="field"><label>Дата на престоя (ДД.ММ.ГГГГ)</label><input name="date" required placeholder="29.10.2026" pattern="\d{2}\.\d{2}\.\d{4}"></div><div class="field"><label>Област</label><select name="domain" id="stay-region" required><option value="">Избери област</option></select></div><div class="field"><label>Община</label><select name="municipality" id="stay-municipality" required disabled><option value="">Избери община</option></select></div><div class="field"><label>Населено място</label><select name="city" id="stay-city" required disabled><option value="">Избери населено място</option></select></div><div class="field"><label>Адрес</label><input name="address" required></div><div class="field"><label>Номер</label><input name="addressNumber" required></div></div><div class="actions"><button type="submit">Генерирай XML</button></div></form><div id="stay-status" class="status"></div><div class="hint">Областите, общините и населените места се зареждат от пълните оригинални номенклатури на ZaraEx. Изборите са свързани по код. Обработката на XML се извършва локално в браузъра.</div></div></section>
+<div class="field"><label for="stay-source">Изходен ЕДП XML</label><input type="file" id="stay-source" accept=".xml,text/xml,application/xml"></div><form id="stay-form"><div class="fields" style="margin-top:18px"><div class="field"><label>Дата на престоя (ДД.ММ.ГГГГ)</label><input name="date" required placeholder="29.10.2026" pattern="\d{2}\.\d{2}\.\d{4}"></div><div class="field"><label>Област</label><select name="domain" id="stay-region" required><option value="">Избери област</option></select></div><div class="field"><label>Община</label><select name="municipality" id="stay-municipality" required disabled><option value="">Избери община</option></select></div><div class="field"><label>Населено място</label><select name="city" id="stay-city" required disabled><option value="">Избери населено място</option></select></div><div class="field"><label>Адрес</label><input name="address" required></div><div class="field"><label>Номер</label><input name="addressNumber" required></div></div><div class="actions"><button type="submit">Генерирай XML</button></div></form><div class="panel" style="margin-top:18px;background:#f9fbfd"><h2 style="font-size:16px">Запазени адреси (5 шаблона)</h2><p>Можеш да запазиш текущите данни за местоположение и да ги заредиш при следваща декларация в същата браузърна сесия.</p><div id="stay-presets" class="fields"></div></div><div id="stay-status" class="status"></div><div class="hint">Областите, общините и населените места се зареждат от пълните оригинални номенклатури на ZaraEx. Изборите са свързани по код. Обработката на XML се извършва локално в браузъра.</div></div></section>
 <section id="pdf" hidden><div class="panel"><h2>PDF инструменти</h2><div class="tabs" id="pdf-tabs"><button data-pdf="images" class="active">Изображения към PDF</button><button data-pdf="merge">Обединяване на PDF</button><button data-pdf="compress">Компресиране на PDF</button></div><label class="upload" id="pdf-upload">+ Избери файлове от устройството<input id="pdf-files" type="file" multiple accept="image/*"></label><div class="filelist" id="pdf-files-list"></div><div class="actions"><button id="pdf-run">Създай PDF</button><button class="secondary" id="pdf-clear">Изчисти</button></div><div id="pdf-status" class="status"></div><div class="hint">PDF операциите се изпълняват локално в браузъра чрез външна JavaScript библиотека. Не качваме документите към Supabase. При обединяване цифровите подписи могат да станат невалидни. Компресирането е базово и не гарантира по-малък файл.</div></div></section>
 </div>
 <script type="module">
@@ -60,6 +60,31 @@ try{
    fillSelect("stay-city",stayLocations.city.filter(i=>municipality&&cityMunicipalities[i.code]===municipality),"Избери населено място");
  });
 }catch(err){$("stay-status").textContent="Грешка при зареждане на номенклатурите: "+err.message;}
+
+const stayPresetKey="gtadesk_stay_presets_v1";
+let stayPresets=[];try{stayPresets=JSON.parse(sessionStorage.getItem(stayPresetKey)||"[]")}catch{}
+const stayControls=["domain","municipality","city","address","addressNumber"];
+function presetRefresh(){
+ $("stay-presets").innerHTML=Array.from({length:5},(_,i)=>'<div class="field"><label>Адрес '+(i+1)+'</label><div class="actions" style="margin:0"><button type="button" class="small secondary" data-use-preset="'+i+'">Зареди</button><button type="button" class="small" data-save-preset="'+i+'">Запази</button></div><small>'+(stayPresets[i]?"Запазен адрес":"Празен шаблон")+'</small></div>').join("");
+}
+presetRefresh();
+$("stay-presets").addEventListener("click",e=>{
+ const b=e.target.closest("button");if(!b)return;
+ const i=Number(b.dataset.savePreset??b.dataset.usePreset),form=$("stay-form");
+ if(b.hasAttribute("data-save-preset")){
+  const entry=Object.fromEntries(new FormData(form).entries());
+  if(!entry.domain||!entry.municipality||!entry.city){$("stay-status").textContent="Избери област, община и населено място преди запазване.";return}
+  stayPresets[i]=Object.fromEntries(stayControls.map(k=>[k,entry[k]||""]));
+  sessionStorage.setItem(stayPresetKey,JSON.stringify(stayPresets));presetRefresh();$("stay-status").textContent="Адресът е запазен.";
+ }else{
+  const saved=stayPresets[i];if(!saved){$("stay-status").textContent="Шаблонът е празен.";return}
+  $("stay-region").value=saved.domain;$("stay-region").dispatchEvent(new Event("change"));
+  $("stay-municipality").value=saved.municipality;$("stay-municipality").dispatchEvent(new Event("change"));
+  $("stay-city").value=saved.city;
+  for(const k of ["address","addressNumber"])form.elements.namedItem(k).value=saved[k]||"";
+  $("stay-status").textContent="Адресът е зареден.";
+ }
+});
 $("stay-form").onsubmit=async e=>{e.preventDefault();try{const file=$("stay-source").files[0];if(!file)throw Error("Избери ЕДП XML.");const xml=new DOMParser().parseFromString(await file.text(),"application/xml");if(xml.querySelector("parsererror"))throw Error("Невалиден входен XML.");const get=path=>path.split("/").reduce((n,k)=>n?.querySelector(":scope > "+k),xml.documentElement)?.textContent?.trim()||"";const vals=Object.fromEntries(new FormData(e.target).entries());
 if(!stayLocations||!cityMunicipalities)throw Error("Номенклатурите не са заредени.");
 if(!stayLocations.domain.some(i=>i.code===vals.domain)||
