@@ -7,7 +7,7 @@
 <section id="loads">
 <div class="panel"><h2>Ново товарене</h2><p>Създай товарене или редактирай съществуващ запис. Черновите се съхраняват само в тази браузърна сесия. За дългосрочно съхранение ще е необходима защитена база данни.</p>
 <form id="load-form"><div class="fields" id="load-fields"></div><div class="actions"><button type="submit" id="save-load">Добави товарене</button><button type="button" class="secondary" id="reset-load">Изчисти формата</button></div></form><div class="status" id="load-status"></div>
-</div><div class="panel"><h2>Подготвени товарения</h2><div class="scroll"><table><thead><tr><th>Дата</th><th>УКН</th><th>ADD №</th><th>Количество (л)</th><th>Продукт</th><th>МПС</th><th>Действия</th></tr></thead><tbody id="loads-list"></tbody></table></div><div class="actions"><button id="export-loads" type="button" class="secondary">Експорт JSON (чернова)</button></div><div class="hint">Оригиналният ZaraEx експорт създава 63-колонен .xls чрез Microsoft Excel/COM на Windows. Не генерираме приблизителен файл, който може да се окаже невалиден за импорт.</div></div>
+</div><div class="panel"><h2>Подготвени товарения</h2><div class="scroll"><table><thead><tr><th>Дата</th><th>УКН</th><th>ADD №</th><th>Количество (л)</th><th>Продукт</th><th>МПС</th><th>Действия</th></tr></thead><tbody id="loads-list"></tbody></table></div><div class="actions"><button id="export-loads" type="button" class="secondary">Експорт XML (товарения)</button></div><div class="hint">XML експортът запазва данните на товаренията в структурирана чернова. Оригиналният ZaraEx формат е .xls с 63 колони; този XML не е потвърден като официален формат за импорт в НАП. За 1:1 съвместимост е нужна XSD схема или реален XML образец.</div></div>
 </section>
 <section id="settings" hidden><div class="panel"><h2>Номенклатури</h2><p>Продукти, транспортни фирми, МПС, шофьори, петролни бази и лица, предаващи гориво.</p><div class="tabs" id="collections"></div><form id="item-form"><div class="fields" id="item-fields"></div><div class="actions"><button type="submit" id="save-item">Добави запис</button><button type="button" class="secondary" id="reset-item">Откажи редакцията</button></div></form><div class="status" id="item-status"></div><div class="scroll"><table><thead id="items-head"></thead><tbody id="items-list"></tbody></table></div></div></section>
 <section id="stay" hidden><div class="panel"><h2>НАП — декларация за престой</h2><p>Зареди изходен ЕДП XML и попълни данните за местоположението. Изходният документ следва структурата на оригиналния генератор; преди подаване е необходима проверка спрямо актуалната схема на НАП.</p>
@@ -37,7 +37,35 @@ $("load-form").onsubmit=e=>{e.preventDefault();const o=Object.fromEntries(new Fo
 $("loads-list").onclick=e=>{const b=e.target.closest("button");if(!b)return;const i=Number(b.dataset.edit??b.dataset.del);if(b.hasAttribute("data-del")){if(confirm("Изтриване на товаренето?")){state.loads.splice(i,1);persist();drawLoads()}}else{editLoad=i;renderLoadForm();window.scrollTo({top:0,behavior:"smooth"})}};
 $("reset-load").onclick=()=>{editLoad=-1;renderLoadForm();$("load-status").textContent=""};
 function download(blob,name){const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)}
-$("export-loads").onclick=()=>download(new Blob([JSON.stringify({loads:state.loads},null,2)],{type:"application/json"}),"zaraex_draft.json");
+
+$("export-loads").onclick=()=>{
+ if(!state.loads.length){$("load-status").textContent="Няма товарения за експорт.";return}
+ const doc=document.implementation.createDocument(null,"zaraexLoadsDraft",null);
+ const root=doc.documentElement;root.setAttribute("version","1");root.setAttribute("format","draft-not-official-NRA");
+ const add=(parent,name,value)=>{const el=doc.createElement(name);el.textContent=String(value??"");parent.appendChild(el);return el};
+ const find=(name,collection,key="name")=>state[collection].find(x=>x[key]===name)||{};
+ for(const record of state.loads){
+  const load=add(root,"loading","");
+  const product=find(record.product,"products"),base=find(record.base,"bases"),company=find(record.company,"transport_companies");
+  const driver=find(record.driver,"drivers"),vehicle=find(record.vehicle,"vehicles","registration");
+  const qty=Number(record.quantity);
+  const values={
+   ukn:record.ukn,addNumber:record.add,date:record.date,quantity:Number.isFinite(qty)?qty:record.quantity,
+   zaraCode:record.zara,productName:record.product,productCode:product.catalog_code,
+   fuelKind:product.fuel_kind,knCode:product.kn_code,productLinkCode:product.link_code,
+   petroleumBase:record.base,baseEik:base.eik,baseLinkCode:base.link_code,
+   region:base.region,regionCode:base.region_code,municipality:base.municipality,
+   municipalityCode:base.municipality_code,city:base.city,cityCode:base.city_code,
+   baseAddress:base.street,transportCompany:record.company,transportCompanyEik:company.eik,
+   vehicleRegistration:record.vehicle,driverName:record.driver,driverEgn:driver.egn,
+   handoverName:record.handover_name||record.driver,handoverEgn:record.handover_egn||driver.egn
+  };
+  for(const [key,value] of Object.entries(values))add(load,key,value);
+ }
+ const xml='<?xml version="1.0" encoding="UTF-8"?>\n'+new XMLSerializer().serializeToString(doc);
+ download(new Blob([xml],{type:"application/xml;charset=utf-8"}),"zaraex_loads_draft.xml");
+ $("load-status").textContent="XML файлът е създаден. Това е структурирана чернова, не потвърдена декларация за НАП.";
+};
 renderLoadForm();drawLoads();
 $("tabs").onclick=e=>{const b=e.target.closest("[data-tab]");if(!b)return;for(const t of ["loads","settings","stay","pdf"])$(t).hidden=b.dataset.tab!==t;for(const el of $("tabs").querySelectorAll("button"))el.classList.toggle("active",el===b);if(b.dataset.tab==="loads")renderLoadForm()};
 
