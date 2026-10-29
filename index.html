@@ -14,8 +14,8 @@
 [hidden]{display:none!important}
 body{margin:0;min-height:100vh;background:#e8edf1;color:var(--text)}
 .shell{min-height:100vh;display:grid;grid-template-columns:minmax(0,1.18fr) minmax(390px,.82fr)}
-.showcase{padding:clamp(30px,4vw,70px);display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;background:#7791a7 url("./assets/future-city.svg") center center/cover no-repeat;isolation:isolate}
-.showcase::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#e9f3faed 0%,#e4f1fb68 24%,#10395408 43%,#071d38b5 80%,#071b32e3 100%)}
+.showcase{padding:clamp(30px,4vw,70px);display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;background:#7791a7 url("https://solfuturo.com.mx/hero-banner.webp") center 52%/cover no-repeat;isolation:isolate}
+.showcase::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#f0f7fa3a 0%,#e5f1fb08 32%,#10395420 53%,#071d38b3 85%,#071b32e8 100%)}
 .showcase::after{content:"";position:absolute;inset:14px;border:1px solid #d4f4ff65;pointer-events:none}
 .logo{display:inline-flex;align-items:center;gap:13px;font-size:17px;font-weight:850;letter-spacing:.19em;position:relative;z-index:1}
 .mark{height:45px;width:45px;display:grid;place-items:center;background:#f9fcffe8;border:1px solid #e0ebf4;border-radius:11px;color:#182b3b;font-size:23px;font-weight:900;box-shadow:0 8px 26px #26425e24}
@@ -27,8 +27,8 @@ body{margin:0;min-height:100vh;background:#e8edf1;color:var(--text)}
 .tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:31px}
 .tags span{font-size:11px;letter-spacing:.08em;font-weight:700;color:#f1fbff;border:1px solid #b9eaff78;background:#c6ebff1a;backdrop-filter:blur(9px);padding:9px 13px;border-radius:6px}
 .copyright{font-size:11px;color:#d3e8f9;position:relative;z-index:1;letter-spacing:.08em}
-.right{display:grid;place-items:center;padding:56px 38px;background:linear-gradient(150deg,#fbfcfd,#edf1f5);border-left:1px solid #fff}
-.auth{width:min(100%,420px)}
+.right{display:grid;place-items:center;padding:56px 38px;background:radial-gradient(circle at 70% 15%,#e6f7ffb8,transparent 38%),linear-gradient(150deg,#fbfcfd,#edf1f5);border-left:1px solid #fff}
+.auth{width:min(100%,420px);padding:38px 32px;background:#ffffffc9;border:1px solid #ffffffed;border-radius:24px;box-shadow:0 28px 70px #2d52691a, inset 0 1px 0 #fff;backdrop-filter:blur(18px);animation:entry .7s cubic-bezier(.19,1,.22,1) both}
 .mobile-logo{display:none;margin-bottom:50px}
 .topline{display:flex;align-items:center;gap:10px;font-size:11px;color:#617b8b;font-weight:800;letter-spacing:.15em}
 .dot{width:8px;height:8px;border-radius:50%;background:#20b89e;box-shadow:0 0 0 5px #26c9ac15}
@@ -59,8 +59,12 @@ input:focus{border-color:#4f8caa;box-shadow:0 0 0 3px #66bfe725}
 .workspace-card{border:1px solid #d7e7ee;background:#f5fafd;border-radius:12px;padding:22px;margin-bottom:22px;color:#627d8e;line-height:1.6;font-size:14px}
 .secondary{background:#dfe9f0;color:#193247;box-shadow:none}
 .secondary:hover:enabled{filter:brightness(.96)}
-@media(max-width:940px){.shell{grid-template-columns:1fr}.showcase{min-height:235px;padding:26px 24px;background-position:center 57%}.showcase::before{background:linear-gradient(90deg,#e4eff9f0,#e4eff957 70%,#12395550)}.showcase::after{inset:9px}.hero{display:none}.copyright{display:none}.right{min-height:calc(100svh - 235px);padding:43px 24px}.auth{max-width:420px}.mobile-logo{display:none}h2{font-size:33px}}
-@media(max-width:520px){.showcase{min-height:185px}.right{min-height:calc(100svh - 185px);padding:38px 22px}.bottom{flex-wrap:wrap}}
+@keyframes entry{from{opacity:0;transform:translateY(20px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes ambient{0%,100%{background-position:center 52%}50%{background-position:53% 50%}}
+@media(min-width:941px) and (prefers-reduced-motion:no-preference){.showcase{animation:ambient 22s ease-in-out infinite}}
+input:focus{transform:translateY(-1px)}
+@media(max-width:940px){.shell{grid-template-columns:1fr}.showcase{min-height:235px;padding:26px 24px;background-position:center 57%}.showcase::before{background:linear-gradient(90deg,#e4eff9f0,#e4eff957 70%,#12395550)}.showcase::after{inset:9px}.hero{display:none}.copyright{display:none}.right{min-height:calc(100svh - 235px);padding:43px 24px}.auth{padding:32px 24px}.auth{max-width:420px}.mobile-logo{display:none}h2{font-size:33px}}
+@media(max-width:520px){.showcase{min-height:185px}.right{min-height:calc(100svh - 185px);padding:24px 14px}.auth{padding:27px 19px}.bottom{flex-wrap:wrap}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -70,7 +74,7 @@ input:focus{border-color:#4f8caa;box-shadow:0 0 0 3px #66bfe725}
     <div class="logo"><span class="mark" aria-hidden="true">G</span> GTA DESK</div>
     <div class="hero">
       <div class="eyebrow">GTA DESK · РАБОТНА СРЕДА</div>
-      <h1>Прототипи и <span>полезни инструменти.</span></h1>
+      <h1>Инструменти, <span>прототипи и автоматизации.</span></h1>
       <p>GTA Desk е платформа за разработване и тестване на уеб инструменти, автоматизации и нови идеи. Тук събираме различните функционалности на едно място.</p>
       <div class="tags"><span>Прототипи</span><span>Автоматизации</span><span>Инструменти за данни</span></div>
     </div>
