@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#f4f7fa">
+<title>Основен панел | GTA Desk</title>
+<style>
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:#1b2a38;background:#f4f7fa}
+*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;min-height:100vh}
+button{font:inherit;cursor:pointer}
+.shell{display:grid;grid-template-columns:264px minmax(0,1fr);min-height:100vh}
+.sidebar{background:#fff;border-right:1px solid #e1e7ee;padding:28px 19px;display:flex;flex-direction:column;gap:34px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:#17283a;font-size:15px;font-weight:850;letter-spacing:.15em}
+.mark{display:grid;place-items:center;background:#e6f4fa;border:1px solid #d5e7f0;width:40px;height:40px;border-radius:12px;font-size:24px}
+.caption{font-size:10px;text-transform:uppercase;letter-spacing:.15em;font-weight:750;color:#90a0ad;margin:0 10px 12px}
+.nav{display:grid;gap:5px}
+.nav button{border:0;background:transparent;text-align:left;padding:13px 14px;border-radius:12px;color:#66798a;font-size:14px;font-weight:600;display:flex;gap:13px;align-items:center}
+.nav button.active{background:#eaf3f8;color:#164762}
+.nav button:disabled{opacity:.48;cursor:not-allowed}
+.nav .ico{font-size:18px;width:23px;text-align:center}
+.side-bottom{margin-top:auto;border-top:1px solid #e7edf2;padding:20px 8px 0}
+.account-label{font-size:11px;color:#81909d}
+.account-email{font-size:12px;font-weight:650;margin:8px 0 18px;overflow-wrap:anywhere}
+.logout{border:1px solid #dce5ed;background:#f7f9fb;padding:11px 15px;border-radius:10px;color:#334d62;font-size:13px;font-weight:700;width:100%}
+.logout:hover{background:#e9f0f6}
+.main{padding:38px clamp(24px,5vw,76px) 70px;max-width:1550px;width:100%;margin:0 auto}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.eyebrow{color:#768a9a;letter-spacing:.17em;font-weight:800;font-size:11px;text-transform:uppercase}
+.pill{display:flex;align-items:center;gap:8px;border:1px solid #dce8ef;padding:10px 13px;border-radius:99px;color:#557182;font-size:12px;background:#fff}
+.dot{width:7px;height:7px;background:#29af98;border-radius:50%}
+h1{font-size:clamp(30px,4vw,45px);margin:28px 0 10px;letter-spacing:-.045em;line-height:1.1}
+.lead{color:#718496;font-size:15px;line-height:1.7;margin:0;max-width:650px}
+.hero{margin:34px 0;display:grid;grid-template-columns:1fr 240px;gap:20px;align-items:center;background:linear-gradient(115deg,#173f5a,#2f6483);border-radius:23px;padding:32px;color:#fff;box-shadow:0 18px 35px #234e6b25;overflow:hidden;position:relative}
+.hero:after{content:"";position:absolute;width:390px;height:390px;border:1px solid #b0e6ff51;border-radius:50%;right:-110px;top:-165px;box-shadow:0 0 0 40px #b1e3f910,0 0 0 90px #b1e3f909;pointer-events:none}
+.hero h2{margin:0 0 10px;font-size:22px;letter-spacing:-.025em}
+.hero p{margin:0;color:#daebf5;font-size:13px;line-height:1.8;max-width:600px}
+.hero .hero-meta{text-align:right;font-size:12px;color:#c9e8f8;z-index:1}
+.section-title{font-size:18px;margin:37px 0 16px;letter-spacing:-.02em}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.card{background:#fff;border:1px solid #e1e8ef;border-radius:18px;padding:24px;min-height:230px;display:flex;flex-direction:column;gap:13px}
+.card-icon{width:44px;height:44px;display:grid;place-items:center;background:#edf5fa;border-radius:13px;color:#295d7d;font-size:22px}
+.card h3{font-size:16px;margin:4px 0 0}
+.card p{font-size:13px;line-height:1.65;color:#788b9a;margin:0}
+.card footer{margin-top:auto;border-top:1px solid #eef2f5;padding-top:14px;font-size:12px;color:#91a0aa}
+.notice{margin-top:24px;background:#fff;border:1px solid #e2e9ef;border-radius:17px;padding:20px 24px;font-size:13px;line-height:1.7;color:#6e8191}
+.loading{min-height:100vh;display:grid;place-items:center;color:#667d90;font-size:14px}
+.mobile-menu{display:none}
+@media(max-width:950px){.cards{grid-template-columns:1fr 1fr}.hero{grid-template-columns:1fr}.hero-meta{text-align:left}}
+@media(max-width:700px){.shell{grid-template-columns:1fr}.sidebar{display:none}.mobile-menu{display:block;border:1px solid #dae5ee;border-radius:10px;background:white;padding:9px 12px}.main{padding:22px 18px 50px}.cards{grid-template-columns:1fr}.pill{font-size:11px}.hero{padding:25px}}
+</style>
+</head>
+<body>
+<div id="loading" class="loading" role="status">Проверка на достъпа...</div>
+<div class="shell" id="app" hidden>
+ <aside class="sidebar">
+  <a class="brand" href="./dashboard.html"><span class="mark">G</span> GTA DESK</a>
+  <div><div class="caption">Навигация</div><nav class="nav" aria-label="Основно меню">
+   <button class="active" aria-current="page"><span class="ico">⌂</span>Основен панел</button>
+   <button disabled title="Предстои"><span class="ico">▦</span>Прототипи</button>
+   <button disabled title="Предстои"><span class="ico">⟲</span>Автоматизации</button>
+   <button disabled title="Предстои"><span class="ico">◫</span>Инструменти за данни</button>
+  </nav></div>
+  <div class="side-bottom"><div class="account-label">Влезли сте като</div><div class="account-email" id="account-email"></div><button class="logout" id="logout">Изход от профила</button></div>
+ </aside>
+ <main class="main">
+  <div class="top"><div class="eyebrow">GTA DESK / РАБОТНА СРЕДА</div><div class="pill"><span class="dot"></span> Защитена сесия</div></div>
+  <h1>Основен панел</h1>
+  <p class="lead">Тук ще намираш всички разработени прототипи и инструменти. Новите функционалности ще се появяват в отделни секции.</p>
+  <div class="hero"><div><h2>Работната среда е готова</h2><p>GTA Desk е свързан със Supabase. Първите модули все още се разработват; ще ги добавяме постепенно към този панел.</p></div><div class="hero-meta">GTA Desk · Prototype workspace</div></div>
+  <h2 class="section-title">Модули</h2>
+  <div class="cards">
+   <section class="card"><div class="card-icon">▦</div><h3>Прототипи</h3><p>Разработка и тестване на нови уеб функционалности на едно място.</p><footer>Предстои добавяне</footer></section>
+   <section class="card"><div class="card-icon">⟲</div><h3>Автоматизации</h3><p>Инструменти за автоматизиране на повтарящи се задачи и работни процеси.</p><footer>Предстои добавяне</footer></section>
+   <section class="card"><div class="card-icon">◫</div><h3>Инструменти за данни</h3><p>Помощни приложения за обработка, проверка и анализ на информация.</p><footer>Предстои добавяне</footer></section>
+  </div>
+  <div class="notice">Това е началната версия на основния панел. Модулите са обозначени като предстоящи, докато не разработим съответната функционалност.</div>
+  <button id="mobile-logout" class="logout mobile-menu" style="margin-top:20px">Изход от профила</button>
+ </main>
+</div>
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.58.0";
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "./config.js";
+const home = new URL("./", location.href);
+const login = () => location.replace(home.href);
+try {
+ const client = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+ const {data:{user},error} = await client.auth.getUser();
+ if(error || !user) {login();}
+ else {
+  const {data:allowed,error:policyError} = await client.from("gtadesk_access").select("user_id").eq("user_id",user.id).maybeSingle();
+  if(policyError || !allowed) {await client.auth.signOut();login();}
+  else {
+   document.getElementById("account-email").textContent=user.email || "Одобрен потребител";
+   document.getElementById("loading").hidden=true;
+   document.getElementById("app").hidden=false;
+   client.auth.onAuthStateChange(event=>{if(event==="SIGNED_OUT") login();});
+   async function logout(){await client.auth.signOut();login();}
+   document.getElementById("logout").addEventListener("click",logout);
+   document.getElementById("mobile-logout").addEventListener("click",logout);
+  }
+ }
+} catch {login();}
+</script>
+</body></html>
