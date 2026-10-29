@@ -136,13 +136,8 @@ input:focus{transform:translateY(-1px)}
     status(text, error);
   }
   function showDashboard(email) {
-    el("login-view").hidden = true;
-    el("dashboard-view").hidden = false;
-    el("current-user").textContent = email || "Разрешен потребител";
-    form.reset();
-    el("password").type = "password";
-    el("toggle-password").textContent = "Покажи";
-    el("toggle-password").setAttribute("aria-pressed", "false");
+    // Access is checked above. Open the separate application dashboard.
+    window.location.replace(new URL("./dashboard.html", window.location.href).href);
   }
   async function checkAccess() {
     const current = ++checkSequence;
