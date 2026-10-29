@@ -67,7 +67,21 @@ input:focus{transform:translateY(-1px)}
 @media(max-width:520px){.showcase{min-height:185px}.right{min-height:calc(100svh - 185px);padding:24px 14px}.auth{padding:27px 19px}.bottom{flex-wrap:wrap}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
 </style>
-</head>
+<style id="gtadesk-ui-polish">
+.ui-icon{width:18px;height:18px;flex-shrink:0;vertical-align:middle;transition:transform .2s ease}
+button,a,input,select{transition:background-color .2s ease,border-color .2s ease,box-shadow .2s ease,transform .2s ease}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #74c7ee;outline-offset:3px}
+button:enabled:hover{filter:brightness(1.035)}
+button:enabled:active{transform:translateY(1px)}
+button:disabled{cursor:not-allowed}
+.panel,.card,.address-card{box-shadow:0 7px 24px rgba(24,62,86,.035)}
+.panel,.card,.address-card{transition:box-shadow .2s ease,border-color .2s ease,transform .2s ease}
+.card:hover,.address-card:hover{border-color:#b4d2e3;box-shadow:0 14px 30px rgba(24,62,86,.09)}
+.tabs button.active{box-shadow:0 8px 20px rgba(26,72,99,.15)}
+.nav .nav-link:hover{background:#e6f2f8}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23536e80' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:40px!important}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+</style></head>
 <body>
 <div class="shell">
   <aside class="showcase" aria-label="GTA Desk">
@@ -99,7 +113,7 @@ input:focus{transform:translateY(-1px)}
               <button type="button" class="toggle" id="toggle-password" aria-label="Покажи паролата" aria-pressed="false">Покажи</button>
             </div>
           </div>
-          <button class="submit" id="login-button" type="submit" disabled>Вход в платформата →</button>
+          <button class="submit" id="login-button" type="submit" disabled>Вход в платформата <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
         </form>
         <p class="status info" role="status" aria-live="polite" id="message">Свързване със защитения достъп...</p>
       </section>
