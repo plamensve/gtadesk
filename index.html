@@ -3,62 +3,62 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#080e1c">
+  <meta name="theme-color" content="#f4f5f6">
   <meta name="robots" content="noindex,nofollow,noarchive">
   <meta name="description" content="GTA Desk — защитена работна среда за прототипи и автоматизации.">
   <title>Вход | GTA Desk</title>
   <style>
-    :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color-scheme:dark;--bg:#080e1c;--panel:#10192a;--line:#28354a;--text:#f4f7fb;--muted:#93a4bb;--accent:#54e2c1}
-    *{box-sizing:border-box}
-    [hidden]{display:none!important}
-    body{margin:0;min-height:100vh;background:var(--bg);color:var(--text)}
-    .shell{min-height:100vh;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(420px,.95fr)}
-    .showcase{padding:clamp(32px,5.2vw,88px);display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;background:radial-gradient(circle at 76% 45%,#154b526a 0,transparent 34%),radial-gradient(circle at 12% 90%,#153b5e6a 0,transparent 44%),linear-gradient(145deg,#0e1e2f,#081320)}
-    .showcase::after{content:"";position:absolute;right:-135px;top:21%;width:440px;height:440px;border:1px solid #4de0c11f;border-radius:50%;box-shadow:0 0 0 65px #4de0c108,0 0 0 138px #4de0c106;pointer-events:none}
-    .logo{display:inline-flex;align-items:center;gap:13px;font-size:17px;font-weight:800;letter-spacing:.12em;position:relative;z-index:1}
-    .mark{height:45px;width:45px;display:grid;place-items:center;background:linear-gradient(145deg,#68eed2,#2ca992);border-radius:13px;color:#062924;font-size:24px;font-weight:900;letter-spacing:-.09em}
-    .hero{max-width:550px;position:relative;z-index:1;padding:60px 0}
-    .eyebrow{font-size:11px;color:var(--accent);letter-spacing:.21em;text-transform:uppercase;font-weight:800}
-    .hero h1{font-size:clamp(44px,5vw,78px);line-height:1.06;letter-spacing:-.058em;margin:20px 0 24px;font-weight:790}
-    .hero h1 span{color:var(--accent)}
-    .hero p{font-size:17px;line-height:1.8;color:#aebdd0;max-width:460px;margin:0}
-    .tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:34px}
-    .tags span{font-size:12px;font-weight:650;color:#d5e6e8;border:1px solid #40606080;background:#1b3b4238;padding:9px 13px;border-radius:100px}
-    .copyright{font-size:12px;color:#7189a0;position:relative;z-index:1}
-    .right{display:grid;place-items:center;padding:48px 32px;background:radial-gradient(ellipse at top right,#1d294050,transparent 55%),#0b1120}
-    .auth{width:min(100%,420px)}
-    .mobile-logo{display:none;margin-bottom:45px}
-    .topline{display:flex;align-items:center;gap:9px;font-size:12px;color:#8abfb7;font-weight:650}
-    .dot{width:8px;height:8px;border-radius:50%;background:#47d5ae;box-shadow:0 0 0 5px #47d5ae15}
-    h2{font-size:36px;letter-spacing:-.047em;line-height:1.15;margin:18px 0 10px}
-    .intro{margin:0 0 36px;color:var(--muted);font-size:14px;line-height:1.75}
-    form{display:grid;gap:22px}
-    .field-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-    label{font-size:13px;font-weight:650;color:#d8e1ee}
-    .input-wrap{position:relative}
-    input{width:100%;height:52px;border:1px solid #304058;border-radius:12px;padding:0 16px;background:#111d30;color:#f8fafc;font:inherit;font-size:15px;outline:0;transition:border-color .15s,box-shadow .15s}
-    input::placeholder{color:#667a93}
-    input:hover{border-color:#4a5c74}
-    input:focus{border-color:var(--accent);box-shadow:0 0 0 3px #54e2c121}
-    #password{padding-right:74px}
-    .toggle{position:absolute;right:8px;top:8px;border:0;background:transparent;color:#b2c1d1;padding:9px;border-radius:8px;font:inherit;font-size:12px;cursor:pointer}
-    .toggle:hover{background:#ffffff12;color:white}
-    .submit{width:100%;min-height:53px;border:0;border-radius:12px;font:inherit;font-size:14px;font-weight:800;color:#062a25;background:linear-gradient(90deg,#6bead0,#38c9ae);cursor:pointer;margin-top:5px;transition:filter .15s,transform .15s}
-    .submit:hover:enabled{filter:brightness(1.1);transform:translateY(-1px)}
-    .submit:disabled{cursor:wait;opacity:.62}
-    .status{font-size:13px;min-height:20px;color:#f8a6ac;line-height:1.6;margin:17px 0 0}
-    .status.info{color:#9fb0c6}
-    .bottom{margin-top:38px;padding-top:22px;border-top:1px solid #273449;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:#7589a3}
-    .locked{display:flex;align-items:center;gap:7px}
-    .shield{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8}
-    .profile{border:1px solid var(--line);border-radius:14px;padding:18px;background:#111d30;margin:24px 0 20px;overflow-wrap:anywhere}
-    .profile small{display:block;color:var(--muted);margin-bottom:8px}
-    .profile strong{font-size:15px}
-    .workspace-card{border:1px dashed #3e5962;background:#19343935;border-radius:14px;padding:22px;margin-bottom:22px;color:#c4d5de;line-height:1.6;font-size:14px}
-    .secondary{background:#25354a;color:#f1f5f9}
-    .secondary:hover:enabled{filter:brightness(1.18)}
-    @media(max-width:900px){.shell{grid-template-columns:1fr}.showcase{display:none}.right{min-height:100svh;padding:34px 22px}.mobile-logo{display:inline-flex}.auth{max-width:420px}h2{font-size:33px}}
-    @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color-scheme:light;--bg:#f4f5f6;--panel:#fff;--line:#e0e4e8;--text:#17202a;--muted:#6c7681;--accent:#151b22}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;min-height:100vh;background:linear-gradient(125deg,#fafbfc,#eef0f2 60%,#e6e9ec);color:var(--text)}
+.shell{min-height:100vh;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(420px,.95fr)}
+.showcase{padding:clamp(32px,5.2vw,88px);display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;background:radial-gradient(circle at 82% 47%,#d8dde3 0,transparent 33%),linear-gradient(145deg,#fafbfc,#e9edf0)}
+.showcase::after{content:"";position:absolute;right:-125px;top:21%;width:450px;height:450px;border:1px solid #aeb8c333;border-radius:50%;box-shadow:0 0 0 60px #9da9b317,0 0 0 135px #a0acb011;pointer-events:none}
+.logo{display:inline-flex;align-items:center;gap:13px;font-size:17px;font-weight:800;letter-spacing:.12em;position:relative;z-index:1}
+.mark{height:45px;width:45px;display:grid;place-items:center;background:linear-gradient(145deg,#fff,#d7dfe5);border:1px solid #d7dce1;border-radius:13px;color:#15202b;font-size:24px;font-weight:900;letter-spacing:-.09em;box-shadow:0 8px 20px #1e293b12}
+.hero{max-width:550px;position:relative;z-index:1;padding:60px 0}
+.eyebrow{font-size:11px;color:#677785;letter-spacing:.21em;text-transform:uppercase;font-weight:800}
+.hero h1{font-size:clamp(44px,5vw,76px);line-height:1.06;letter-spacing:-.058em;margin:20px 0 24px;font-weight:790}
+.hero h1 span{color:#7b8793}
+.hero p{font-size:17px;line-height:1.8;color:#667481;max-width:460px;margin:0}
+.tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:34px}
+.tags span{font-size:12px;font-weight:650;color:#42505c;border:1px solid #ccd3da;background:#ffffffaa;padding:9px 13px;border-radius:100px}
+.copyright{font-size:12px;color:#87919b;position:relative;z-index:1}
+.right{display:grid;place-items:center;padding:48px 32px;background:#ffffffaf;border-left:1px solid #dde2e7}
+.auth{width:min(100%,420px)}
+.mobile-logo{display:none;margin-bottom:45px}
+.topline{display:flex;align-items:center;gap:9px;font-size:12px;color:#677785;font-weight:700;letter-spacing:.08em}
+.dot{width:8px;height:8px;border-radius:50%;background:#2d9f87;box-shadow:0 0 0 5px #2d9f8717}
+h2{font-size:36px;letter-spacing:-.047em;line-height:1.15;margin:18px 0 10px}
+.intro{margin:0 0 36px;color:var(--muted);font-size:14px;line-height:1.75}
+form{display:grid;gap:22px}
+.field-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+label{font-size:13px;font-weight:650;color:#24313e}
+.input-wrap{position:relative}
+input{width:100%;height:52px;border:1px solid #d5dce3;border-radius:12px;padding:0 16px;background:#f7f8fa;color:#18212b;font:inherit;font-size:15px;outline:0;transition:border-color .15s,box-shadow .15s}
+input::placeholder{color:#9aa6b2}
+input:hover{border-color:#aab5bf}
+input:focus{border-color:#536372;box-shadow:0 0 0 3px #6b7f9019;background:#fff}
+#password{padding-right:74px}
+.toggle{position:absolute;right:8px;top:8px;border:0;background:#e9edf0;color:#374654;padding:9px;border-radius:8px;font:inherit;font-size:12px;cursor:pointer}
+.toggle:hover{background:#dfe5eb}
+.submit{width:100%;min-height:53px;border:0;border-radius:12px;font:inherit;font-size:14px;font-weight:800;color:#fff;background:linear-gradient(100deg,#141b23,#343f49);cursor:pointer;margin-top:5px;transition:filter .15s,transform .15s}
+.submit:hover:enabled{filter:brightness(1.18);transform:translateY(-1px)}
+.submit:disabled{cursor:wait;opacity:.62}
+.status{font-size:13px;min-height:20px;color:#ae3434;line-height:1.6;margin:17px 0 0}
+.status.info{color:#768491}
+.bottom{margin-top:38px;padding-top:22px;border-top:1px solid #e0e5e9;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:#87939e}
+.locked{display:flex;align-items:center;gap:7px}
+.shield{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8}
+.profile{border:1px solid #e0e5e9;border-radius:14px;padding:18px;background:#f6f8fa;margin:24px 0 20px;overflow-wrap:anywhere}
+.profile small{display:block;color:var(--muted);margin-bottom:8px}
+.profile strong{font-size:15px}
+.workspace-card{border:1px dashed #aebac4;background:#f7f9fb;border-radius:14px;padding:22px;margin-bottom:22px;color:#5a6976;line-height:1.6;font-size:14px}
+.secondary{background:#e8ecf0;color:#17212c}
+.secondary:hover:enabled{filter:brightness(.95)}
+@media(max-width:900px){.shell{grid-template-columns:1fr}.showcase{display:none}.right{min-height:100svh;padding:34px 22px}.mobile-logo{display:inline-flex}.auth{max-width:420px}h2{font-size:33px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
   </style>
 </head>
 <body>
@@ -67,9 +67,9 @@
     <div class="logo"><span class="mark" aria-hidden="true">G</span> GTA DESK</div>
     <div class="hero">
       <div class="eyebrow">Prototype workspace · Version 1.0</div>
-      <h1>Идеите стават <span>работещи решения.</span></h1>
-      <p>Една защитена платформа за разработка, експерименти и тестване на нови функционалности.</p>
-      <div class="tags"><span>Prototype Lab</span><span>Automations</span><span>Data &amp; Tools</span></div>
+      <h1>Интелигентна среда. <span>Без ограничения.</span></h1>
+      <p>Минималистична платформа за AI прототипи, автоматизации и инженерни експерименти.</p>
+      <div class="tags"><span>AI Systems</span><span>Automations</span><span>Prototype Lab</span></div>
     </div>
     <div class="copyright">© GTA Desk · Private workspace</div>
   </aside>
