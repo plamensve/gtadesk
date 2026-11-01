@@ -165,6 +165,21 @@ body{background:#030c1b}
 @media(max-width:950px){.world{width:500px;height:500px}.orbit{width:82%}}
 @media(max-width:700px){.world{width:420px;height:420px;opacity:.55!important}.stage-logo{width:85px;height:85px}.command-stage{min-height:540px}.orbit{width:110%}}
 @media(prefers-reduced-motion:reduce){.world{animation:none}}
+</style><style id="full-visible-globe">
+/* Complete visible globe and orbit system in the light workspace. */
+.command-stage{min-height:660px;display:grid;grid-template-columns:minmax(260px,0.85fr) minmax(380px,1.15fr);grid-template-rows:1fr auto;align-items:center;justify-items:stretch;gap:28px;padding:48px clamp(24px,4vw,65px) 55px;overflow:hidden}
+.stage-heading{grid-column:1;grid-row:1;text-align:left;align-self:center;max-width:420px}
+.stage-logo{margin:10px 0 6px}
+.stage-heading h1{font-size:clamp(44px,5vw,70px)}
+.stage-heading p{margin-bottom:12px}
+.world{width:clamp(270px,32vw,445px)!important;height:clamp(270px,32vw,445px)!important;left:73%!important;top:42%!important;transform:translate(-50%,-50%);opacity:.75!important}
+.orbit{left:73%!important;top:42%!important;width:clamp(340px,37vw,510px)!important;height:clamp(110px,13vw,190px)!important}
+.orbit-two{width:clamp(345px,38vw,530px)!important;height:clamp(125px,14vw,205px)!important}
+.bridge-modules{grid-column:1/-1;grid-row:2;align-self:end;max-width:800px;margin:0 auto}
+.holo-platform{display:none}
+@media(max-width:1000px){.command-stage{grid-template-columns:minmax(220px,1fr) minmax(270px,1fr);min-height:630px;padding:32px 22px 45px}.world{left:74%!important;width:min(36vw,360px)!important;height:min(36vw,360px)!important}.orbit,.orbit-two{left:74%!important;width:min(43vw,440px)!important;height:155px!important}}
+@media(max-width:700px){.command-stage{display:flex;flex-direction:column;justify-content:flex-start;align-items:center;gap:0;min-height:760px;padding:26px 12px 33px}.stage-heading{text-align:center;align-self:center;order:0}.stage-logo{margin:8px auto}.stage-heading h1{font-size:clamp(38px,8vw,54px)}.world{left:50%!important;top:445px!important;width:min(66vw,310px)!important;height:min(66vw,310px)!important}.orbit,.orbit-two{left:50%!important;top:445px!important;width:min(83vw,395px)!important;height:115px!important}.bridge-modules{order:2;margin-top:auto;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.command-stage:before,.command-stage:after{display:none}}
+@media(max-width:400px){.command-stage{min-height:735px}.world{top:425px!important}.orbit,.orbit-two{top:425px!important}}
 </style></head>
 <body>
 <div id="loading" class="loading" role="status">Проверка на достъпа...</div>
