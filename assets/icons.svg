@@ -6,4 +6,9 @@
 <symbol id="arrow-right" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
 <symbol id="arrow-left" viewBox="0 0 24 24"><path d="M19 12H5m6 6-6-6 6-6"/></symbol>
 <symbol id="logout" viewBox="0 0 24 24"><path d="M10 17l5-5-5-5m5 5H3"/><path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7"/></symbol>
+<symbol id="truck" viewBox="0 0 24 24"><path d="M2 5h12v11H2zM14 9h4l4 4v3h-8z"/><circle cx="6.5" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></symbol>
+<symbol id="layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></symbol>
+<symbol id="file-text" viewBox="0 0 24 24"><path d="M5 2h9l5 5v15H5zM14 2v6h5M8 12h8M8 16h8"/></symbol>
+<symbol id="file-pdf" viewBox="0 0 24 24"><path d="M5 2h9l5 5v15H5zM14 2v6h5"/><path d="M8 17v-5h2a1 1 0 0 1 0 2H8m6-2h1a2 2 0 0 1 0 4h-1v-4Zm4 5v-5h3m-3 3h2"/></symbol>
+<symbol id="settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="m10 2-1 3-3 1-3-1-2 4 3 2v3l-3 2 2 4 3-1 3 1 1 3h4l1-3 3-1 3 1 2-4-3-2v-3l3-2-2-4-3 1-3-1-1-3z"/></symbol>
 </defs></svg>
