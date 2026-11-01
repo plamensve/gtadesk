@@ -62,17 +62,22 @@ button:disabled{cursor:not-allowed}
 .nav .nav-link:hover{background:#e6f2f8}
 select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23536e80' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:40px!important}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+
+/* Shared always-visible workspace navigation */
+.shell{grid-template-columns:264px minmax(0,1fr)}
+.sidebar{position:sticky;top:0;height:100vh;overflow-y:auto;z-index:5}
+@media(max-width:700px){.shell{grid-template-columns:74px minmax(0,1fr)}.sidebar{display:flex;padding:18px 8px;gap:25px}.sidebar .brand{font-size:0;justify-content:center}.sidebar .mark{font-size:22px;flex-shrink:0}.sidebar .caption,.sidebar .nav-label,.sidebar .account-label,.sidebar .account-email{display:none}.sidebar .nav button,.sidebar .nav .nav-link{justify-content:center;padding:13px 7px;font-size:0;gap:0}.sidebar .nav .ui-icon{width:21px;height:21px}.sidebar .side-bottom{padding:14px 0 0}.sidebar .logout{font-size:0;padding:11px 0}.sidebar .logout::after{content:"↪";font-size:21px}.main{min-width:0;padding:22px 14px 50px}.mobile-menu{display:none}}
 </style></head>
 <body>
 <div id="loading" class="loading" role="status">Проверка на достъпа...</div>
 <div class="shell" id="app" hidden>
- <aside class="sidebar">
+ <aside class="sidebar" aria-label="Постоянна навигация">
   <a class="brand" href="./dashboard.html"><span class="mark">G</span> GTA DESK</a>
   <div><div class="caption">Навигация</div><nav class="nav" aria-label="Основно меню">
-   <button class="active" aria-current="page"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10H3zM9 20v-7h6v7"/></svg>Основен панел</button>
-   <a class="nav-link" href="./zaraex.html"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>ZaraEx инструменти</a>
-   <button disabled title="Предстои"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9A7 7 0 0 1 18 6l2 1M4 17l2 1a7 7 0 0 0 12.4-3"/></svg>Автоматизации</button>
-   <button disabled title="Предстои"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>Инструменти за данни</button>
+   <button class="active" aria-current="page"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10H3zM9 20v-7h6v7"/></svg><span class="nav-label">Основен панел</span></button>
+   <a class="nav-link" href="./zaraex.html"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg><span class="nav-label">ZaraEx инструменти</span></a>
+   <button disabled title="Предстои"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9A7 7 0 0 1 18 6l2 1M4 17l2 1a7 7 0 0 0 12.4-3"/></svg><span class="nav-label">Автоматизации</span></button>
+   <button disabled title="Предстои"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg><span class="nav-label">Инструменти за данни</span></button>
   </nav></div>
   <div class="side-bottom"><div class="account-label">Влезли сте като</div><div class="account-email" id="account-email"></div><button class="logout" id="logout">Изход от профила</button></div>
  </aside>
