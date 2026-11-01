@@ -140,7 +140,32 @@ body{background:#030c1b}
 .main.cosmic-main{background:radial-gradient(ellipse at 70% 16%,#c6f7ff,transparent 43%),linear-gradient(180deg,#f7fdff,#e9f8fe)!important;color:#102d43!important}.cosmic-main:before{background:repeating-linear-gradient(90deg,transparent 0 90px,#048cb906 91px)!important}.cosmic-main .eyebrow,.cosmic-main .pill,.cosmic-main .stage-kicker,.cosmic-main .stage-heading p,.cosmic-main .module-tile,.cosmic-main .module-tile strong,.cosmic-main .module-tile small,.cosmic-main .telemetry,.cosmic-main .telemetry strong,.cosmic-main .telemetry small,.cosmic-main .command-note{color:#18394e!important}.command-header .pill{background:white!important;border-color:#bedfe9!important}.command-stage{background:radial-gradient(circle at 50% 43%,#9beef445,transparent 49%),linear-gradient(145deg,#fff,#e5f8fd)!important;border-color:#b8deeb!important;box-shadow:0 15px 42px #247d9a17!important}.command-stage:before,.command-stage:after{border-color:#15a3b528!important;box-shadow:none!important}.stage-heading{text-shadow:none!important}.stage-heading h1,.stage-heading h1 span{color:#10384e!important}.world{opacity:.19!important;box-shadow:0 0 65px #22c7dd28!important}.orbit{opacity:.3}.holo-platform{opacity:.22}.module-tile{background:linear-gradient(145deg,#fff,#e8f7fb)!important;border:1px solid #b6dbe8!important;box-shadow:0 9px 24px #1a7da018!important;backdrop-filter:none!important}.module-tile.available{border-color:#00a5b0!important;background:#d7fbfc!important}.module-tile.available:hover{background:#c7f5f7!important}.module-tile .ui-icon{color:#08758b!important}.module-tile.dormant{opacity:.75}.telemetry{background:white!important;border-color:#c4e0eb!important;color:#173c50!important}.telemetry-glyph{color:#008b9e!important}.signal-led{box-shadow:0 0 9px #00a87660}.command-note{color:#526f82!important}
 
 </style>
-</head>
+<style id="gtadesk-orbit-refresh">
+/* Polished light holographic planet: legible corporate dashboard */
+.main.cosmic-main{background:radial-gradient(ellipse at 52% 20%,#d7f7fd 0%,transparent 46%),linear-gradient(180deg,#f8fdff,#ecf8fc)!important}
+.command-stage{background:radial-gradient(ellipse at 50% 45%,#b7ecf5 0%,#e6f9fd 40%,#ffffff 76%)!important;border:1px solid #b4ddea!important;box-shadow:0 20px 50px #266e8c19,inset 0 1px #fff!important}
+.command-stage:before,.command-stage:after{opacity:.25}
+.world{top:38%;width:min(53vw,560px);height:min(53vw,560px);opacity:.7!important;background:radial-gradient(circle at 30% 24%,#ffffffb8,transparent 22%),radial-gradient(circle at 40% 35%,#d9ffff,#8bd6e5 43%,#268cbb 71%,#116086 100%);box-shadow:inset -28px -26px 60px #096c9855,0 0 60px #1aa9cd28,0 15px 45px #3589a329!important;animation:planet-float 12s ease-in-out infinite}
+.world-land{opacity:.3;filter:blur(11px)}
+.world-grid{border-color:#ffffff8c;background:repeating-linear-gradient(0deg,transparent 0 32px,#ffffff40 33px),repeating-linear-gradient(90deg,transparent 0 38px,#ffffff31 39px);mask-image:radial-gradient(circle,#000 38%,transparent 70%)}
+.orbit{top:39%;width:66%;height:31%;border:2px solid #008dab54;opacity:.65;box-shadow:0 0 22px #3bd3ec1f}
+.orbit-two{width:68%;height:34%;border-color:#00a2bf66}
+.stage-heading{z-index:3}
+.stage-heading h1{color:#0c364d!important;text-shadow:0 1px 0 #ffffffcc}
+.stage-heading h1 span{color:#087f99!important}
+.stage-kicker{color:#087f99!important}
+.stage-heading p{color:#123f55!important}
+.stage-logo{width:104px;height:104px;filter:drop-shadow(0 6px 10px #066f8b42)}
+.bridge-modules{gap:16px}
+.module-tile{border-radius:17px!important;background:linear-gradient(145deg,#ffffffed,#e9f9ffed)!important;box-shadow:0 12px 30px #1e8da61e!important}
+.module-tile.available{background:#d4f8fb!important;box-shadow:0 10px 25px #1ea7bb28!important}
+.holo-platform{bottom:-80px;opacity:.25}
+.telemetry{border-radius:16px!important;box-shadow:0 6px 19px #2f89950d}
+@keyframes planet-float{50%{transform:translate(-50%,-52%)}}
+@media(max-width:950px){.world{width:500px;height:500px}.orbit{width:82%}}
+@media(max-width:700px){.world{width:420px;height:420px;opacity:.55!important}.stage-logo{width:85px;height:85px}.command-stage{min-height:540px}.orbit{width:110%}}
+@media(prefers-reduced-motion:reduce){.world{animation:none}}
+</style></head>
 <body>
 <div id="loading" class="loading" role="status">Проверка на достъпа...</div>
 <div class="shell" id="app" hidden>
