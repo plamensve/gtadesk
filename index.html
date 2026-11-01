@@ -204,12 +204,12 @@ html,body{background:#f6fcff!important}
 @media(max-width:850px){.shell{display:flex!important;flex-direction:column;overflow:visible}.showcase{flex:none!important;min-height:370px!important;margin:12px!important;padding:24px!important}.showcase>.logo .gtad-brand-logo{width:230px!important}.showcase .hero{position:relative!important;top:auto!important;left:auto!important;margin:28px 0 0!important;max-width:50%!important;width:340px}.showcase .hero p{font-size:14px!important}.showcase .earth-art{width:265px!important;max-width:52%;right:6%!important;top:80px!important}.showcase .login-modules{bottom:19px!important;left:13px!important;grid-template-columns:repeat(4,minmax(0,1fr));width:min(95%,500px);gap:0}.login-modules strong{font-size:10px}.right{margin:-18px auto 45px!important;padding:0 16px!important;align-self:stretch!important;max-width:440px;width:100%!important}.auth{padding:27px 22px!important}}
 @media(max-width:520px){.showcase{min-height:365px!important}.showcase>.logo .gtad-brand-logo{width:192px!important}.showcase .hero{margin-top:20px!important;max-width:55%!important}.showcase .hero p{font-size:12px!important}.showcase .earth-art{width:185px!important;top:90px!important;right:2%!important;max-width:48%}.showcase .login-modules{width:96%}.login-modules span{padding:8px 3px;gap:5px}.login-modules .ui-icon{width:20px;height:20px}.login-modules strong{font-size:9px}.right{margin-top:-14px!important}}
 @media(prefers-reduced-motion:reduce){.showcase .earth-art img{animation:none!important}}
-</style></head>
+</style><link rel="stylesheet" href="./assets/gtadesk-globe.css"></head>
 <body>
 <div class="shell">
   <aside class="showcase" aria-label="GTA Desk">
     <div class="logo"><img class="gtad-brand-logo" src="./assets/gtadesk-logo.svg" alt="GTA Desk" width="210" height="62"></div>
-    <div class="earth-art" aria-hidden="true"><div class="earth-orbit earth-orbit-a"></div><div class="earth-orbit earth-orbit-b"></div><img src="./assets/earth-from-reference.svg" alt=""><span class="orbit-dot dot-one"></span><span class="orbit-dot dot-two"></span><span class="orbit-dot dot-three"></span></div>
+    <div class="earth-art globe-interactive" tabindex="0" role="group" aria-label="Интерактивна планета Земя. Завъртете с мишка, с докосване или със стрелките на клавиатурата."><div class="earth-orbit earth-orbit-a" aria-hidden="true"></div><div class="earth-orbit earth-orbit-b" aria-hidden="true"></div><img class="earth-fallback" src="./assets/earth-from-reference.svg" alt=""><canvas class="globe-sphere" aria-hidden="true"></canvas><canvas class="globe-rings" aria-hidden="true"></canvas><span class="orbit-dot dot-one" aria-hidden="true"></span><span class="orbit-dot dot-two" aria-hidden="true"></span><span class="orbit-dot dot-three" aria-hidden="true"></span></div>
     <div class="hero"><h1>GTA Desk</h1><p>Централизирано управление на товарения, номенклатури, декларации и документи.</p></div><div class="login-modules" aria-label="Инструменти в GTA Desk">
 <span><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#truck"></use></svg><strong>Товарения</strong></span>
 <span><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#layers"></use></svg><strong>Номенклатури</strong></span>
@@ -338,5 +338,5 @@ html,body{background:#f6fcff!important}
     }
   }
 </script>
-</body>
+<script type="module" src="./assets/gtadesk-orbits.js"></script><script type="module" src="./assets/gtadesk-globe.js"></script></body>
 </html>
