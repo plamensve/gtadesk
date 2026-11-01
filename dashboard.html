@@ -133,7 +133,21 @@ body{background:#030c1b}
 @media(max-width:950px){.command-stage{min-height:530px}.world{width:650px;height:650px}}
 @media(max-width:700px){.command-header{flex-wrap:wrap}.era{display:none}.main.cosmic-main{padding:18px 12px 30px}.command-stage{padding:40px 12px 110px;min-height:530px}.world{width:570px;height:570px}.bridge-modules{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.module-tile{min-height:116px;padding:10px 4px}.module-tile strong{font-size:11px}.module-tile small{font-size:9px}.module-tile .ui-icon{width:23px;height:23px}.command-lower{grid-template-columns:1fr}.stage-kicker{font-size:9px;letter-spacing:.09em}.stage-heading h1{font-size:clamp(38px,8vw,55px)}}
 @media(max-width:410px){.command-stage{min-height:510px}.module-tile{min-height:110px}.stage-heading p{font-size:13px}.command-header .eyebrow{font-size:9px}}
-</style></head>
+</style>
+<style id="gtadesk-white-text">
+/* Accessible white-on-dark text system; do not override status semantics or focus indication. */
+body,button,input,select,textarea{color:#f5fbff}
+button:not(:disabled),a:not(:disabled){color:#f5fbff}
+button:disabled{color:#d2e2ed}
+input::placeholder,textarea::placeholder{color:#d4e3ed;opacity:1}
+input:disabled,select:disabled,textarea:disabled{color:#c4d5e1;opacity:1}
+select,select option{color:#f5fbff;background-color:#091b2e}
+:focus-visible{outline-color:#76dfff}
+.sidebar .brand,.sidebar .caption,.sidebar .nav button,.sidebar .nav .nav-link,.sidebar .account-label,.sidebar .account-email,.sidebar .logout,.sidebar .logout-label{color:#f5fbff}
+.sidebar .nav button:disabled{color:#d4e4ee;opacity:.64}
+.cosmic-main .eyebrow,.cosmic-main .pill,.cosmic-main .stage-kicker,.cosmic-main .stage-heading p,.cosmic-main .module-tile,.cosmic-main .module-tile strong,.cosmic-main .module-tile small,.cosmic-main .telemetry,.cosmic-main .telemetry strong,.cosmic-main .telemetry small,.cosmic-main .command-note{color:#f5fbff}
+</style>
+</head>
 <body>
 <div id="loading" class="loading" role="status">Проверка на достъпа...</div>
 <div class="shell" id="app" hidden>
