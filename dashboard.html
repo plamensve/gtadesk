@@ -69,12 +69,13 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 .shell{grid-template-columns:264px minmax(0,1fr)}
 .sidebar{position:sticky;top:0;height:100vh;overflow-y:auto;z-index:5}
 @media(max-width:700px){.shell{grid-template-columns:74px minmax(0,1fr)}.sidebar{display:flex;padding:18px 8px;gap:25px}.sidebar .brand{font-size:0;justify-content:center}.sidebar .mark{font-size:22px;flex-shrink:0}.sidebar .caption,.sidebar .nav-label,.sidebar .account-label,.sidebar .account-email{display:none}.sidebar .nav button,.sidebar .nav .nav-link{justify-content:center;padding:13px 7px;font-size:0;gap:0}.sidebar .nav .ui-icon{width:21px;height:21px}.sidebar .side-bottom{padding:14px 0 0}.sidebar .logout{font-size:0;padding:11px 0}.sidebar .logout::after{content:"";display:none}.main{min-width:0;padding:22px 14px 50px}.mobile-menu{display:none}}
+.mark{padding:3px;overflow:hidden;background:#fff;border-color:#dbe7ef}.mark img{width:100%;height:100%;display:block;object-fit:contain}
 </style></head>
 <body>
 <div id="loading" class="loading" role="status">Проверка на достъпа...</div>
 <div class="shell" id="app" hidden>
  <aside class="sidebar" aria-label="Постоянна навигация">
-  <a class="brand" href="./dashboard.html"><span class="mark">G</span> GTA DESK</a>
+  <a class="brand" href="./dashboard.html"><span class="mark"><img src="./assets/gta-petroleum-logo.svg" alt="" width="40" height="40" loading="eager"></span> GTA DESK</a>
   <div><div class="caption">Навигация</div><nav class="nav" aria-label="Основно меню">
    <button class="active" aria-current="page"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#home"></use></svg><span class="nav-label">Основен панел</span></button>
    <a class="nav-link" href="./zaraex.html"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#modules"></use></svg><span class="nav-label">ZaraEx инструменти</span></a>
