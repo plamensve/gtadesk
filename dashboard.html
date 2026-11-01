@@ -276,7 +276,7 @@ body{background:#f3faff!important}
 @media(max-width:700px){.shell{grid-template-columns:74px minmax(0,1fr)!important}.sidebar{padding:18px 7px!important}.sidebar .brand .gtad-brand-logo{width:52px!important;height:45px!important;object-fit:cover;object-position:left}.sidebar .nav .nav-link{padding:12px 6px;justify-content:center;gap:0;font-size:0}.sidebar .nav .nav-link .nav-label{display:none}.sidebar .nav .nav-link .ui-icon{width:23px;height:23px}.main.cosmic-main.dash-v2{padding:22px 12px!important}.dash-session{margin-top:12px}.dash-visual{min-height:260px;height:260px}.dash-visual .earth-art{width:215px!important}.dash-tools{gap:10px}.dash-tool{padding:14px!important;min-height:165px}.dash-tool strong{font-size:13px}.dash-tool>span:not(.dash-tool-action){font-size:11px}.dash-bottom{grid-template-columns:1fr}}
 @media(max-width:410px){.dash-tools{grid-template-columns:1fr}.dash-tool{min-height:120px}.dash-visual{height:230px;min-height:230px}.dash-visual .earth-art{width:175px!important}}
 @media(prefers-reduced-motion:reduce){.dash-visual img{animation:none!important}}
-</style></head>
+</style><link rel="stylesheet" href="./assets/gtadesk-globe.css"></head>
 <body>
 <div id="loading" class="loading" role="status">Проверка на достъпа...</div>
 <div class="shell" id="app" hidden>
@@ -303,7 +303,7 @@ body{background:#f3faff!important}
 <a class="dash-tool is-ready" href="./zaraex.html#stay"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#file-text"></use></svg><strong>НАП · Престой</strong><span>Декларация за престой (XML)</span><span class="dash-tool-action">Отвори инструмент <span aria-hidden="true">›</span></span></a>
 <a class="dash-tool is-ready" href="./zaraex.html#pdf"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#file-pdf"></use></svg><strong>PDF инструменти</strong><span>Обединяване и обработка на PDF файлове</span><span class="dash-tool-action">Отвори инструмент <span aria-hidden="true">›</span></span></a>
 </div>
-    <div class="dash-visual" aria-label="Планетата Земя със светещи орбити" role="img"><div class="earth-art" aria-hidden="true"><div class="earth-orbit earth-orbit-a"></div><div class="earth-orbit earth-orbit-b"></div><img src="./assets/earth-from-reference.svg" alt=""><span class="orbit-dot dot-one"></span><span class="orbit-dot dot-two"></span><span class="orbit-dot dot-three"></span></div></div></section>
+    <div class="dash-visual" aria-label="Планетата Земя със светещи орбити" role="img"><div class="earth-art globe-interactive" tabindex="0" role="group" aria-label="Интерактивна планета Земя. Завъртете с мишка, с докосване или със стрелките на клавиатурата."><div class="earth-orbit earth-orbit-a" aria-hidden="true"></div><div class="earth-orbit earth-orbit-b" aria-hidden="true"></div><img class="earth-fallback" src="./assets/earth-from-reference.svg" alt=""><canvas class="globe-sphere" aria-hidden="true"></canvas><canvas class="globe-rings" aria-hidden="true"></canvas><span class="orbit-dot dot-one" aria-hidden="true"></span><span class="orbit-dot dot-two" aria-hidden="true"></span><span class="orbit-dot dot-three" aria-hidden="true"></span></div></div></section>
   <section class="dash-bottom" aria-label="Състояние на работната среда">
 <div class="dash-info"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#truck"></use></svg><div><strong>Товарения</strong><small>Достъпен модул ZaraEx</small></div></div>
 <div class="dash-info"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#file-text"></use></svg><div><strong>Декларации</strong><small>Генериране на XML документи</small></div></div>
@@ -338,4 +338,4 @@ try {
  }
 } catch {login();}
 </script>
-</body></html>
+<script type="module" src="./assets/gtadesk-orbits.js"></script><script type="module" src="./assets/gtadesk-globe.js"></script></body></html>
