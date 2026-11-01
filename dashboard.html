@@ -180,7 +180,45 @@ body{background:#030c1b}
 @media(max-width:1000px){.command-stage{grid-template-columns:minmax(220px,1fr) minmax(270px,1fr);min-height:630px;padding:32px 22px 45px}.world{left:74%!important;width:min(36vw,360px)!important;height:min(36vw,360px)!important}.orbit,.orbit-two{left:74%!important;width:min(43vw,440px)!important;height:155px!important}}
 @media(max-width:700px){.command-stage{display:flex;flex-direction:column;justify-content:flex-start;align-items:center;gap:0;min-height:760px;padding:26px 12px 33px}.stage-heading{text-align:center;align-self:center;order:0}.stage-logo{margin:8px auto}.stage-heading h1{font-size:clamp(38px,8vw,54px)}.world{left:50%!important;top:445px!important;width:min(66vw,310px)!important;height:min(66vw,310px)!important}.orbit,.orbit-two{left:50%!important;top:445px!important;width:min(83vw,395px)!important;height:115px!important}.bridge-modules{order:2;margin-top:auto;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.command-stage:before,.command-stage:after{display:none}}
 @media(max-width:400px){.command-stage{min-height:735px}.world{top:425px!important}.orbit,.orbit-two{top:425px!important}}
-</style><style id="gtadesk-brand-update">.sidebar .brand .gtad-brand-logo{width:210px;height:auto;max-width:100%}.sidebar .brand{min-height:55px}.stage-logo{display:block;width:min(100%,280px)!important;height:auto!important;max-height:93px;object-fit:contain;margin:8px 0 10px!important;filter:none!important}.stage-heading h1{font-size:clamp(25px,3vw,39px)!important;line-height:1.2;letter-spacing:-.03em}.stage-heading{max-width:470px}.command-stage{min-height:660px}.module-tile.available{border-color:#00aab4!important}@media(max-width:700px){.sidebar .brand .gtad-brand-logo{width:52px;max-width:none;object-fit:cover;object-position:left;width:52px;height:46px}.stage-logo{margin:8px auto!important;width:200px!important}.stage-heading{text-align:center}}</style></head>
+</style><style id="gtadesk-brand-update">.sidebar .brand .gtad-brand-logo{width:210px;height:auto;max-width:100%}.sidebar .brand{min-height:55px}.stage-logo{display:block;width:min(100%,280px)!important;height:auto!important;max-height:93px;object-fit:contain;margin:8px 0 10px!important;filter:none!important}.stage-heading h1{font-size:clamp(25px,3vw,39px)!important;line-height:1.2;letter-spacing:-.03em}.stage-heading{max-width:470px}.command-stage{min-height:660px}.module-tile.available{border-color:#00aab4!important}@media(max-width:700px){.sidebar .brand .gtad-brand-logo{width:52px;max-width:none;object-fit:cover;object-position:left;width:52px;height:46px}.stage-logo{margin:8px auto!important;width:200px!important}.stage-heading{text-align:center}}</style><style id="approved-dashboard-layout">
+/* GTA Desk light dashboard — approved composition, no invented KPI values. */
+.main.cosmic-main.dash-v2{min-height:100vh;padding:clamp(25px,3.4vw,55px);background:radial-gradient(circle at 82% 23%,#d5f7fa,transparent 31%),linear-gradient(120deg,#f8fdff,#eef9fe 80%)!important;overflow:hidden;color:#102f45}
+.dash-header{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin:0 auto 28px;max-width:1510px}
+.dash-eyebrow{font-size:11px;letter-spacing:.15em;color:#07899e;font-weight:800}
+.dash-header h1{font-size:clamp(28px,3vw,43px);letter-spacing:-.035em;margin:12px 0 9px;line-height:1.15}
+.dash-header p{margin:0;color:#547184;line-height:1.6;font-size:15px}
+.dash-session{white-space:nowrap;display:flex;align-items:center;background:#fff;border:1px solid #c5e5ed;border-radius:30px;padding:12px 16px;font-size:12px;color:#236075;box-shadow:0 7px 23px #327d9510}
+.dash-workspace{max-width:1510px;margin:auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.78fr);gap:clamp(20px,3vw,52px);align-items:center;min-height:510px;background:linear-gradient(135deg,#ffffffd9,#edfbffb8);border:1px solid #c5e5ef;border-radius:25px;padding:clamp(20px,3vw,48px);box-shadow:0 18px 48px #267b9511;position:relative;isolation:isolate}
+.dash-workspace:before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;background:radial-gradient(circle at 80% 50%,#b7f3fa66,transparent 35%);pointer-events:none}
+.dash-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;position:relative;z-index:2}
+.dash-tool{min-width:0;min-height:182px;display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:24px;border:1px solid #d3e6ed;background:#fff;border-radius:18px;text-decoration:none;box-shadow:0 9px 22px #1e688710;color:#123449}
+.dash-tool .ui-icon{width:30px;height:30px;color:#0399ae}
+.dash-tool strong{font-size:16px;line-height:1.3;color:#11364b}
+.dash-tool span{font-size:12px;line-height:1.5;color:#617d8c}
+.dash-tool .dash-tool-action{font-size:11px;font-weight:750;margin-top:auto;color:#097f95}
+.dash-tool.is-ready{border-color:#4fc6d5;background:linear-gradient(140deg,#f6feff,#dff9fb);cursor:pointer}
+.dash-tool.is-ready:hover{border-color:#009dae;box-shadow:0 14px 28px #0c9bad29;transform:translateY(-3px)}
+.dash-tool.is-planned{cursor:default}.dash-tool.is-planned .dash-tool-action{color:#8098a5}
+.dash-visual{height:420px;width:100%;display:grid;place-items:center;position:relative;isolation:isolate;overflow:visible}
+.dash-planet{width:min(100%,340px);aspect-ratio:1;border-radius:50%;position:relative;overflow:hidden;background:radial-gradient(circle at 29% 22%,#ffffffc2,transparent 25%),radial-gradient(circle at 37% 32%,#dafcff,#95dbe9 38%,#51afcf 73%,#247fa7 100%);box-shadow:inset -29px -19px 44px #147ca33e,0 15px 40px #1884a328,0 0 70px #36c7d925}
+.dash-planet-map{position:absolute;inset:16%;border-radius:50%;background:conic-gradient(from 120deg,transparent 0 10%,#e9ffffb8 13% 16%,transparent 20% 31%,#e9ffffa0 33% 39%,transparent 43% 62%,#e9ffff99 65% 69%,transparent 73%);filter:blur(17px);opacity:.6}
+.dash-planet-grid{position:absolute;inset:0;border-radius:50%;background:repeating-linear-gradient(0deg,transparent 0 31px,#e2ffff38 32px),repeating-linear-gradient(90deg,transparent 0 43px,#e2ffff28 44px);mask-image:radial-gradient(circle,#000 40%,transparent 75%)}
+.dash-ring{position:absolute;top:50%;left:50%;width:min(119%,440px);height:140px;border:2px solid #48c5d9a6;border-radius:50%;box-shadow:0 0 16px #21bcd12e;pointer-events:none}
+.dash-ring-one{transform:translate(-50%,-50%) rotate(-31deg)}
+.dash-ring-two{transform:translate(-50%,-50%) rotate(42deg);border-color:#9ee9f0c7}
+.dash-node{position:absolute;width:10px;height:10px;border-radius:50%;background:#18b9c4;box-shadow:0 0 0 5px #67e5eb4d,0 0 18px #19bbca}
+.dash-node-one{top:19%;left:24%}.dash-node-two{right:14%;top:35%}.dash-node-three{bottom:21%;left:23%}
+.dash-bottom{max-width:1510px;margin:18px auto 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.dash-info{display:flex;align-items:center;gap:13px;background:#fff;border:1px solid #cce5ef;border-radius:16px;padding:18px;box-shadow:0 8px 20px #277a920c}
+.dash-info .ui-icon{width:22px;height:22px;flex-shrink:0;color:#0894a7}
+.dash-info strong,.dash-info small{display:block}.dash-info strong{font-size:13px;color:#12384f}.dash-info small{font-size:11px;color:#6c8795;margin-top:4px}
+.dash-disclaimer{max-width:1510px;margin:17px auto;color:#688595;font-size:12px;line-height:1.7}
+@media(max-width:1120px){.dash-workspace{grid-template-columns:1fr;gap:10px}.dash-visual{height:320px;grid-row:1}.dash-planet{width:260px}.dash-ring{width:350px;height:110px}.dash-tools{grid-row:2}}
+@media(max-width:700px){.main.cosmic-main.dash-v2{padding:22px 12px}.dash-header{display:block}.dash-session{display:inline-flex;margin-top:14px}.dash-workspace{padding:16px}.dash-tools{gap:10px}.dash-tool{padding:16px;min-height:165px}.dash-tool strong{font-size:13px}.dash-tool span{font-size:11px}.dash-visual{height:280px}.dash-planet{width:220px}.dash-ring{width:290px;height:95px}.dash-bottom{grid-template-columns:1fr}}
+@media(max-width:390px){.dash-tools{grid-template-columns:1fr}.dash-tool{min-height:130px}.dash-visual{height:240px}.dash-planet{width:190px}.dash-ring{width:250px}}
+@media(prefers-reduced-motion:no-preference){.dash-planet{animation:dash-float 10s ease-in-out infinite}.dash-node{animation:dash-glow 3s ease-in-out infinite alternate}}
+@keyframes dash-float{50%{transform:translateY(-9px)}}@keyframes dash-glow{to{opacity:.45}}
+</style></head>
 <body>
 <div id="loading" class="loading" role="status">Проверка на достъпа...</div>
 <div class="shell" id="app" hidden>
@@ -194,36 +232,30 @@ body{background:#030c1b}
   </nav></div>
   <div class="side-bottom"><div class="account-label">Влезли сте като</div><div class="account-email" id="account-email"></div><button class="logout" id="logout" aria-label="Изход от профила" title="Изход от профила"><svg class="logout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#logout"></use></svg><span class="logout-label">Изход от профила</span></button></div>
  </aside>
- <main class="main cosmic-main">
-  <div class="bridge-grid" aria-hidden="true"></div>
-  <div class="stars" aria-hidden="true"></div>
-  <header class="command-header">
-    <div class="eyebrow"><span class="signal-led"></span> GTA DESK / РАБОТНА СРЕДА</div>
-    <div class="pill"><span class="dot"></span> Защитена сесия</div>
+ <main class="main cosmic-main dash-v2">
+  <header class="dash-header">
+    <div><div class="dash-eyebrow">GTA DESK / РАБОТНА СРЕДА</div><h1>Добре дошли в GTA Desk!</h1><p>Централизирано управление на товарения, номенклатури, декларации и документи.</p></div>
+    <div class="dash-session"><span class="signal-led"></span> Защитена сесия</div>
   </header>
-  <section class="command-stage" aria-labelledby="command-title">
-    <div class="orbit orbit-one" aria-hidden="true"></div>
-    <div class="orbit orbit-two" aria-hidden="true"></div>
-    <div class="world" aria-hidden="true"><div class="world-land"></div><div class="world-grid"></div></div>
-    <div class="stage-heading">
-      <div class="stage-kicker">ЦЕНТРАЛИЗИРАНО УПРАВЛЕНИЕ <span>●</span> ДИГИТАЛНИ ИНСТРУМЕНТИ</div>
-      <img class="stage-logo" src="./assets/gtadesk-logo.svg" alt="GTA Desk" width="320" height="94">
-      <h1 id="command-title">Добре дошли в GTA Desk</h1>
-      <p>Централизирана работна среда за товарения, номенклатури, документи и автоматизация.</p>
+  <section class="dash-workspace" aria-label="Работни инструменти">
+    <div class="dash-tools">
+      <a class="dash-tool is-ready" href="./zaraex.html"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#modules"></use></svg><strong>ZaraEx инструменти</strong><span>Товарения, номенклатури, НАП · Престой и PDF</span><span class="dash-tool-action">Отвори работната среда →</span></a>
+      <div class="dash-tool is-planned"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#database"></use></svg><strong>Анализи и данни</strong><span>Инструменти за обработка и справки</span><span class="dash-tool-action">Предстои</span></div>
+      <div class="dash-tool is-planned"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#automation"></use></svg><strong>Автоматизации</strong><span>Оптимизиране на работните процеси</span><span class="dash-tool-action">Предстои</span></div>
+      <div class="dash-tool is-planned"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#home"></use></svg><strong>Други инструменти</strong><span>Допълнителни фирмени функционалности</span><span class="dash-tool-action">Предстои</span></div>
     </div>
-    <div class="bridge-modules">
-      <a class="module-tile available" href="./zaraex.html"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#modules"></use></svg><strong>ZaraEx</strong><small>Отвори модул</small></a>
-      <div class="module-tile dormant"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#database"></use></svg><strong>Инструменти за данни</strong><small>Предстои</small></div>
-      <div class="module-tile dormant"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#automation"></use></svg><strong>Автоматизации</strong><small>Предстои</small></div>
+    <div class="dash-visual" aria-label="Илюстрация на свързана дигитална среда" role="img">
+      <div class="dash-planet"><div class="dash-planet-map"></div><div class="dash-planet-grid"></div></div>
+      <div class="dash-ring dash-ring-one"></div><div class="dash-ring dash-ring-two"></div>
+      <span class="dash-node dash-node-one"></span><span class="dash-node dash-node-two"></span><span class="dash-node dash-node-three"></span>
     </div>
-    <div class="holo-platform" aria-hidden="true"><div></div><div></div><div></div></div>
   </section>
-  <section class="command-lower" aria-label="Системна информация">
-   <div class="telemetry"><span class="signal-led"></span><div><strong>Достъпът е потвърден</strong><small>Защитена работна сесия</small></div></div>
-   <div class="telemetry"><span class="telemetry-glyph">◇</span><div><strong>GTA Desk</strong><small>Платформа за работни инструменти</small></div></div>
-   <div class="telemetry"><span class="telemetry-glyph">◎</span><div><strong>Модул ZaraEx</strong><small>Налична уеб версия</small></div></div>
+  <section class="dash-bottom" aria-label="Информация за работната среда">
+    <div class="dash-info"><span class="signal-led"></span><div><strong>Достъпът е потвърден</strong><small>Защитена работна сесия</small></div></div>
+    <div class="dash-info"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#modules"></use></svg><div><strong>ZaraEx</strong><small>Достъпен работен модул</small></div></div>
+    <div class="dash-info"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#database"></use></svg><div><strong>GTA Desk</strong><small>Централизирана фирмена платформа</small></div></div>
   </section>
-  <p class="command-note">ZaraEx включва уеб инструменти за товарения, XML и PDF. Пълната съвместимост с оригиналния Windows .xls експорт още не е реализирана.</p>
+  <p class="dash-disclaimer">ZaraEx включва уеб инструменти за товарения, XML и PDF. Пълната съвместимост с оригиналния Windows .xls експорт все още не е реализирана.</p>
   <button id="mobile-logout" class="logout mobile-menu" style="margin-top:20px">Изход от профила</button>
  </main>
 </div>
