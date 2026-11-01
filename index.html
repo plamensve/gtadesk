@@ -171,20 +171,59 @@ body{background:linear-gradient(145deg,#f7fdff,#e5f7fc)!important}.right{backgro
 @media(max-width:940px){.shell{grid-template-columns:1fr}.showcase{min-height:240px;padding:24px!important;gap:4px}.showcase .hero{margin:10px 0 0!important}.showcase .hero p{font-size:13px;max-width:320px}.earth-art{width:220px;left:auto;right:4%;top:5%;opacity:.75}.showcase .copyright{display:none}.right{padding:25px 16px;min-height:unset}.auth{width:min(100%,450px)}}
 @media(max-width:500px){.showcase{min-height:210px}.earth-art{width:155px;right:-2%;top:9%;opacity:.55}.showcase>.logo .gtad-brand-logo{width:200px!important}.showcase .hero p{max-width:240px}.auth{padding:25px 20px!important}}
 @media(prefers-reduced-motion:no-preference){.earth-art img{animation:earth-breathe 11s ease-in-out infinite}}@keyframes earth-breathe{50%{transform:translateY(-7px)}}@media(prefers-reduced-motion:reduce){.earth-art img{animation:none}}
+</style><style id="approved-reference-login-v2">
+/* Login page visually aligned with the approved split-screen reference. */
+html,body{background:#f6fcff!important}
+.shell{display:grid!important;position:relative;isolation:isolate;grid-template-columns:1fr!important;grid-template-rows:minmax(780px,100svh);min-height:100svh!important;overflow:hidden}
+.showcase{position:relative!important;grid-row:1;grid-column:1;padding:clamp(28px,4.3vw,75px)!important;margin:clamp(10px,1.4vw,24px)!important;border-radius:24px;background:radial-gradient(ellipse at 72% 43%,#c0edfb 0%,transparent 45%),linear-gradient(145deg,#fff,#e5f5ff)!important;box-shadow:0 10px 32px #2376931d;border:1px solid #d5e8f2;display:block!important;min-height:0!important;overflow:hidden!important}
+.showcase:before{z-index:-1!important;background:linear-gradient(150deg,transparent 43%,#a8eafa24 46%,transparent 80%)!important}
+.showcase:after{border:1px solid #f3ffffaa!important;inset:5px;border-radius:20px;pointer-events:none}
+.showcase>.logo{position:relative;z-index:5}.showcase>.logo .gtad-brand-logo{display:block;width:clamp(240px,24vw,345px)!important;height:auto!important}
+.showcase .hero{display:block!important;position:absolute!important;left:clamp(28px,4.3vw,75px)!important;top:clamp(190px,24vh,250px)!important;width:410px;max-width:32vw!important;max-height:none;padding:0!important;margin:0!important;color:#143a51!important;text-shadow:none!important}
+.showcase .hero h1{display:none!important}
+.showcase .hero p{font-size:clamp(15px,1.25vw,18px)!important;line-height:1.7;color:#143a51!important;font-weight:540}
+.showcase .earth-art{position:absolute!important;z-index:2;left:auto!important;right:clamp(65px,11vw,195px)!important;top:clamp(175px,22vh,250px)!important;width:clamp(345px,35vw,520px)!important;height:auto!important;max-width:53%;aspect-ratio:1;opacity:1!important;filter:drop-shadow(0 25px 24px #17a8c931)}
+.showcase .earth-art img{display:block;position:relative;z-index:1;width:100%;height:auto;animation:none!important;filter:none}
+.showcase .earth-orbit{position:absolute;z-index:2;left:50%;top:51%;width:127%;height:39%;transform:translate(-50%,-50%) rotate(-27deg);border:2px solid #b6ffffd9;border-radius:50%;box-shadow:0 0 13px #1dd5de80;pointer-events:none}
+.showcase .earth-orbit-b{transform:translate(-50%,-50%) rotate(41deg);border-color:#b3f7ffba;height:34%;box-shadow:0 0 12px #23cee375}
+.showcase .orbit-dot{z-index:3;position:absolute;width:10px;height:10px;border-radius:50%;background:#13c4c3;box-shadow:0 0 0 5px #9bfcf170,0 0 18px #00aebd}
+.showcase .login-modules{position:absolute;left:clamp(24px,4vw,70px);bottom:clamp(30px,5vh,57px);display:grid;grid-template-columns:repeat(4,minmax(90px,140px));gap:4px;max-width:570px;z-index:3}
+.login-modules span{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:11px;padding:11px 7px;border-right:1px solid #cbdfe9;color:#113c52}
+.login-modules span:last-child{border-right:none}
+.login-modules .ui-icon{width:27px;height:27px;color:#007b94}
+.login-modules strong{font-size:12px;font-weight:650;text-align:center}
+.showcase .copyright{display:none}
+.right{grid-row:1;grid-column:1;z-index:5;display:block!important;align-self:start;justify-self:start;min-height:unset!important;position:relative;margin:clamp(355px,39vh,410px) 0 0 clamp(35px,4.7vw,84px)!important;padding:0!important;width:min(385px,36vw)!important;max-width:none;background:transparent!important;border:0!important}
+.auth{display:block;width:100%;max-width:none!important;padding:27px 28px!important;border:1px solid #d4e3ef!important;border-radius:17px!important;background:#fffffff7!important;box-shadow:0 16px 43px #166b8b21!important}
+.auth h2{font-size:24px!important;line-height:1.2;margin:10px 0 15px!important}.auth .topline{font-size:10px!important;letter-spacing:.09em}
+.auth .intro{display:none}.auth form{gap:13px}.auth .field-head{margin-bottom:5px}.auth label{font-size:12px;color:#294b61!important}
+.auth input{height:45px!important;border-radius:9px;background:#fff!important;font-size:14px;padding:0 13px}
+.auth .submit{min-height:47px!important;margin-top:3px!important;background:linear-gradient(115deg,#13bfc0,#027c9d)!important;font-size:14px}
+.auth .bottom{display:none}.auth .status{font-size:11px;min-height:18px;margin:10px 0 0}
+@media(max-width:1050px){.showcase .earth-art{right:5%!important;max-width:48%;width:420px!important}.showcase .hero{max-width:43vw!important}.right{width:360px!important}}
+@media(max-width:850px){.shell{display:flex!important;flex-direction:column;overflow:visible}.showcase{flex:none!important;min-height:370px!important;margin:12px!important;padding:24px!important}.showcase>.logo .gtad-brand-logo{width:230px!important}.showcase .hero{position:relative!important;top:auto!important;left:auto!important;margin:28px 0 0!important;max-width:50%!important;width:340px}.showcase .hero p{font-size:14px!important}.showcase .earth-art{width:265px!important;max-width:52%;right:6%!important;top:80px!important}.showcase .login-modules{bottom:19px!important;left:13px!important;grid-template-columns:repeat(4,minmax(0,1fr));width:min(95%,500px);gap:0}.login-modules strong{font-size:10px}.right{margin:-18px auto 45px!important;padding:0 16px!important;align-self:stretch!important;max-width:440px;width:100%!important}.auth{padding:27px 22px!important}}
+@media(max-width:520px){.showcase{min-height:365px!important}.showcase>.logo .gtad-brand-logo{width:192px!important}.showcase .hero{margin-top:20px!important;max-width:55%!important}.showcase .hero p{font-size:12px!important}.showcase .earth-art{width:185px!important;top:90px!important;right:2%!important;max-width:48%}.showcase .login-modules{width:96%}.login-modules span{padding:8px 3px;gap:5px}.login-modules .ui-icon{width:20px;height:20px}.login-modules strong{font-size:9px}.right{margin-top:-14px!important}}
+@media(prefers-reduced-motion:reduce){.showcase .earth-art img{animation:none!important}}
 </style></head>
 <body>
 <div class="shell">
   <aside class="showcase" aria-label="GTA Desk">
     <div class="logo"><img class="gtad-brand-logo" src="./assets/gtadesk-logo.svg" alt="GTA Desk" width="210" height="62"></div>
-    <div class="earth-art" aria-hidden="true"><div class="earth-orbit earth-orbit-a"></div><div class="earth-orbit earth-orbit-b"></div><img src="./assets/gtadesk-earth.svg" alt=""><span class="orbit-dot dot-one"></span><span class="orbit-dot dot-two"></span><span class="orbit-dot dot-three"></span></div>
-    <div class="hero"><h1>GTA Desk</h1><p>Централизирано управление на товарения, номенклатури, декларации и документи.</p></div><div class="copyright">© GTA Desk · Среда за разработка и тестове</div>
+    <div class="earth-art" aria-hidden="true"><div class="earth-orbit earth-orbit-a"></div><div class="earth-orbit earth-orbit-b"></div><img src="./assets/earth-from-reference.svg" alt=""><span class="orbit-dot dot-one"></span><span class="orbit-dot dot-two"></span><span class="orbit-dot dot-three"></span></div>
+    <div class="hero"><h1>GTA Desk</h1><p>Централизирано управление на товарения, номенклатури, декларации и документи.</p></div><div class="login-modules" aria-label="Инструменти в GTA Desk">
+<span><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#truck"></use></svg><strong>Товарения</strong></span>
+<span><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#layers"></use></svg><strong>Номенклатури</strong></span>
+<span><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#file-text"></use></svg><strong>НАП · Престой</strong></span>
+<span><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#file-pdf"></use></svg><strong>PDF инструменти</strong></span>
+</div>
+    <div class="copyright">© GTA Desk · Среда за разработка и тестове</div>
   </aside>
   <main class="right">
     <div class="auth">
       <div class="logo mobile-logo"><img class="gtad-brand-logo" src="./assets/gtadesk-logo.svg" alt="GTA Desk" width="210" height="62"></div>
       <section id="login-view">
         <div class="topline"><span class="dot"></span> ВХОД В СИСТЕМАТА</div>
-        <h2>Добре дошли</h2>
+        <h2>Вход в системата</h2>
         <p class="intro">Използвайте имейла и паролата на вашия одобрен акаунт, за да отворите работната среда.</p>
         <form id="login-form">
           <div>
@@ -198,7 +237,7 @@ body{background:linear-gradient(145deg,#f7fdff,#e5f7fc)!important}.right{backgro
               <button type="button" class="toggle" id="toggle-password" aria-label="Покажи паролата" aria-pressed="false">Покажи</button>
             </div>
           </div>
-          <button class="submit" id="login-button" type="submit" disabled>Вход в платформата <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+          <button class="submit" id="login-button" type="submit" disabled>Вход <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
         </form>
         <p class="status info" role="status" aria-live="polite" id="message">Свързване със защитения достъп...</p>
       </section>
