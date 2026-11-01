@@ -218,6 +218,19 @@ body{background:#030c1b}
 @media(max-width:390px){.dash-tools{grid-template-columns:1fr}.dash-tool{min-height:130px}.dash-visual{height:240px}.dash-planet{width:190px}.dash-ring{width:250px}}
 @media(prefers-reduced-motion:no-preference){.dash-planet{animation:dash-float 10s ease-in-out infinite}.dash-node{animation:dash-glow 3s ease-in-out infinite alternate}}
 @keyframes dash-float{50%{transform:translateY(-9px)}}@keyframes dash-glow{to{opacity:.45}}
+</style><style id="approved-earth-dashboard">.earth-art{position:absolute;z-index:1;left:34%;top:29%;width:min(72%,510px);aspect-ratio:1;pointer-events:none;filter:drop-shadow(0 18px 26px #139bc232)}
+.earth-art img{width:100%;height:100%;display:block}.earth-orbit{position:absolute;z-index:2;left:50%;top:52%;width:112%;height:34%;border-radius:50%;border:2px solid #6be7f3;box-shadow:0 0 19px #29e9f188;transform:translate(-50%,-50%) rotate(-31deg)}.earth-orbit-b{transform:translate(-50%,-50%) rotate(37deg);border-color:#ddffffa8}
+.orbit-dot{position:absolute;z-index:3;width:11px;height:11px;border-radius:50%;background:#2ce8e2;box-shadow:0 0 0 5px #bafffa88,0 0 18px #11bcca}.dot-one{top:18%;left:26%}.dot-two{top:58%;right:0}.dot-three{bottom:20%;left:13%}
+
+/* Approved reference: real Earth illustration, four cards and compact blue-white workspace. */
+.main.cosmic-main.dash-v2{padding:clamp(24px,3vw,46px)!important;background:radial-gradient(circle at 85% 24%,#d7f4fc,transparent 35%),linear-gradient(135deg,#fcfeff,#effaff)!important}
+.dash-header{margin-bottom:22px}.dash-header h1{font-size:clamp(28px,2.5vw,39px)}
+.dash-workspace{grid-template-columns:minmax(0,1.1fr) minmax(325px,.9fr);min-height:540px;padding:clamp(23px,3vw,40px);background:linear-gradient(145deg,#ffffffef,#e7f8ffdb)!important;border-radius:22px;overflow:hidden}
+.dash-tools{gap:15px}.dash-tool{min-height:175px;border-radius:16px;box-shadow:0 10px 25px #24789016}.dash-tool.is-ready{background:#effdff!important}
+.dash-visual{min-height:435px;overflow:visible}.dash-visual .earth-art{position:relative;left:auto;right:auto;top:auto;width:min(100%,440px);height:auto;max-width:440px;margin:auto;opacity:1;filter:drop-shadow(0 15px 27px #119dc83c)}.dash-visual .earth-orbit{height:35%}.dash-visual .orbit-dot{width:9px;height:9px}
+.dash-bottom{grid-template-columns:repeat(3,minmax(0,1fr))}.dash-info{background:#fff}
+@media(max-width:1120px){.dash-workspace{grid-template-columns:1fr}.dash-visual{min-height:330px;height:330px;grid-row:1}.dash-visual .earth-art{width:290px}.dash-tools{grid-row:2}}
+@media(max-width:700px){.dash-workspace{padding:15px}.dash-visual{min-height:280px;height:280px}.dash-visual .earth-art{width:240px}.dash-tool{min-height:165px}.dash-bottom{grid-template-columns:1fr}}
 </style></head>
 <body>
 <div id="loading" class="loading" role="status">Проверка на достъпа...</div>
@@ -244,12 +257,7 @@ body{background:#030c1b}
       <div class="dash-tool is-planned"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#automation"></use></svg><strong>Автоматизации</strong><span>Оптимизиране на работните процеси</span><span class="dash-tool-action">Предстои</span></div>
       <div class="dash-tool is-planned"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#home"></use></svg><strong>Други инструменти</strong><span>Допълнителни фирмени функционалности</span><span class="dash-tool-action">Предстои</span></div>
     </div>
-    <div class="dash-visual" aria-label="Илюстрация на свързана дигитална среда" role="img">
-      <div class="dash-planet"><div class="dash-planet-map"></div><div class="dash-planet-grid"></div></div>
-      <div class="dash-ring dash-ring-one"></div><div class="dash-ring dash-ring-two"></div>
-      <span class="dash-node dash-node-one"></span><span class="dash-node dash-node-two"></span><span class="dash-node dash-node-three"></span>
-    </div>
-  </section>
+    <div class="dash-visual" aria-label="Планетата Земя със светещи орбити" role="img"><div class="earth-art" aria-hidden="true"><div class="earth-orbit earth-orbit-a"></div><div class="earth-orbit earth-orbit-b"></div><img src="./assets/gtadesk-earth.svg" alt=""><span class="orbit-dot dot-one"></span><span class="orbit-dot dot-two"></span><span class="orbit-dot dot-three"></span></div></div></section>
   <section class="dash-bottom" aria-label="Информация за работната среда">
     <div class="dash-info"><span class="signal-led"></span><div><strong>Достъпът е потвърден</strong><small>Защитена работна сесия</small></div></div>
     <div class="dash-info"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#modules"></use></svg><div><strong>ZaraEx</strong><small>Достъпен работен модул</small></div></div>
