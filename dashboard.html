@@ -70,6 +70,69 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 .sidebar{position:sticky;top:0;height:100vh;overflow-y:auto;z-index:5}
 @media(max-width:700px){.shell{grid-template-columns:74px minmax(0,1fr)}.sidebar{display:flex;padding:18px 8px;gap:25px}.sidebar .brand{font-size:0;justify-content:center}.sidebar .mark{font-size:22px;flex-shrink:0}.sidebar .caption,.sidebar .nav-label,.sidebar .account-label,.sidebar .account-email{display:none}.sidebar .nav button,.sidebar .nav .nav-link{justify-content:center;padding:13px 7px;font-size:0;gap:0}.sidebar .nav .ui-icon{width:21px;height:21px}.sidebar .side-bottom{padding:14px 0 0}.sidebar .logout{font-size:0;padding:11px 0}.sidebar .logout::after{content:"";display:none}.main{min-width:0;padding:22px 14px 50px}.mobile-menu{display:none}}
 .mark{padding:3px;overflow:hidden;background:#fff;border-color:#dbe7ef}.mark img{width:100%;height:100%;display:block;object-fit:contain}
+
+/* YEAR 4523 · cinematic command deck (display-only; existing auth preserved) */
+:root{background:#030c1b;color:#edfaff}
+body{background:#030c1b}
+.shell{background:#040c1b}
+.sidebar{background:linear-gradient(175deg,#040c1b,#0a1328 67%,#050a16);border-right:1px solid #244c6b;color:#e9faff;box-shadow:9px 0 40px #0008}
+.sidebar .brand{color:#fff}
+.sidebar .caption{color:#75a6c4}
+.sidebar .nav button,.sidebar .nav .nav-link{color:#9cc6dc;background:transparent}
+.sidebar .nav button.active{background:linear-gradient(95deg,#6e102c99,#42142c66);color:#fff;border:1px solid #e14e69;box-shadow:inset 3px 0 #ff3f64,0 0 24px #d92d4c25}
+.sidebar .nav .nav-link:hover{background:#103452;color:#fff}
+.sidebar .nav button:disabled{color:#789aae;opacity:.66}
+.sidebar .side-bottom{border-color:#21445f}
+.sidebar .account-label{color:#88aabd}
+.sidebar .account-email{color:#e8f9ff}
+.sidebar .logout{background:#0d1c30;color:#bce5f6;border-color:#25465d}
+.main.cosmic-main{max-width:none;padding:27px clamp(16px,3vw,54px) 40px;min-width:0;position:relative;overflow:hidden;background:radial-gradient(ellipse at 54% 28%,#12507e72 0%,transparent 38%),linear-gradient(180deg,#041024,#08172b 60%,#030914);isolation:isolate;min-height:100vh}
+.cosmic-main:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 75px,#52bcff06 76px),repeating-linear-gradient(90deg,transparent 0 84px,#52bcff07 85px);pointer-events:none;z-index:-1}
+.cosmic-main .bridge-grid{position:absolute;inset:0;pointer-events:none;background:linear-gradient(125deg,#ff345712,transparent 25%,transparent 70%,#18b8ff11);z-index:-1}
+.stars{position:absolute;inset:0;pointer-events:none;z-index:-1;background-image:radial-gradient(1px 1px at 12% 18%,#cbf5ff 100%,transparent),radial-gradient(2px 2px at 80% 8%,#72cfff 100%,transparent),radial-gradient(1px 1px at 65% 15%,#fff 100%,transparent),radial-gradient(2px 2px at 20% 64%,#fff9 100%,transparent);background-size:510px 410px;opacity:.55}
+.command-header{display:flex;align-items:center;justify-content:space-between;gap:12px;position:relative;z-index:3}
+.command-header .eyebrow{color:#9ecadd;letter-spacing:.12em;font-size:11px}
+.era{color:#ff6c86}
+.signal-led{display:inline-block;width:8px;height:8px;border-radius:50%;background:#37efbc;box-shadow:0 0 13px #21f4c3;flex-shrink:0;margin-right:7px}
+.command-header .pill{background:#0b2537b8;border-color:#2c7684;color:#b9f4f1}
+.command-stage{min-height:560px;max-width:1450px;margin:27px auto 0;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 12px 115px;overflow:hidden;border:1px solid #25648670;border-radius:25px;background:radial-gradient(ellipse at 50% 50%,#1073a82c,transparent 54%),linear-gradient(180deg,#07172c9e,#030d1ec9);box-shadow:inset 0 0 65px #20d2ff12,0 20px 65px #0007}
+.command-stage:before,.command-stage:after{content:"";position:absolute;top:-8%;bottom:-5%;width:18%;pointer-events:none;border:2px solid #45c9fa25;box-shadow:inset 0 0 40px #f62d3d12}
+.command-stage:before{left:-11%;transform:rotate(-18deg);border-right:3px solid #e4405b}
+.command-stage:after{right:-11%;transform:rotate(18deg);border-left:3px solid #e4405b}
+.stage-heading{position:relative;z-index:2;text-align:center;text-shadow:0 2px 22px #00121f}
+.stage-kicker{font-size:10px;letter-spacing:.26em;color:#80eafc;font-weight:800}
+.stage-kicker span{color:#fb476d;margin:0 10px}
+.stage-logo{margin:13px auto 0;display:block;width:72px;height:72px;filter:drop-shadow(0 0 13px #00bfff55)}
+.stage-heading h1{margin:6px 0 3px;font-weight:900;line-height:1;font-size:clamp(43px,6vw,82px);letter-spacing:.055em;color:#fff}
+.stage-heading h1 span{color:#cbeeff}
+.stage-heading p{margin:14px 0 30px;line-height:1.7;color:#d4f2ff;font-size:clamp(14px,1.7vw,18px)}
+.stage-heading p strong{color:#fff}
+.world{position:absolute;width:min(68vw,770px);height:min(68vw,770px);left:50%;top:39%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 30% 27%,#65daff66,transparent 20%),radial-gradient(circle at 54% 48%,#146dae 0%,#063c77 32%,#031a35 69%,#020b1b 75%);box-shadow:inset -60px -35px 80px #01091cff,0 0 70px #16bafc48,0 0 165px #26aafa1a;opacity:.6;pointer-events:none}
+.world-land{position:absolute;inset:6%;border-radius:50%;background:conic-gradient(from 70deg at 50% 50%,transparent 0 12%,#65dafa6c 13% 15%,transparent 16% 28%,#b0f8f7a1 29% 34%,transparent 35% 50%,#8dddfb77 51% 57%,transparent 58% 75%,#6adefc6b 76% 80%,transparent 81%);filter:blur(13px);opacity:.7}
+.world-grid{position:absolute;inset:0;border-radius:50%;border:1px solid #92eeff6e;background:repeating-linear-gradient(0deg,transparent 0 44px,#8deaff1c 45px,#8deaff05 46px),repeating-linear-gradient(90deg,transparent 0 52px,#8deaff14 53px);mask-image:radial-gradient(circle,#000 47%,transparent 72%)}
+.orbit{position:absolute;left:50%;top:40%;width:83%;height:49%;border:1px solid #5adfff55;border-radius:50%;transform:translate(-50%,-50%) rotate(-18deg);box-shadow:0 0 16px #36deff22;pointer-events:none}
+.orbit-two{transform:translate(-50%,-50%) rotate(24deg);height:38%;border-color:#ff547c66}
+.bridge-modules{display:grid;grid-template-columns:repeat(3,minmax(135px,200px));gap:14px;justify-content:center;width:100%;z-index:3}
+.module-tile{min-height:133px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;padding:16px 12px;border-radius:15px;text-decoration:none;text-align:center;color:#e6faff;border:1px solid #36cbf3a8;background:linear-gradient(145deg,#073553d9,#071327d9);box-shadow:inset 0 0 22px #13c9ff16,0 0 20px #0cb9ed1b;backdrop-filter:blur(12px)}
+.module-tile .ui-icon{width:28px;height:28px;color:#9deaff;flex-shrink:0}
+.module-tile strong{font-size:14px}
+.module-tile small{font-size:11px;color:#8fc5d8}
+.module-tile.available:hover{background:#12537c;box-shadow:0 0 30px #16c6ff69;transform:translateY(-4px)}
+.module-tile.dormant{border-color:#2b7e9a7a;opacity:.77}
+.holo-platform{position:absolute;width:min(85%,850px);height:145px;bottom:-72px;left:50%;transform:translateX(-50%);border:3px solid #23caffaa;border-radius:50%;box-shadow:0 0 35px #16d5ff9c,0 0 0 22px #ef285521,0 0 0 34px #1bbdfa18;pointer-events:none}
+.holo-platform div{position:absolute;inset:20px;border:1px dashed #6df7ff66;border-radius:50%}
+.holo-platform div:nth-child(2){inset:39px;border-color:#fd597d77}
+.holo-platform div:nth-child(3){inset:55px;border-color:#00dfff}
+.command-lower{max-width:1450px;margin:18px auto 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.telemetry{display:flex;align-items:center;gap:14px;padding:17px 18px;border:1px solid #2d6881;border-radius:13px;background:linear-gradient(105deg,#0d2a43b8,#091a2f);color:#f0fbff}
+.telemetry strong,.telemetry small{display:block}.telemetry strong{font-size:13px}.telemetry small{font-size:11px;color:#90bdd0;margin-top:5px}
+.telemetry-glyph{font-size:26px;color:#72dbfc}
+.command-note{max-width:1450px;margin:19px auto 0;color:#84a9bc;font-size:12px;line-height:1.65}
+@media(prefers-reduced-motion:no-preference){.world{animation:world-breathe 11s ease-in-out infinite}.orbit-one{animation:orbital 26s linear infinite}.orbit-two{animation:orbital-reverse 31s linear infinite}.holo-platform{animation:platform-pulse 5s ease-in-out infinite}.signal-led{animation:beacon 2.7s ease-in-out infinite}}
+@keyframes world-breathe{50%{opacity:.76;filter:hue-rotate(8deg)}}@keyframes orbital{50%{transform:translate(-50%,-50%) rotate(162deg)}100%{transform:translate(-50%,-50%) rotate(342deg)}}@keyframes orbital-reverse{50%{transform:translate(-50%,-50%) rotate(-156deg)}100%{transform:translate(-50%,-50%) rotate(-336deg)}}@keyframes platform-pulse{50%{box-shadow:0 0 55px #16d5ffb8,0 0 0 22px #ef285529,0 0 0 34px #1bbdfa20}}@keyframes beacon{50%{opacity:.55}}
+@media(max-width:950px){.command-stage{min-height:530px}.world{width:650px;height:650px}}
+@media(max-width:700px){.command-header{flex-wrap:wrap}.era{display:none}.main.cosmic-main{padding:18px 12px 30px}.command-stage{padding:40px 12px 110px;min-height:530px}.world{width:570px;height:570px}.bridge-modules{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.module-tile{min-height:116px;padding:10px 4px}.module-tile strong{font-size:11px}.module-tile small{font-size:9px}.module-tile .ui-icon{width:23px;height:23px}.command-lower{grid-template-columns:1fr}.stage-kicker{font-size:9px;letter-spacing:.09em}.stage-heading h1{font-size:clamp(38px,8vw,55px)}}
+@media(max-width:410px){.command-stage{min-height:510px}.module-tile{min-height:110px}.stage-heading p{font-size:13px}.command-header .eyebrow{font-size:9px}}
 </style></head>
 <body>
 <div id="loading" class="loading" role="status">Проверка на достъпа...</div>
@@ -84,18 +147,36 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
   </nav></div>
   <div class="side-bottom"><div class="account-label">Влезли сте като</div><div class="account-email" id="account-email"></div><button class="logout" id="logout" aria-label="Изход от профила" title="Изход от профила"><svg class="logout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#logout"></use></svg><span class="logout-label">Изход от профила</span></button></div>
  </aside>
- <main class="main">
-  <div class="top"><div class="eyebrow">GTA DESK / РАБОТНА СРЕДА</div><div class="pill"><span class="dot"></span> Защитена сесия</div></div>
-  <h1>Основен панел</h1>
-  <p class="lead">Тук ще намираш всички разработени прототипи и инструменти. Новите функционалности ще се появяват в отделни секции.</p>
-  <div class="hero"><div><h2>Работната среда е готова</h2><p>GTA Desk е свързан със Supabase. Първите модули все още се разработват; ще ги добавяме постепенно към този панел.</p></div><div class="hero-meta">GTA Desk · Prototype workspace</div></div>
-  <h2 class="section-title">Модули</h2><p class="lead" style="margin-bottom:18px">Модулът ZaraEx е в процес на пренасяне от настолното приложение. Достъпна е първа уеб версия за тестове.</p><a href="./zaraex.html" style="display:inline-block;background:#20506c;color:#fff;border-radius:11px;padding:13px 18px;text-decoration:none;font-weight:700;margin-bottom:22px">Отвори ZaraEx инструменти <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
-  <div class="cards">
-   <section class="card"><div class="card-icon">▦</div><h3>Прототипи</h3><p>Разработка и тестване на нови уеб функционалности на едно място.</p><footer>Предстои добавяне</footer></section>
-   <section class="card"><div class="card-icon">⟲</div><h3>Автоматизации</h3><p>Инструменти за автоматизиране на повтарящи се задачи и работни процеси.</p><footer>Предстои добавяне</footer></section>
-   <section class="card"><div class="card-icon">◫</div><h3>Инструменти за данни</h3><p>Помощни приложения за обработка, проверка и анализ на информация.</p><footer>Предстои добавяне</footer></section>
-  </div>
-  <div class="notice">ZaraEx включва начални уеб инструменти за товарения, XML и PDF. Пълната съвместимост с оригиналния Windows .xls експорт все още не е реализирана.</div>
+ <main class="main cosmic-main">
+  <div class="bridge-grid" aria-hidden="true"></div>
+  <div class="stars" aria-hidden="true"></div>
+  <header class="command-header">
+    <div class="eyebrow"><span class="signal-led"></span> GTA PETROLEUM / COMMAND BRIDGE <span class="era">· YEAR 4523</span></div>
+    <div class="pill"><span class="dot"></span> Защитена сесия</div>
+  </header>
+  <section class="command-stage" aria-labelledby="command-title">
+    <div class="orbit orbit-one" aria-hidden="true"></div>
+    <div class="orbit orbit-two" aria-hidden="true"></div>
+    <div class="world" aria-hidden="true"><div class="world-land"></div><div class="world-grid"></div></div>
+    <div class="stage-heading">
+      <div class="stage-kicker">NEXT GENERATION OPERATIONS <span>●</span> DIGITAL ECOSYSTEM</div>
+      <img class="stage-logo" src="./assets/gta-petroleum-logo.svg" alt="GTA Petroleum" width="80" height="80">
+      <h1 id="command-title">GTA <span>DESK</span></h1>
+      <p>Управление. Анализ. Автоматизация.<br><strong>Всичко на едно място.</strong></p>
+    </div>
+    <div class="bridge-modules">
+      <a class="module-tile available" href="./zaraex.html"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#modules"></use></svg><strong>ZaraEx</strong><small>Отвори модул</small></a>
+      <div class="module-tile dormant"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#database"></use></svg><strong>Инструменти за данни</strong><small>Предстои</small></div>
+      <div class="module-tile dormant"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#automation"></use></svg><strong>Автоматизации</strong><small>Предстои</small></div>
+    </div>
+    <div class="holo-platform" aria-hidden="true"><div></div><div></div><div></div></div>
+  </section>
+  <section class="command-lower" aria-label="Системна информация">
+   <div class="telemetry"><span class="signal-led"></span><div><strong>Достъпът е потвърден</strong><small>Защитена работна сесия</small></div></div>
+   <div class="telemetry"><span class="telemetry-glyph">◇</span><div><strong>GTA Desk</strong><small>Платформа за работни инструменти</small></div></div>
+   <div class="telemetry"><span class="telemetry-glyph">◎</span><div><strong>Модул ZaraEx</strong><small>Налична уеб версия</small></div></div>
+  </section>
+  <p class="command-note">ZaraEx включва уеб инструменти за товарения, XML и PDF. Пълната съвместимост с оригиналния Windows .xls експорт още не е реализирана.</p>
   <button id="mobile-logout" class="logout mobile-menu" style="margin-top:20px">Изход от профила</button>
  </main>
 </div>
