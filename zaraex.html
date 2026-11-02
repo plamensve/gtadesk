@@ -111,7 +111,21 @@ th{background:#eaf7fb!important;color:#17445a!important}td{color:#173d51!importa
 import {createClient} from "https://esm.sh/@supabase/supabase-js@2.58.0";
 import {SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY} from "./config.js";
 const $=id=>document.getElementById(id), esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let client;try{client=createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);const {data:{user},error}=await client.auth.getUser();if(error||!user)throw Error("Неоторизиран достъп");const {data:access,error:err}=await client.from("gtadesk_access").select("user_id").eq("user_id",user.id).maybeSingle();if(err||!access)throw Error("Нямате разрешен достъп");$("account-email").textContent=user.email||"Одобрен потребител";$("logout").addEventListener("click",async()=>{await client.auth.signOut();location.replace("./")});$("guard").hidden=true;$("app").hidden=false;client.auth.onAuthStateChange(e=>{if(e==="SIGNED_OUT")location.replace("./")})}catch(e){$("guard").textContent=e.message||"Неуспешна проверка";location.replace("./")}
+let client;try{client=createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);const {data:{user},error}=await client.auth.getUser();if(error||!user)throw Error("Неоторизиран достъп");const {data:access,error:err}=await client.from("gtadesk_access").select("user_id").eq("user_id",user.id).maybeSingle();if(err||!access)throw Error("Нямате разрешен достъп");$("account-email").textContent=user.email||"Одобрен потребител";$("logout").addEventListener("click",async()=>{await client.auth.signOut();location.replace("./")});// Apply the requested deep-link tab before revealing the authenticated workspace.
+const initialTab=["loads","settings","stay","pdf"].includes(location.hash.slice(1))?location.hash.slice(1):"loads";
+for(const tab of ["loads","settings","stay","pdf"]){
+  $(tab).hidden=tab!==initialTab;
+}
+for(const button of $("tabs").querySelectorAll("[data-tab]")){
+  button.classList.toggle("active",button.dataset.tab===initialTab);
+}
+for(const a of document.querySelectorAll(".gta-sidebar-nav [data-tab-target]")){
+  const selected=a.dataset.tabTarget===initialTab;
+  a.classList.toggle("active",selected);
+  if(selected)a.setAttribute("aria-current","page");
+  else a.removeAttribute("aria-current");
+}
+$("guard").hidden=true;$("app").hidden=false;client.auth.onAuthStateChange(e=>{if(e==="SIGNED_OUT")location.replace("./")})}catch(e){$("guard").textContent=e.message||"Неуспешна проверка";location.replace("./")}
 const key="gtadesk_zaraex_v1";const defaults={products:[],transport_companies:[],vehicles:[],drivers:[],bases:[],handover_people:[],loads:[]};let state;try{state={...defaults,...JSON.parse(sessionStorage.getItem(key)||"{}")}}catch{state=structuredClone(defaults)};const persist=()=>sessionStorage.setItem(key,JSON.stringify(state));
 if(!state.products.length){try{const response=await fetch("./zaraex/products.json");if(response.ok){state.products=await response.json();persist()}}catch{}}
 
