@@ -1,6 +1,23 @@
 <!doctype html><html lang="bg"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Заверки | GTA Desk</title>
 <style>
 :root{font-family:Inter,system-ui,"Segoe UI",sans-serif;background:#f3fbff;color:#103249}*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;padding-left:252px}button,input,select,textarea{font:inherit}button{cursor:pointer}.sidebar{position:fixed;inset:0 auto 0 0;width:252px;padding:30px 20px;background:linear-gradient(170deg,#fff,#eaf9ff);border-right:1px solid #c5e0eb;display:flex;flex-direction:column;gap:24px}.brand img{width:194px;height:auto}.nav{display:grid;gap:7px}.nav a{display:flex;align-items:center;gap:12px;color:#3b6479;font-size:14px;font-weight:700;text-decoration:none;padding:13px;border-radius:11px}.nav a:hover,.nav a.active{background:#d8f5f9;color:#086377}.nav svg{height:21px;width:21px;flex-shrink:0}.wrap{max-width:1450px;margin:auto;padding:30px 35px 75px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px}.subtitle{letter-spacing:.15em;text-transform:uppercase;font-size:11px;color:#6c8a9d;font-weight:800}h1{font-size:clamp(29px,4vw,43px);letter-spacing:-.04em;margin:12px 0 8px}p{line-height:1.5;color:#658296}.tabs{display:flex;gap:9px;flex-wrap:wrap;margin:27px 0}.tabs button,.btn{border:1px solid #b6dbe9;background:#fff;color:#184c67;border-radius:11px;padding:11px 16px;font-weight:750}.tabs button.active,.btn.primary{background:#008f9f;color:#fff;border-color:#008f9f}.panel{background:white;border:1px solid #cce2eb;border-radius:18px;padding:24px;margin-bottom:20px;box-shadow:0 12px 32px #1b72920b}h2{font-size:19px;margin:0 0 13px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px}.field{display:grid;gap:6px}.field span{font-size:12px;font-weight:750;color:#56748b}.field input,.field select{width:100%;border:1px solid #b7d4e2;border-radius:10px;padding:11px 12px;background:#fbfeff;color:#123c51;min-width:0}input:focus,select:focus,button:focus-visible{outline:3px solid #5ccbd9;outline-offset:2px}.wide{grid-column:span 2}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}.scroll{overflow-x:auto;max-height:650px;overflow-y:auto}table{border-collapse:collapse;width:100%;font-size:12px;min-width:850px}th,td{text-align:left;border-bottom:1px solid #e0eef3;padding:11px;vertical-align:top}th{position:sticky;top:0;background:#eff9fb;color:#56758a;z-index:1}td{color:#234c62}td button{color:#008f9f;border:0;background:transparent;font-weight:800}.muted{font-size:12px;color:#648094}.status{min-height:22px;font-size:13px;color:#126b62;margin-top:12px}.status.bad{color:#bd3752}.pill{padding:8px 14px;background:#e4f9f7;border-radius:30px;font-size:12px;color:#20685f;font-weight:800}.search{max-width:400px;width:100%}.searchbar{display:flex;gap:12px;margin:12px 0;flex-wrap:wrap;align-items:center}.searchbar .field{flex:1}.num{font-variant-numeric:tabular-nums}.hint{background:#eff9fb;padding:13px 15px;border-radius:12px;color:#4d7187;font-size:12px;margin:15px 0}.printsheet{font-family:"Times New Roman",serif;color:#111;background:white;padding:20mm 14mm;max-width:210mm;margin:auto;min-height:270mm;font-size:14pt;line-height:1.65}.printsheet h3{text-align:center;font-size:16pt}.printsheet p{color:#111}.printsheet img{max-width:72mm;max-height:40mm;object-fit:contain}.preview{overflow:auto;background:#e9f2f5;border-radius:14px;padding:15px}.docfooter{display:flex;justify-content:space-between;gap:15px;align-items:flex-end;margin-top:45px}.docfooter small{font-size:11pt}@media(max-width:1100px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:700px){body{padding-left:68px}.sidebar{width:68px;padding:17px 7px}.brand img{width:50px;max-height:48px;object-fit:cover;object-position:left}.nav a{font-size:0;justify-content:center;padding:12px 5px}.wrap{padding:20px 13px}.grid{grid-template-columns:1fr}.wide{grid-column:span 1}.panel{padding:17px}.top{align-items:flex-start}.printsheet{padding:12mm}}@media print{body{padding:0!important;background:white}.sidebar,.wrap,.actions,.tabs,.panel,.top{display:none!important}#print-target{display:block!important}.printsheet{padding:15mm;border:0;min-height:0;max-width:none}.printsheet img{max-height:42mm}@page{size:A4;margin:8mm}}
+
+/* Searchable company selector — the dropdown overlays the form without changing the shared sidebar. */
+.company-field{position:relative;z-index:8}
+.company-field>label{font-size:12px;font-weight:750;color:#56748b}
+.company-combobox{position:relative;min-width:0}
+.company-combobox #company-search{width:100%;min-width:0;background:#fbfeff;border:1px solid #b7d4e2;border-radius:10px;padding:11px 12px;color:#123c51}
+.company-combobox #company-search:focus{outline:3px solid #5ccbd9;outline-offset:2px}
+.company-suggestions{position:absolute;top:calc(100% + 5px);left:0;right:0;z-index:50;max-height:285px;overflow-y:auto;overscroll-behavior:contain;background:#fff;border:1px solid #b6dbe9;border-radius:12px;box-shadow:0 15px 40px #174f6b33;padding:6px}
+.company-suggestions[hidden]{display:none!important}
+.company-option{padding:11px 12px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:43px;color:#163e52;font-size:13px}
+.company-option:hover,.company-option.is-highlighted{background:#def5f8;color:#074d64}
+.company-option .company-name{font-weight:750;overflow-wrap:anywhere}
+.company-option .company-eik{color:#5a8298;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:12px}
+.company-empty,.company-more{padding:11px 12px;color:#668698;font-size:12px}
+.company-more{border-top:1px solid #e4eff4}
+.company-help{font-size:11px;line-height:1.4;color:#668698;min-height:15px}
+@media(max-width:700px){.company-option{align-items:flex-start;flex-direction:column;gap:3px}.company-option .company-eik{white-space:normal}}
 </style><link rel="stylesheet" href="./assets/gtadesk-sidebar.css?v=1"></head><body class="gta-certs-page">
 <aside class="sidebar workspace-sidebar gta-unified-sidebar" aria-label="Постоянна навигация">
 <a class="brand ws-brand gta-sidebar-brand" href="./dashboard.html" aria-label="GTA Desk"><img class="gtad-brand-logo" src="./assets/gtadesk-logo.svg" alt="GTA Desk" width="210" height="62"></a>
@@ -20,7 +37,15 @@
 <div class="tabs"><button class="active" data-tab="records">История</button><button data-tab="new">Нова заверка</button><button data-tab="companies">Фирми</button></div>
 <section id="records"><article class="panel"><h2>Регистър на заверките</h2><div class="searchbar"><input id="filter" class="search field" placeholder="Търси номер, фирма, ЕИК, документ…" aria-label="Търси"><button class="btn" id="reload">Обнови</button></div><div class="scroll"><table><thead><tr><th>№</th><th>Дата</th><th>Клиент</th><th>Гориво</th><th>Литри</th><th>Кг</th><th>Документ</th><th>Партида</th><th>Изготвил</th><th></th></tr></thead><tbody id="rows"></tbody></table></div><div class="actions"><button class="btn" id="previous">Назад</button><span class="muted" id="pagination"></span><button class="btn" id="next">Напред</button></div><div class="status" id="records-status"></div></article></section>
 <section id="new" hidden><article class="panel"><h2 id="form-title">Нова заверка</h2><div class="hint">Номерът се присвоява автоматично и атомарно при запис. При редакция на стар документ номерът не се променя. Полетата за документ и партида приемат съществуващия формат „номер/дата“.</div>
-<form id="cert-form"><div class="grid"><label class="field wide"><span>Фирма *</span><select name="company_id" id="company-choice" required><option value="">Изберете фирма</option></select></label><label class="field"><span>Дата *</span><input type="date" name="cert_date" required></label><label class="field"><span>Вид гориво *</span><select name="fuel_type" id="fuel-choice" required></select></label><label class="field"><span>Количество (литри)</span><input type="number" step="0.001" min="0" name="litres"></label><label class="field"><span>Количество (кг)</span><input type="number" step="0.001" min="0" name="kilograms"></label><label class="field"><span>Документ № / дата</span><input name="document_ref" placeholder="0528914/27.10.2026"></label><label class="field"><span>Партида на декларацията</span><input name="batch_ref" placeholder="500/19.10.2026"></label><label class="field wide"><span>Изготвил</span><input name="prepared_by" list="preparers"></label><datalist id="preparers"><option value="Пламен Кръстев"><option value="Иво Йорданов"><option value="Даниел Илиев"></datalist></div><div class="actions"><button type="submit" class="btn primary" id="save">Запиши заверка</button><button type="reset" class="btn" id="cancel-edit">Изчисти</button><button type="button" class="btn" id="preview">Преглед на документа</button></div></form><div class="status" id="form-status"></div></article>
+<form id="cert-form"><div class="grid"><div class="field wide company-field">
+<label for="company-search"><span>Фирма *</span></label>
+<div class="company-combobox">
+<input id="company-search" type="search" placeholder="Търси по име или ЕИК…" role="combobox" aria-autocomplete="list" aria-controls="company-suggestions" aria-expanded="false" aria-describedby="company-help" autocomplete="off" spellcheck="false" required>
+<input type="hidden" name="company_id" id="company-choice">
+<div id="company-suggestions" class="company-suggestions" role="listbox" aria-label="Предложения за фирма" hidden></div>
+</div>
+<span class="company-help" id="company-help" aria-live="polite">Започни да пишеш, за да избереш фирма.</span>
+</div><label class="field"><span>Дата *</span><input type="date" name="cert_date" required></label><label class="field"><span>Вид гориво *</span><select name="fuel_type" id="fuel-choice" required></select></label><label class="field"><span>Количество (литри)</span><input type="number" step="0.001" min="0" name="litres"></label><label class="field"><span>Количество (кг)</span><input type="number" step="0.001" min="0" name="kilograms"></label><label class="field"><span>Документ № / дата</span><input name="document_ref" placeholder="0528914/27.10.2026"></label><label class="field"><span>Партида на декларацията</span><input name="batch_ref" placeholder="500/19.10.2026"></label><label class="field wide"><span>Изготвил</span><input name="prepared_by" list="preparers"></label><datalist id="preparers"><option value="Пламен Кръстев"><option value="Иво Йорданов"><option value="Даниел Илиев"></datalist></div><div class="actions"><button type="submit" class="btn primary" id="save">Запиши заверка</button><button type="reset" class="btn" id="cancel-edit">Изчисти</button><button type="button" class="btn" id="preview">Преглед на документа</button></div></form><div class="status" id="form-status"></div></article>
 <article class="panel"><h2>Подпис и печат</h2><p>Избери изображение на подписа и печата от компютъра. То се използва само в браузъра за текущия преглед и не се записва в публичното хранилище.</p><input type="file" id="signature" accept="image/png,image/jpeg,image/webp"><div class="hint">Използвай подписа само за одобрени документи. Преглеждай задължително текста и нормативните бележки за конкретното гориво преди подписване.</div></article></section>
 <section id="companies" hidden><article class="panel"><h2>Добавяне на фирма</h2><form id="company-form" class="grid"><label class="field wide"><span>Наименование *</span><input name="name" required maxlength="250"></label><label class="field"><span>ЕИК *</span><input name="eik" inputmode="numeric" pattern="[0-9]{9,13}" maxlength="13" required></label><div class="field"><span>&nbsp;</span><button type="submit" class="btn primary">Добави фирма</button></div></form><div class="status" id="company-status"></div></article><article class="panel"><h2>Фирми</h2><input id="company-filter" class="search field" placeholder="Търси по име или ЕИК"><div class="scroll"><table><thead><tr><th>Наименование</th><th>ЕИК</th></tr></thead><tbody id="company-list"></tbody></table></div></article></section>
 </main><div id="print-target" hidden></div>
@@ -35,8 +60,99 @@ for(let button of document.querySelectorAll(".tabs button"))button.onclick=()=>{
 try{let {data:{user},error}=await client.auth.getUser();if(error||!user)throw Error("Влезте в GTA Desk.");let a=await client.from("gtadesk_access").select("user_id").eq("user_id",user.id).maybeSingle();if(a.error||!a.data)throw Error("Нямате достъп.");$("account-email").textContent=user.email||"Одобрен потребител";$("logout").addEventListener("click",async()=>{await client.auth.signOut();location.replace("./")});$("guard").hidden=true;$("app").hidden=false;await loadLookups();await loadRecords()}catch(e){$("guard").textContent=e.message;setTimeout(()=>location.replace("./"),2300)}
 client.auth.onAuthStateChange(event=>{if(event==="SIGNED_OUT")location.replace("./")});
 async function loadLookups(){let [a,b]=await Promise.all([client.from("gta_cert_companies").select("id,name,eik").order("name").limit(2000),client.from("gta_cert_fuels").select("name").order("name")]);if(a.error||b.error)throw Error(a.error?.message||b.error?.message);companies=a.data;fuels=b.data.map(x=>x.name);
-$("company-choice").innerHTML='<option value="">Изберете фирма</option>'+companies.map(x=>'<option value="'+x.id+'">'+escape(x.name)+(x.eik?' · '+escape(x.eik):'')+'</option>').join("");
 $("fuel-choice").innerHTML='<option value="">Изберете гориво</option>'+fuels.map(x=>'<option>'+escape(x)+'</option>').join("");renderCompanies()}
+
+/* Search is local and instantaneous across the authorized companies already fetched from Supabase. */
+let visibleCompanyMatches=[], highlightedCompanyIndex=-1;
+const companyInput=$("company-search"), companyList=$("company-suggestions");
+function hideCompanySuggestions(){
+ companyList.hidden=true;
+ companyInput.setAttribute("aria-expanded","false");
+ companyInput.removeAttribute("aria-activedescendant");
+ highlightedCompanyIndex=-1;
+}
+function companyMatches(query){
+ const terms=query.trim().toLocaleLowerCase("bg-BG").split(/\\s+/).filter(Boolean);
+ return companies.filter(c=>{
+   const haystack=(c.name+" "+(c.eik||"")).toLocaleLowerCase("bg-BG");
+   return terms.every(t=>haystack.includes(t));
+ });
+}
+function updateCompanyHighlight(index){
+ if(!visibleCompanyMatches.length)return;
+ highlightedCompanyIndex=(index+visibleCompanyMatches.length)%visibleCompanyMatches.length;
+ const options=companyList.querySelectorAll('[role="option"]');
+ options.forEach((el,i)=>{
+   const active=i===highlightedCompanyIndex;
+   el.classList.toggle("is-highlighted",active);
+   el.setAttribute("aria-selected",String(active));
+ });
+ const selected=options[highlightedCompanyIndex];
+ if(selected){
+   companyInput.setAttribute("aria-activedescendant",selected.id);
+   selected.scrollIntoView({block:"nearest"});
+ }
+}
+function showCompanySuggestions(){
+ const matches=companyMatches(companyInput.value);
+ visibleCompanyMatches=matches.slice(0,12);
+ highlightedCompanyIndex=-1;
+ companyList.innerHTML=visibleCompanyMatches.map((c,i)=>
+   '<div id="company-option-'+i+'" role="option" aria-selected="false" class="company-option" data-company="'+escape(c.id)+'"><span class="company-name">'+escape(c.name)+'</span><span class="company-eik">'+(c.eik?'ЕИК: '+escape(c.eik):'Без ЕИК')+'</span></div>'
+ ).join("")+(matches.length>12?'<div class="company-more">Още '+(matches.length-12)+' резултата — въведи повече символи.</div>':"");
+ if(!visibleCompanyMatches.length)companyList.innerHTML='<div class="company-empty">Няма намерени фирми. Провери името или ЕИК.</div>';
+ companyList.hidden=false;
+ companyInput.setAttribute("aria-expanded","true");
+ companyInput.removeAttribute("aria-activedescendant");
+}
+function selectCompany(company){
+ $("company-choice").value=company?String(company.id):"";
+ companyInput.value=company?company.name:"";
+ $("company-help").textContent=company?(company.eik?"Избрана фирма · ЕИК: "+company.eik:"Избрана фирма · без въведен ЕИК"):"Започни да пишеш, за да избереш фирма.";
+ hideCompanySuggestions();
+}
+companyInput.addEventListener("focus",showCompanySuggestions);
+companyInput.addEventListener("input",()=>{
+ $("company-choice").value="";
+ $("company-help").textContent="Избери фирма от предложенията.";
+ showCompanySuggestions();
+});
+companyInput.addEventListener("keydown",event=>{
+ if(event.key==="Escape"){hideCompanySuggestions();return}
+ if(event.key==="Tab"){hideCompanySuggestions();return}
+ if(event.key==="ArrowDown"||event.key==="ArrowUp"){
+   event.preventDefault();
+   if(companyList.hidden)showCompanySuggestions();
+   if(visibleCompanyMatches.length)updateCompanyHighlight(highlightedCompanyIndex+(event.key==="ArrowDown"?1:-1));
+   return;
+ }
+ if(event.key==="Enter"){
+   event.preventDefault();
+   if(companyList.hidden)showCompanySuggestions();
+   if(visibleCompanyMatches.length)selectCompany(visibleCompanyMatches[Math.max(0,highlightedCompanyIndex)]);
+ }
+});
+function chooseCompanyFromEvent(event){
+ const choice=event.target.closest("[data-company]");
+ if(!choice)return;
+ const selected=companies.find(c=>String(c.id)===choice.dataset.company);
+ if(selected)selectCompany(selected);
+}
+companyList.addEventListener("pointerdown",event=>{
+ if(event.target.closest("[data-company]")){event.preventDefault();chooseCompanyFromEvent(event)}
+});
+companyList.addEventListener("click",chooseCompanyFromEvent);
+companyInput.addEventListener("blur",()=>{
+ // Allow clicks on the suggestions to select an item before the dropdown closes.
+ setTimeout(()=>{if(document.activeElement!==companyInput)hideCompanySuggestions()},150);
+});
+document.addEventListener("pointerdown",event=>{
+ if(!event.target.closest(".company-combobox"))hideCompanySuggestions();
+});
+$("cert-form").addEventListener("reset",()=>{
+ selectCompany(null);
+});
+
 function renderCompanies(){let f=$("company-filter").value.trim().toLowerCase();$("company-list").innerHTML=companies.filter(x=>(x.name+" "+(x.eik||"")).toLowerCase().includes(f)).map(x=>'<tr><td>'+escape(x.name)+'</td><td>'+escape(x.eik)+'</td></tr>').join("")}
 $("company-filter").oninput=renderCompanies;
 $("company-form").onsubmit=async e=>{e.preventDefault();let f=new FormData(e.target),name=String(f.get("name")).trim(),eik=String(f.get("eik")).trim();let r=await client.from("gta_cert_companies").insert({name,eik}).select().single();if(r.error){message("company-status",r.error.code==="23505"?"Фирма с този ЕИК вече съществува.":r.error.message,true);return}message("company-status","Фирмата е добавена.");e.target.reset();await loadLookups()};
@@ -49,10 +165,10 @@ $("rows").onclick=e=>{let b=e.target.closest("[data-open]");if(!b)return;let x=r
 $("filter").oninput=e=>{term=e.target.value;page=0;loadRecords()};$("reload").onclick=loadRecords;$("previous").onclick=()=>{page=Math.max(0,page-1);loadRecords()};$("next").onclick=()=>{page++;loadRecords()};
 $("cert-form").elements.cert_date.value=new Date().toLocaleDateString("en-CA");
 function openRecord(x){editId=x.id;viewRecord=x;showTab("new");$("form-title").textContent="Заверка № "+(x.seq_no||"—");let f=$("cert-form");for(const k of ["cert_date","fuel_type","litres","kilograms","document_ref","batch_ref","prepared_by"])f.elements[k].value=x[k]??"";
-let company=companies.find(c=>c.id===x.company_id)||companies.find(c=>c.eik&&c.eik===x.company_eik)||companies.find(c=>c.name===x.company_name);f.elements.company_id.value=company?.id||"";
+let company=companies.find(c=>c.id===x.company_id)||companies.find(c=>c.eik&&c.eik===x.company_eik)||companies.find(c=>c.name===x.company_name);if(company)selectCompany(company);else{$("company-choice").value="";companyInput.value=x.company_name||"";$("company-help").textContent="Избери фирма от предложенията.";hideCompanySuggestions()}
 message("form-status",x.source_row?"Импортиран запис от Excel, ред "+x.source_row:"Редактиране на заверката")};
 $("cancel-edit").onclick=()=>{editId=null;viewRecord=null;$("form-title").textContent="Нова заверка";message("form-status","");setTimeout(()=>$("cert-form").elements.cert_date.value=new Date().toLocaleDateString("en-CA"))};
-function readForm(){let f=new FormData($("cert-form"));let c=companies.find(x=>String(x.id)===String(f.get("company_id")));if(!c)throw Error("Изберете фирма.");let val=n=>f.get(n)===""?null:Number(f.get(n));return {company_id:c.id,company_name:c.name,company_eik:c.eik,cert_date:f.get("cert_date"),fuel_type:f.get("fuel_type"),litres:val("litres"),kilograms:val("kilograms"),document_ref:f.get("document_ref")||null,batch_ref:f.get("batch_ref")||null,prepared_by:f.get("prepared_by")||null}}
+function readForm(){let f=new FormData($("cert-form"));let c=companies.find(x=>String(x.id)===String(f.get("company_id")));if(!c){companyInput.focus();showCompanySuggestions();throw Error("Изберете фирма от предложените резултати.");}let val=n=>f.get(n)===""?null:Number(f.get(n));return {company_id:c.id,company_name:c.name,company_eik:c.eik,cert_date:f.get("cert_date"),fuel_type:f.get("fuel_type"),litres:val("litres"),kilograms:val("kilograms"),document_ref:f.get("document_ref")||null,batch_ref:f.get("batch_ref")||null,prepared_by:f.get("prepared_by")||null}}
 $("cert-form").onsubmit=async e=>{e.preventDefault();try{let data=readForm();if(!data.fuel_type||!data.cert_date)throw Error("Попълнете задължителните полета.");$("save").disabled=true;let r=editId?await client.from("gta_cert_records").update(data).eq("id",editId).select().single():await client.from("gta_cert_records").insert(data).select().single();if(r.error)throw r.error;viewRecord=r.data;editId=r.data.id;message("form-status","Записано успешно. Номер на заверката: "+r.data.seq_no);$("form-title").textContent="Заверка № "+r.data.seq_no}catch(err){message("form-status",err.message,true)}finally{$("save").disabled=false}};
 $("signature").onchange=e=>{if(signatureURL)URL.revokeObjectURL(signatureURL);signatureURL=e.target.files?.[0]?URL.createObjectURL(e.target.files[0]):null};
 function docHtml(x){let company=x.company_name||"",date=x.cert_date?x.cert_date.split("-").reverse().join("."):"",litres=x.litres??"…………",kgs=x.kilograms??"…………";
