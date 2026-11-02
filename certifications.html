@@ -72,7 +72,7 @@ function hideCompanySuggestions(){
  highlightedCompanyIndex=-1;
 }
 function companyMatches(query){
- const terms=query.trim().toLocaleLowerCase("bg-BG").split(/\\s+/).filter(Boolean);
+ const terms=query.trim().toLocaleLowerCase("bg-BG").split(/\s+/).filter(Boolean);
  return companies.filter(c=>{
    const haystack=(c.name+" "+(c.eik||"")).toLocaleLowerCase("bg-BG");
    return terms.every(t=>haystack.includes(t));
@@ -123,7 +123,7 @@ companyInput.addEventListener("keydown",event=>{
  if(event.key==="ArrowDown"||event.key==="ArrowUp"){
    event.preventDefault();
    if(companyList.hidden)showCompanySuggestions();
-   if(visibleCompanyMatches.length)updateCompanyHighlight(highlightedCompanyIndex+(event.key==="ArrowDown"?1:-1));
+   if(visibleCompanyMatches.length){const direction=event.key==="ArrowDown"?1:-1;const index=highlightedCompanyIndex<0?(direction===1?0:visibleCompanyMatches.length-1):highlightedCompanyIndex+direction;updateCompanyHighlight(index)}
    return;
  }
  if(event.key==="Enter"){
