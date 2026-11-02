@@ -226,7 +226,7 @@ function renderCompanies(){
  '<button type="button" data-company-action="edit" data-company-id="'+c.id+'">Редактирай</button>'+
  (c.archived_at?
  '<button type="button" class="restore" data-company-action="restore" data-company-id="'+c.id+'">Възстанови</button>':
- '<button type="button" class="archive" data-company-action="archive" data-company-id="'+c.id+'">Архивирай</button>')+
+ '<button type="button" class="archive" title="Изтрива от активния списък, без да премахва старите заверки" data-company-action="archive" data-company-id="'+c.id+'">Изтрий</button>')+
  '</div></td></tr>').join("")||'<tr><td colspan="4">Няма намерени фирми.</td></tr>';
 }
 function resetCompanyEditor(clearMessage=true){
@@ -300,7 +300,7 @@ $("company-list").onclick=async event=>{
  if(!c)return;
  const action=button.dataset.companyAction;
  if(action==="edit"){beginCompanyEdit(c);return}
- if(action==="archive"&&!confirm('Архивиране на "'+c.name+'"?\nФирмата няма да се показва за нови заверки. Всички исторически документи ще бъдат запазени.'))return;
+ if(action==="archive"&&!confirm('Изтриване на "'+c.name+'" от активния списък?\nФирмата ще бъде архивирана и няма да се показва за нови заверки. Всички исторически документи ще бъдат запазени.'))return;
  if(action==="restore"&&!confirm('Възстановяване на "'+c.name+'"?\nФирмата отново ще бъде достъпна за нови заверки.'))return;
  if(action!=="archive"&&action!=="restore")return;
  companyActionBusy=true;
