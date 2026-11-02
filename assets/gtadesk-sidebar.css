@@ -1,0 +1,204 @@
+/* Shared GTA Desk navigation: a single visual system for all modules.
+   Use the same gta-unified-sidebar markup on dashboard, ZaraEx and certifications. */
+.gta-unified-sidebar.sidebar.workspace-sidebar {
+  box-sizing:border-box!important;
+  display:flex!important;
+  flex-direction:column!important;
+  flex-shrink:0!important;
+  width:264px!important;
+  min-width:264px!important;
+  height:100vh!important;
+  max-height:100vh!important;
+  top:0!important;
+  left:0!important;
+  padding:28px 17px!important;
+  gap:30px!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  z-index:20!important;
+  background:linear-gradient(180deg,#fff,#f0faff)!important;
+  border-right:1px solid #cfe4ee!important;
+  box-shadow:7px 0 28px #2677930b!important;
+  color:#153a52!important;
+}
+body.gta-dashboard-page .gta-unified-sidebar{position:sticky!important;bottom:auto!important}
+body.gta-zaraex-page .gta-unified-sidebar,
+body.gta-certs-page .gta-unified-sidebar{position:fixed!important;bottom:0!important}
+body.gta-zaraex-page,body.gta-certs-page{padding-left:264px!important}
+.gta-unified-sidebar .gta-sidebar-brand{
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  min-height:55px!important;
+  width:100%!important;
+  flex-shrink:0!important;
+  padding:0!important;
+  margin:0!important;
+  background:none!important;
+  text-decoration:none!important;
+}
+.gta-unified-sidebar .gta-sidebar-brand .gtad-brand-logo{
+  width:210px!important;
+  max-width:100%!important;
+  height:auto!important;
+  display:block!important;
+  object-fit:contain!important;
+  object-position:left center!important;
+}
+.gta-unified-sidebar .gta-sidebar-menu{display:block!important;width:100%!important;min-width:0!important}
+.gta-unified-sidebar .gta-sidebar-caption{
+  display:block!important;
+  margin:0 10px 12px!important;
+  color:#64889d!important;
+  font-size:10px!important;
+  line-height:1.3!important;
+  text-transform:uppercase!important;
+  letter-spacing:.15em!important;
+  font-weight:750!important;
+}
+.gta-unified-sidebar .gta-sidebar-nav{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:7px!important;
+  width:100%!important;
+  padding:0!important;
+  margin:0!important;
+}
+.gta-unified-sidebar .gta-sidebar-nav a.gta-sidebar-link{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:13px!important;
+  min-width:0!important;
+  min-height:47px!important;
+  padding:13px 12px!important;
+  border:0!important;
+  border-radius:10px!important;
+  background:transparent!important;
+  color:#153a52!important;
+  box-shadow:none!important;
+  font:670 13px/1.4 Inter,system-ui,"Segoe UI",Arial,sans-serif!important;
+  text-align:left!important;
+  text-decoration:none!important;
+  white-space:nowrap!important;
+  opacity:1!important;
+  transition:background .15s ease,color .15s ease!important;
+}
+.gta-unified-sidebar .gta-sidebar-nav a.gta-sidebar-link:hover{
+  background:#e7f9fc!important;
+  color:#006e82!important;
+}
+.gta-unified-sidebar .gta-sidebar-nav a.gta-sidebar-link.active,
+.gta-unified-sidebar .gta-sidebar-nav a.gta-sidebar-link[aria-current="page"],
+.gta-unified-sidebar .gta-sidebar-nav a.gta-sidebar-link.active:hover{
+  background:linear-gradient(120deg,#08c8bd,#0087a8)!important;
+  color:#fff!important;
+  border:0!important;
+  box-shadow:0 5px 16px #009dba26!important;
+}
+.gta-unified-sidebar .gta-sidebar-nav a.gta-sidebar-link .gta-sidebar-icon{
+  box-sizing:border-box!important;
+  display:block!important;
+  width:19px!important;
+  height:19px!important;
+  min-width:19px!important;
+  flex:0 0 19px!important;
+  color:inherit!important;
+  stroke:currentColor!important;
+  stroke-width:1.8!important;
+  transform:none!important;
+}
+.gta-unified-sidebar .gta-sidebar-nav a.gta-sidebar-link .gta-sidebar-label{
+  display:inline!important;
+  min-width:0!important;
+  font-size:inherit!important;
+  font-weight:inherit!important;
+  color:inherit!important;
+}
+.gta-unified-sidebar .gta-sidebar-account{
+  display:block!important;
+  margin-top:auto!important;
+  padding:20px 8px 0!important;
+  border-top:1px solid #d2e8ef!important;
+}
+.gta-unified-sidebar .gta-sidebar-account .account-label{
+  color:#668ca0!important;
+  font-size:11px!important;
+  line-height:1.3!important;
+}
+.gta-unified-sidebar .gta-sidebar-account .account-email{
+  margin:8px 0 18px!important;
+  font-size:12px!important;
+  font-weight:650!important;
+  color:#234c62!important;
+  overflow-wrap:anywhere!important;
+}
+.gta-unified-sidebar .gta-sidebar-account .logout{
+  box-sizing:border-box!important;
+  display:flex!important;
+  width:100%!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  border:1px solid #c8e2ed!important;
+  border-radius:10px!important;
+  background:#eaf5f9!important;
+  color:#2d5a6c!important;
+  padding:11px 12px!important;
+  font-size:13px!important;
+  font-weight:700!important;
+  cursor:pointer!important;
+}
+.gta-unified-sidebar .gta-sidebar-account .logout:hover{background:#d9edf5!important}
+.gta-unified-sidebar .gta-sidebar-account .logout-icon{width:18px!important;height:18px!important;flex-shrink:0!important;display:none!important}
+body.gta-zaraex-page .wrap,body.gta-certs-page .wrap{box-sizing:border-box}
+@media(max-width:700px){
+  .gta-unified-sidebar.sidebar.workspace-sidebar{
+    width:74px!important;
+    min-width:74px!important;
+    padding:18px 7px!important;
+    gap:25px!important;
+  }
+  body.gta-zaraex-page,body.gta-certs-page{padding-left:74px!important}
+  .gta-unified-sidebar .gta-sidebar-brand{
+    min-height:46px!important;
+    justify-content:center!important;
+    overflow:hidden!important;
+  }
+  .gta-unified-sidebar .gta-sidebar-brand .gtad-brand-logo{
+    width:52px!important;
+    max-width:none!important;
+    height:46px!important;
+    object-fit:cover!important;
+    object-position:left center!important;
+  }
+  .gta-unified-sidebar .gta-sidebar-caption{display:none!important}
+  .gta-unified-sidebar .gta-sidebar-nav a.gta-sidebar-link{
+    justify-content:center!important;
+    min-height:47px!important;
+    padding:12px 6px!important;
+    gap:0!important;
+    font-size:0!important;
+  }
+  .gta-unified-sidebar .gta-sidebar-nav a.gta-sidebar-link .gta-sidebar-icon{
+    width:23px!important;
+    height:23px!important;
+    min-width:23px!important;
+    flex:0 0 23px!important;
+  }
+  .gta-unified-sidebar .gta-sidebar-nav a.gta-sidebar-link .gta-sidebar-label{display:none!important}
+  .gta-unified-sidebar .gta-sidebar-account{padding:14px 0 0!important}
+  .gta-unified-sidebar .gta-sidebar-account .account-label,
+  .gta-unified-sidebar .gta-sidebar-account .account-email,
+  .gta-unified-sidebar .gta-sidebar-account .logout-label{display:none!important}
+  .gta-unified-sidebar .gta-sidebar-account .logout{padding:11px 0!important;font-size:0!important}
+  .gta-unified-sidebar .gta-sidebar-account .logout-icon{display:block!important;width:19px!important;height:19px!important}
+}
+@media print{
+  .gta-unified-sidebar.sidebar.workspace-sidebar{display:none!important}
+  body.gta-certs-page{padding-left:0!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .gta-unified-sidebar .gta-sidebar-nav a.gta-sidebar-link{transition:none!important}
+}
