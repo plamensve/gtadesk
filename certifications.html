@@ -18,6 +18,24 @@
 .company-more{border-top:1px solid #e4eff4}
 .company-help{font-size:11px;line-height:1.4;color:#668698;min-height:15px}
 @media(max-width:700px){.company-option{align-items:flex-start;flex-direction:column;gap:3px}.company-option .company-eik{white-space:normal}}
+
+/* Company registry management — editing and reversible archive, consistent with the GTA Desk interface. */
+.company-list-controls{display:flex;align-items:center;flex-wrap:wrap;gap:14px;margin:13px 0 17px}
+.company-list-controls .search{min-width:min(100%,265px);border:1px solid #b7d4e2;border-radius:10px;padding:11px 12px;background:#fff;color:#123c51}
+.company-show-archived{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#325d72;font-weight:600;cursor:pointer}
+.company-show-archived input{accent-color:#008f9f;width:16px;height:16px}
+.company-editor-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.company-table{min-width:690px}
+.company-table td{white-space:normal}
+.company-row-actions{display:flex;gap:7px;flex-wrap:wrap}
+.company-row-actions button{border:1px solid #b6dbe9;border-radius:9px;padding:7px 11px;background:#f3fbff;color:#126578;font-weight:750;font-size:12px}
+.company-row-actions button:hover{background:#dff5f8}
+.company-row-actions button.archive{border-color:#e9c1c4;background:#fff3f3;color:#a0424b}
+.company-row-actions button.restore{border-color:#bee3d3;background:#eaf9f2;color:#196b4d}
+.company-row-actions button:disabled,.company-editor-actions button:disabled{opacity:.5;cursor:not-allowed}
+.company-status-pill{font-size:12px;color:#13715b;font-weight:750}
+.company-status-pill.archived{color:#916e46}
+.company-table tr.is-archived td{color:#718b9a}
 </style><link rel="stylesheet" href="./assets/gtadesk-sidebar.css?v=1"></head><body class="gta-certs-page">
 <aside class="sidebar workspace-sidebar gta-unified-sidebar" aria-label="Постоянна навигация">
 <a class="brand ws-brand gta-sidebar-brand" href="./dashboard.html" aria-label="GTA Desk"><img class="gtad-brand-logo" src="./assets/gtadesk-logo.svg" alt="GTA Desk" width="210" height="62"></a>
@@ -47,20 +65,59 @@
 <span class="company-help" id="company-help" aria-live="polite">Започни да пишеш, за да избереш фирма.</span>
 </div><label class="field"><span>Дата *</span><input type="date" name="cert_date" required></label><label class="field"><span>Вид гориво *</span><select name="fuel_type" id="fuel-choice" required></select></label><label class="field"><span>Количество (литри)</span><input type="number" step="0.001" min="0" name="litres"></label><label class="field"><span>Количество (кг)</span><input type="number" step="0.001" min="0" name="kilograms"></label><label class="field"><span>Документ № / дата</span><input name="document_ref" placeholder="0528914/27.10.2026"></label><label class="field"><span>Партида на декларацията</span><input name="batch_ref" placeholder="500/19.10.2026"></label><label class="field wide"><span>Изготвил</span><input name="prepared_by" list="preparers"></label><datalist id="preparers"><option value="Пламен Кръстев"><option value="Иво Йорданов"><option value="Даниел Илиев"></datalist></div><div class="actions"><button type="submit" class="btn primary" id="save">Запиши заверка</button><button type="reset" class="btn" id="cancel-edit">Изчисти</button><button type="button" class="btn" id="preview">Преглед на документа</button></div></form><div class="status" id="form-status"></div></article>
 <article class="panel"><h2>Подпис и печат</h2><p>Избери изображение на подписа и печата от компютъра. То се използва само в браузъра за текущия преглед и не се записва в публичното хранилище.</p><input type="file" id="signature" accept="image/png,image/jpeg,image/webp"><div class="hint">Използвай подписа само за одобрени документи. Преглеждай задължително текста и нормативните бележки за конкретното гориво преди подписване.</div></article></section>
-<section id="companies" hidden><article class="panel"><h2>Добавяне на фирма</h2><form id="company-form" class="grid"><label class="field wide"><span>Наименование *</span><input name="name" required maxlength="250"></label><label class="field"><span>ЕИК *</span><input name="eik" inputmode="numeric" pattern="[0-9]{9,13}" maxlength="13" required></label><div class="field"><span>&nbsp;</span><button type="submit" class="btn primary">Добави фирма</button></div></form><div class="status" id="company-status"></div></article><article class="panel"><h2>Фирми</h2><input id="company-filter" class="search field" placeholder="Търси по име или ЕИК"><div class="scroll"><table><thead><tr><th>Наименование</th><th>ЕИК</th></tr></thead><tbody id="company-list"></tbody></table></div></article></section>
+<section id="companies" hidden>
+<article class="panel" id="company-editor">
+<h2 id="company-editor-title">Добавяне на фирма</h2>
+<p id="company-editor-help" class="muted">Добави фирма с нейното наименование и ЕИК. Можеш да променяш данните по-късно.</p>
+<form id="company-form" class="grid">
+<label class="field wide"><span>Наименование *</span><input name="name" required maxlength="250" autocomplete="organization"></label>
+<label class="field"><span>ЕИК *</span><input name="eik" inputmode="numeric" pattern="[0-9]{9,13}" maxlength="13" required autocomplete="off"></label>
+<div class="field"><span>&nbsp;</span><div class="company-editor-actions"><button type="submit" class="btn primary" id="company-save">Добави фирма</button><button type="button" class="btn" id="company-cancel" hidden>Отказ</button></div></div>
+</form><div class="status" id="company-status" role="status"></div>
+</article>
+<article class="panel">
+<h2>Фирми</h2>
+<div class="company-list-controls">
+<input id="company-filter" class="search field" placeholder="Търси по име или ЕИК" aria-label="Търси фирма">
+<label class="company-show-archived"><input type="checkbox" id="company-show-archived"> Покажи архивираните</label>
+<span class="muted" id="company-count"></span>
+</div>
+<div class="scroll"><table class="company-table"><thead><tr><th>Наименование</th><th>ЕИК</th><th>Статус</th><th>Действия</th></tr></thead><tbody id="company-list"></tbody></table></div>
+<p class="muted">Архивирането премахва фирмата от предложенията за нови заверки, но запазва всички вече издадени документи. Архивираните фирми могат да се възстановяват.</p>
+</article></section>
 </main><div id="print-target" hidden></div>
 <script type="module">
 import {createClient} from "https://esm.sh/@supabase/supabase-js@2.58.0";
 import {SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY} from "./config.js";
 const $=id=>document.getElementById(id),escape=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const client=createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);let companies=[],fuels=[],page=0,term="",editId=null,viewRecord=null,signatureURL=null;const LIMIT=40;
+const client=createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);let companies=[],companyCatalog=[],fuels=[],page=0,term="",editId=null,viewRecord=null,signatureURL=null,editCompanyId=null,companyActionBusy=false;const LIMIT=40;
 function message(id,text,bad=false){$(id).textContent=text;$(id).classList.toggle("bad",bad)}
 function showTab(tab){for(let el of document.querySelectorAll(".tabs button"))el.classList.toggle("active",el.dataset.tab===tab);for(let key of ["records","new","companies"])$(key).hidden=key!==tab}
 for(let button of document.querySelectorAll(".tabs button"))button.onclick=()=>{showTab(button.dataset.tab);if(button.dataset.tab==="records")loadRecords()};
 try{let {data:{user},error}=await client.auth.getUser();if(error||!user)throw Error("Влезте в GTA Desk.");let a=await client.from("gtadesk_access").select("user_id").eq("user_id",user.id).maybeSingle();if(a.error||!a.data)throw Error("Нямате достъп.");$("account-email").textContent=user.email||"Одобрен потребител";$("logout").addEventListener("click",async()=>{await client.auth.signOut();location.replace("./")});$("guard").hidden=true;$("app").hidden=false;await loadLookups();await loadRecords()}catch(e){$("guard").textContent=e.message;setTimeout(()=>location.replace("./"),2300)}
 client.auth.onAuthStateChange(event=>{if(event==="SIGNED_OUT")location.replace("./")});
-async function loadLookups(){let [a,b]=await Promise.all([client.from("gta_cert_companies").select("id,name,eik").order("name").limit(2000),client.from("gta_cert_fuels").select("name").order("name")]);if(a.error||b.error)throw Error(a.error?.message||b.error?.message);companies=a.data;fuels=b.data.map(x=>x.name);
-$("fuel-choice").innerHTML='<option value="">Изберете гориво</option>'+fuels.map(x=>'<option>'+escape(x)+'</option>').join("");renderCompanies()}
+async function loadLookups(){
+ const selectedId=$("company-choice").value;
+ const [a,b]=await Promise.all([
+   client.from("gta_cert_companies").select("id,name,eik,archived_at").order("name").limit(2000),
+   client.from("gta_cert_fuels").select("name").order("name")
+ ]);
+ if(a.error||b.error)throw Error(a.error?.message||b.error?.message);
+ companyCatalog=a.data||[];
+ companies=companyCatalog.filter(c=>!c.archived_at);
+ fuels=(b.data||[]).map(x=>x.name);
+ $("fuel-choice").innerHTML='<option value="">Изберете гориво</option>'+fuels.map(x=>'<option>'+escape(x)+'</option>').join("");
+ if(selectedId){
+   const selected=companyCatalog.find(c=>String(c.id)===String(selectedId) &&
+       (!c.archived_at || (editId && String(viewRecord?.company_id)===String(c.id))));
+   $("company-choice").value=selected?String(selected.id):"";
+   $("company-search").value=selected?selected.name:"";
+   $("company-help").textContent=selected?
+       (selected.archived_at?"Архивирана фирма, свързана със стара заверка.":"Избрана фирма"+(selected.eik?" · ЕИК: "+selected.eik:"")):
+       "Избери активна фирма от предложенията.";
+ }
+ renderCompanies();
+}
 
 /* Search is local and instantaneous across the authorized companies already fetched from Supabase. */
 let visibleCompanyMatches=[], highlightedCompanyIndex=-1;
@@ -153,9 +210,115 @@ $("cert-form").addEventListener("reset",()=>{
  selectCompany(null);
 });
 
-function renderCompanies(){let f=$("company-filter").value.trim().toLowerCase();$("company-list").innerHTML=companies.filter(x=>(x.name+" "+(x.eik||"")).toLowerCase().includes(f)).map(x=>'<tr><td>'+escape(x.name)+'</td><td>'+escape(x.eik)+'</td></tr>').join("")}
+
+function renderCompanies(){
+ const needle=$("company-filter").value.trim().toLocaleLowerCase("bg-BG");
+ const showArchived=$("company-show-archived").checked;
+ const filtered=companyCatalog.filter(c=>{
+   if(c.archived_at&&!showArchived)return false;
+   return (c.name+" "+(c.eik||"")).toLocaleLowerCase("bg-BG").includes(needle);
+ });
+ $("company-count").textContent=filtered.length+" намерени / "+companies.length+" активни";
+ $("company-list").innerHTML=filtered.map(c=>'<tr class="'+(c.archived_at?'is-archived':'')+'">'+
+ '<td>'+escape(c.name)+'</td><td>'+escape(c.eik||"—")+'</td>'+
+ '<td><span class="company-status-pill'+(c.archived_at?' archived':'')+'">'+(c.archived_at?'Архивирана':'Активна')+'</span></td>'+
+ '<td><div class="company-row-actions">'+
+ '<button type="button" data-company-action="edit" data-company-id="'+c.id+'">Редактирай</button>'+
+ (c.archived_at?
+ '<button type="button" class="restore" data-company-action="restore" data-company-id="'+c.id+'">Възстанови</button>':
+ '<button type="button" class="archive" data-company-action="archive" data-company-id="'+c.id+'">Архивирай</button>')+
+ '</div></td></tr>').join("")||'<tr><td colspan="4">Няма намерени фирми.</td></tr>';
+}
+function resetCompanyEditor(clearMessage=true){
+ editCompanyId=null;
+ $("company-form").reset();
+ $("company-form").elements.eik.required=true;
+ $("company-editor-title").textContent="Добавяне на фирма";
+ $("company-editor-help").textContent="Добави фирма с нейното наименование и ЕИК. Можеш да променяш данните по-късно.";
+ $("company-save").textContent="Добави фирма";
+ $("company-cancel").hidden=true;
+ if(clearMessage)message("company-status","");
+}
+function beginCompanyEdit(c){
+ editCompanyId=c.id;
+ const form=$("company-form");
+ form.elements.name.value=c.name;
+ form.elements.eik.value=c.eik||"";
+ // Imported historical companies may not have an EIK yet.
+ form.elements.eik.required=false;
+ $("company-editor-title").textContent="Редактиране на фирма";
+ $("company-editor-help").textContent="Коригирай наименованието или ЕИК. Вече издадените заверки запазват оригиналните си данни.";
+ $("company-save").textContent="Запази промените";
+ $("company-cancel").hidden=false;
+ message("company-status",c.archived_at?"Редактираш архивирана фирма. Възстанови я, за да я използваш за нови заверки.":"");
+ $("company-editor").scrollIntoView({behavior:"smooth",block:"start"});
+ form.elements.name.focus({preventScroll:true});
+}
 $("company-filter").oninput=renderCompanies;
-$("company-form").onsubmit=async e=>{e.preventDefault();let f=new FormData(e.target),name=String(f.get("name")).trim(),eik=String(f.get("eik")).trim();let r=await client.from("gta_cert_companies").insert({name,eik}).select().single();if(r.error){message("company-status",r.error.code==="23505"?"Фирма с този ЕИК вече съществува.":r.error.message,true);return}message("company-status","Фирмата е добавена.");e.target.reset();await loadLookups()};
+$("company-show-archived").onchange=renderCompanies;
+$("company-cancel").onclick=()=>resetCompanyEditor();
+$("company-form").onsubmit=async event=>{
+ event.preventDefault();
+ if(companyActionBusy)return;
+ const form=$("company-form");
+ const fields=new FormData(form);
+ const name=String(fields.get("name")||"").trim();
+ const eik=String(fields.get("eik")||"").trim();
+ if(!name){message("company-status","Въведи наименование на фирмата.",true);return}
+ if(eik&&!/^[0-9]{9,13}$/.test(eik)){message("company-status","ЕИК трябва да съдържа между 9 и 13 цифри.",true);return}
+ if(!editCompanyId&&!eik){message("company-status","Въведи ЕИК за новата фирма.",true);return}
+ const current=editCompanyId?companyCatalog.find(x=>x.id===editCompanyId):null;
+ if(editCompanyId&&!current){message("company-status","Фирмата вече не е налична. Обнови списъка.",true);return}
+ companyActionBusy=true;
+ $("company-save").disabled=true;
+ $("company-cancel").disabled=true;
+ try{
+   const values={name,eik:eik||null};
+   const result=current?
+     await client.from("gta_cert_companies").update(values).eq("id",current.id).select("id").single():
+     await client.from("gta_cert_companies").insert(values).select("id").single();
+   if(result.error)throw result.error;
+   resetCompanyEditor(false);
+   await loadLookups();
+   message("company-status",current?"Промените по фирмата са запазени.":"Фирмата е добавена.");
+ }catch(error){
+   const existing=companyCatalog.find(x=>x.eik===eik&&(x.id!==editCompanyId));
+   const note=error.code==="23505"?
+      (existing?.archived_at?"Този ЕИК принадлежи на архивирана фирма. Покажи архивираните и я възстанови.":"Вече съществува фирма с този ЕИК."):
+      error.message;
+   message("company-status",note,true);
+ }finally{
+   companyActionBusy=false;
+   $("company-save").disabled=false;
+   $("company-cancel").disabled=false;
+ }
+};
+$("company-list").onclick=async event=>{
+ const button=event.target.closest("[data-company-action]");
+ if(!button||companyActionBusy)return;
+ const c=companyCatalog.find(x=>String(x.id)===button.dataset.companyId);
+ if(!c)return;
+ const action=button.dataset.companyAction;
+ if(action==="edit"){beginCompanyEdit(c);return}
+ if(action==="archive"&&!confirm('Архивиране на "'+c.name+'"?\nФирмата няма да се показва за нови заверки. Всички исторически документи ще бъдат запазени.'))return;
+ if(action==="restore"&&!confirm('Възстановяване на "'+c.name+'"?\nФирмата отново ще бъде достъпна за нови заверки.'))return;
+ if(action!=="archive"&&action!=="restore")return;
+ companyActionBusy=true;
+ button.disabled=true;
+ try{
+   const result=await client.from("gta_cert_companies")
+     .update({archived_at:action==="archive"?new Date().toISOString():null})
+     .eq("id",c.id).select("id").single();
+   if(result.error)throw result.error;
+   if(editCompanyId===c.id)resetCompanyEditor(false);
+   await loadLookups();
+   message("company-status",action==="archive"?
+     'Фирмата е архивирана. Старите заверки остават непроменени.':
+     'Фирмата е възстановена.');
+ }catch(error){message("company-status",error.message,true)}
+ finally{companyActionBusy=false;button.disabled=false}
+};
+
 async function loadRecords(){let query=client.from("gta_cert_records").select("id,seq_no,cert_date,company_name,company_eik,fuel_type,litres,kilograms,document_ref,batch_ref,prepared_by,source_row,company_id",{count:"exact"}).order("id",{ascending:false}).range(page*LIMIT,(page+1)*LIMIT-1);
 if(term){let safe=term.replace(/[,%()]/g," ").trim();if(/^\\d+$/.test(safe))query=query.or("company_name.ilike.%"+safe+"%,company_eik.ilike.%"+safe+"%,document_ref.ilike.%"+safe+"%,seq_no.eq."+safe);else query=query.or("company_name.ilike.%"+safe+"%,company_eik.ilike.%"+safe+"%,document_ref.ilike.%"+safe+"%")}
 let r=await query;if(r.error){message("records-status",r.error.message,true);return}
@@ -165,10 +328,10 @@ $("rows").onclick=e=>{let b=e.target.closest("[data-open]");if(!b)return;let x=r
 $("filter").oninput=e=>{term=e.target.value;page=0;loadRecords()};$("reload").onclick=loadRecords;$("previous").onclick=()=>{page=Math.max(0,page-1);loadRecords()};$("next").onclick=()=>{page++;loadRecords()};
 $("cert-form").elements.cert_date.value=new Date().toLocaleDateString("en-CA");
 function openRecord(x){editId=x.id;viewRecord=x;showTab("new");$("form-title").textContent="Заверка № "+(x.seq_no||"—");let f=$("cert-form");for(const k of ["cert_date","fuel_type","litres","kilograms","document_ref","batch_ref","prepared_by"])f.elements[k].value=x[k]??"";
-let company=companies.find(c=>c.id===x.company_id)||companies.find(c=>c.eik&&c.eik===x.company_eik)||companies.find(c=>c.name===x.company_name);if(company)selectCompany(company);else{$("company-choice").value="";companyInput.value=x.company_name||"";$("company-help").textContent="Избери фирма от предложенията.";hideCompanySuggestions()}
+let company=companyCatalog.find(c=>c.id===x.company_id)||companyCatalog.find(c=>c.eik&&c.eik===x.company_eik)||companyCatalog.find(c=>c.name===x.company_name);if(company)selectCompany(company);else{$("company-choice").value="";companyInput.value=x.company_name||"";$("company-help").textContent="Избери фирма от предложенията.";hideCompanySuggestions()}
 message("form-status",x.source_row?"Импортиран запис от Excel, ред "+x.source_row:"Редактиране на заверката")};
 $("cancel-edit").onclick=()=>{editId=null;viewRecord=null;$("form-title").textContent="Нова заверка";message("form-status","");setTimeout(()=>$("cert-form").elements.cert_date.value=new Date().toLocaleDateString("en-CA"))};
-function readForm(){let f=new FormData($("cert-form"));let c=companies.find(x=>String(x.id)===String(f.get("company_id")));if(!c){companyInput.focus();showCompanySuggestions();throw Error("Изберете фирма от предложените резултати.");}let val=n=>f.get(n)===""?null:Number(f.get(n));return {company_id:c.id,company_name:c.name,company_eik:c.eik,cert_date:f.get("cert_date"),fuel_type:f.get("fuel_type"),litres:val("litres"),kilograms:val("kilograms"),document_ref:f.get("document_ref")||null,batch_ref:f.get("batch_ref")||null,prepared_by:f.get("prepared_by")||null}}
+function readForm(){let f=new FormData($("cert-form"));let c=companies.find(x=>String(x.id)===String(f.get("company_id"))) || (editId?companyCatalog.find(x=>String(x.id)===String(f.get("company_id")) && String(x.id)===String(viewRecord?.company_id)):null);if(!c){companyInput.focus();showCompanySuggestions();throw Error("Изберете фирма от предложените резултати.");}let val=n=>f.get(n)===""?null:Number(f.get(n));return {company_id:c.id,company_name:c.name,company_eik:c.eik,cert_date:f.get("cert_date"),fuel_type:f.get("fuel_type"),litres:val("litres"),kilograms:val("kilograms"),document_ref:f.get("document_ref")||null,batch_ref:f.get("batch_ref")||null,prepared_by:f.get("prepared_by")||null}}
 $("cert-form").onsubmit=async e=>{e.preventDefault();try{let data=readForm();if(!data.fuel_type||!data.cert_date)throw Error("Попълнете задължителните полета.");$("save").disabled=true;let r=editId?await client.from("gta_cert_records").update(data).eq("id",editId).select().single():await client.from("gta_cert_records").insert(data).select().single();if(r.error)throw r.error;viewRecord=r.data;editId=r.data.id;message("form-status","Записано успешно. Номер на заверката: "+r.data.seq_no);$("form-title").textContent="Заверка № "+r.data.seq_no}catch(err){message("form-status",err.message,true)}finally{$("save").disabled=false}};
 $("signature").onchange=e=>{if(signatureURL)URL.revokeObjectURL(signatureURL);signatureURL=e.target.files?.[0]?URL.createObjectURL(e.target.files[0]):null};
 function docHtml(x){let company=x.company_name||"",date=x.cert_date?x.cert_date.split("-").reverse().join("."):"",litres=x.litres??"…………",kgs=x.kilograms??"…………";
