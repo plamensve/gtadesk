@@ -1,0 +1,11 @@
+{
+  "name": "gta-desk",
+  "version": "1.0.0",
+  "private": true,
+  "description": "No-build static GTA Desk frontend",
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --test"
+  }
+}

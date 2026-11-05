@@ -22,3 +22,9 @@ The login screen is fail-closed: without a Supabase configuration, nobody can lo
 
 ### Important: Truly private website
 To hide the HTML/JS itself from unauthenticated visitors, GitHub Pages is not sufficient; host behind an access-enforcing service such as Cloudflare Pages + Access or an authenticated server instead.
+
+## Development and maintainability
+
+This frontend now separates HTML, CSS and native JavaScript modules. See [Frontend architecture](docs/ARCHITECTURE.md) for the file map, conventions, navigation ownership and test scope.
+
+Run `npm test` with Node.js 20.11+ before committing. No `npm install` is required. GitHub Actions runs the same checks on each push to `main`.

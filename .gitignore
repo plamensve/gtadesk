@@ -1,0 +1,9 @@
+# IDE files are local to each developer
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Optional Node tooling
+node_modules/
+coverage/
