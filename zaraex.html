@@ -81,16 +81,16 @@ th{background:#eaf7fb!important;color:#17445a!important}td{color:#173d51!importa
 .panel{border-radius:17px!important;box-shadow:0 10px 28px #176a8710!important}
 @media(max-width:700px){.workspace-sidebar{padding:18px 7px!important}.workspace-sidebar .gtad-brand-logo{width:52px;height:46px;max-width:none;object-fit:cover;object-position:left}.workspace-sidebar .ws-nav a{justify-content:center;padding:13px 6px;gap:0;font-size:0}.workspace-sidebar .ws-nav .ws-icon{width:23px;height:23px;flex-basis:23px}}
 </style><link rel="stylesheet" href="./assets/gtadesk-sidebar.css?v=1"></head>
-<body class="gta-zaraex-page"><aside class="sidebar workspace-sidebar gta-unified-sidebar" aria-label="Постоянна навигация">
+<body class="gta-zaraex-page"><aside class="sidebar workspace-sidebar gta-unified-sidebar" aria-label="Постоянна навигация" hidden>
 <a class="brand ws-brand gta-sidebar-brand" href="./dashboard.html" aria-label="GTA Desk"><img class="gtad-brand-logo" src="./assets/gtadesk-logo.svg" alt="GTA Desk" width="210" height="62"></a>
 <div class="gta-sidebar-menu"><div class="caption ws-heading gta-sidebar-caption">Навигация</div>
 <nav class="nav ws-nav gta-sidebar-nav" aria-label="Основно меню">
 <a class="nav-link gta-sidebar-link" href="./dashboard.html" title="Начало"><svg class="ui-icon ws-icon gta-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#home"></use></svg><span class="nav-label ws-label gta-sidebar-label">Начало</span></a>
-<a class="nav-link gta-sidebar-link active" href="./zaraex.html#loads" title="Товарения" data-tab-target="loads" aria-current="page"><svg class="ui-icon ws-icon gta-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#truck"></use></svg><span class="nav-label ws-label gta-sidebar-label">Товарения</span></a>
-<a class="nav-link gta-sidebar-link" href="./zaraex.html#settings" title="Номенклатури" data-tab-target="settings"><svg class="ui-icon ws-icon gta-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#layers"></use></svg><span class="nav-label ws-label gta-sidebar-label">Номенклатури</span></a>
-<a class="nav-link gta-sidebar-link" href="./zaraex.html#stay" title="НАП · Престой" data-tab-target="stay"><svg class="ui-icon ws-icon gta-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#file-text"></use></svg><span class="nav-label ws-label gta-sidebar-label">НАП · Престой</span></a>
+<a class="nav-link gta-sidebar-link" href="./zaraex.html?tab=loads" title="Товарения" data-tab-target="loads"><svg class="ui-icon ws-icon gta-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#truck"></use></svg><span class="nav-label ws-label gta-sidebar-label">Товарения</span></a>
+<a class="nav-link gta-sidebar-link" href="./zaraex.html?tab=settings" title="Номенклатури" data-tab-target="settings"><svg class="ui-icon ws-icon gta-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#layers"></use></svg><span class="nav-label ws-label gta-sidebar-label">Номенклатури</span></a>
+<a class="nav-link gta-sidebar-link" href="./zaraex.html?tab=stay" title="НАП · Престой" data-tab-target="stay"><svg class="ui-icon ws-icon gta-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#file-text"></use></svg><span class="nav-label ws-label gta-sidebar-label">НАП · Престой</span></a>
 <a class="nav-link gta-sidebar-link" href="./certifications.html" title="Заверки"><svg class="ui-icon ws-icon gta-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#file-text"></use></svg><span class="nav-label ws-label gta-sidebar-label">Заверки</span></a>
-<a class="nav-link gta-sidebar-link" href="./zaraex.html#pdf" title="PDF инструменти" data-tab-target="pdf"><svg class="ui-icon ws-icon gta-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#file-pdf"></use></svg><span class="nav-label ws-label gta-sidebar-label">PDF инструменти</span></a>
+<a class="nav-link gta-sidebar-link" href="./zaraex.html?tab=pdf" title="PDF инструменти" data-tab-target="pdf"><svg class="ui-icon ws-icon gta-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#file-pdf"></use></svg><span class="nav-label ws-label gta-sidebar-label">PDF инструменти</span></a>
 </nav></div>
 <div class="side-bottom gta-sidebar-account"><div class="account-label">Влезли сте като</div><div class="account-email" id="account-email"></div><button class="logout" id="logout" type="button" aria-label="Изход от профила" title="Изход от профила"><svg class="logout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#logout"></use></svg><span class="logout-label">Изход от профила</span></button></div>
 </aside><div id="guard" class="guard">Проверка на достъпа...</div><div class="wrap" id="app" hidden>
@@ -107,25 +107,13 @@ th{background:#eaf7fb!important;color:#17445a!important}td{color:#173d51!importa
 <div class="field"><label for="stay-source">Изходен ЕДП XML</label><input type="file" id="stay-source" accept=".xml,text/xml,application/xml"></div><form id="stay-form"><div class="fields" style="margin-top:18px"><div class="field"><label>Дата на престоя (ДД.ММ.ГГГГ)</label><input name="date" type="date" required aria-label="Дата на престоя"></div><div class="field"><label>Област</label><select name="domain" id="stay-region" required><option value="">Избери област</option></select></div><div class="field"><label>Община</label><select name="municipality" id="stay-municipality" required disabled><option value="">Избери община</option></select></div><div class="field"><label>Населено място</label><select name="city" id="stay-city" required disabled><option value="">Избери населено място</option></select></div><div class="field"><label>Адрес</label><input name="address" required></div><div class="field"><label>Номер</label><input name="addressNumber" required></div></div><div class="actions"><button type="submit">Генерирай XML</button></div></form><div class="panel stay-presets-panel"><h2 style="font-size:16px">Често използвани адреси</h2><p>Запази адрес веднъж с разбираемо име, например „Нефтобаза Бяла“. За следващата декларация натисни директно върху запазения адрес.</p><div class="actions"><button type="button" id="save-current-address"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/</svg> Запази текущия адрес</button></div><div id="stay-presets" class="address-grid"></div><div class="hint">До 5 адреса. Съхраняват се само в текущата браузърна сесия и не се изпращат в Supabase.</div></div><div id="stay-status" class="status"></div><div class="hint">Областите, общините и населените места се зареждат от пълните оригинални номенклатури на ZaraEx. Изборите са свързани по код. Обработката на XML се извършва локално в браузъра.</div></div></section>
 <section id="pdf" hidden><div class="panel"><h2>PDF инструменти</h2><div class="tabs" id="pdf-tabs"><button data-pdf="images" class="active">Изображения към PDF</button><button data-pdf="merge">Обединяване на PDF</button><button data-pdf="compress">Компресиране на PDF</button></div><label class="upload" id="pdf-upload">+ Избери файлове от устройството<input id="pdf-files" type="file" multiple accept="image/*"></label><div class="filelist" id="pdf-files-list"></div><div class="actions"><button id="pdf-run">Създай PDF</button><button class="secondary" id="pdf-clear">Изчисти</button></div><div id="pdf-status" class="status"></div><div class="hint">PDF операциите се изпълняват локално в браузъра чрез външна JavaScript библиотека. Не качваме документите към Supabase. При обединяване цифровите подписи могат да станат невалидни. Компресирането е базово и не гарантира по-малък файл.</div></div></section>
 </div>
+<script src="./assets/gtadesk-navigation.js?v=1"></script>
 <script type="module">
 import {createClient} from "https://esm.sh/@supabase/supabase-js@2.58.0";
 import {SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY} from "./config.js";
 const $=id=>document.getElementById(id), esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let client;try{client=createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);const {data:{user},error}=await client.auth.getUser();if(error||!user)throw Error("Неоторизиран достъп");const {data:access,error:err}=await client.from("gtadesk_access").select("user_id").eq("user_id",user.id).maybeSingle();if(err||!access)throw Error("Нямате разрешен достъп");$("account-email").textContent=user.email||"Одобрен потребител";$("logout").addEventListener("click",async()=>{await client.auth.signOut();location.replace("./")});// Apply the requested deep-link tab before revealing the authenticated workspace.
-const initialTab=["loads","settings","stay","pdf"].includes(location.hash.slice(1))?location.hash.slice(1):"loads";
-for(const tab of ["loads","settings","stay","pdf"]){
-  $(tab).hidden=tab!==initialTab;
-}
-for(const button of $("tabs").querySelectorAll("[data-tab]")){
-  button.classList.toggle("active",button.dataset.tab===initialTab);
-}
-for(const a of document.querySelectorAll(".gta-sidebar-nav [data-tab-target]")){
-  const selected=a.dataset.tabTarget===initialTab;
-  a.classList.toggle("active",selected);
-  if(selected)a.setAttribute("aria-current","page");
-  else a.removeAttribute("aria-current");
-}
-$("guard").hidden=true;$("app").hidden=false;client.auth.onAuthStateChange(e=>{if(e==="SIGNED_OUT")location.replace("./")})}catch(e){$("guard").textContent=e.message||"Неуспешна проверка";location.replace("./")}
+let client;try{client=createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);const {data:{user},error}=await client.auth.getUser();if(error||!user)throw Error("Неоторизиран достъп");const {data:access,error:err}=await client.from("gtadesk_access").select("user_id").eq("user_id",user.id).maybeSingle();if(err||!access)throw Error("Нямате разрешен достъп");$("account-email").textContent=user.email||"Одобрен потребител";$("logout").addEventListener("click",async()=>{await client.auth.signOut();location.replace("./")});// The shared navigation controller selected the requested tab before authentication.
+$("app").hidden=false;document.querySelector(".gta-unified-sidebar").hidden=false;$("guard").hidden=true;client.auth.onAuthStateChange(e=>{if(e==="SIGNED_OUT")location.replace("./")})}catch(e){$("guard").textContent=e.message||"Неуспешна проверка";location.replace("./")}
 const key="gtadesk_zaraex_v1";const defaults={products:[],transport_companies:[],vehicles:[],drivers:[],bases:[],handover_people:[],loads:[]};let state;try{state={...defaults,...JSON.parse(sessionStorage.getItem(key)||"{}")}}catch{state=structuredClone(defaults)};const persist=()=>sessionStorage.setItem(key,JSON.stringify(state));
 if(!state.products.length){try{const response=await fetch("./zaraex/products.json");if(response.ok){state.products=await response.json();persist()}}catch{}}
 
@@ -174,21 +162,11 @@ $("export-loads").onclick=()=>{
  $("load-status").textContent="XML файлът е създаден. Това е структурирана чернова, не потвърдена декларация за НАП.";
 };
 renderLoadForm();drawLoads();
-const availableTabs=["loads","settings","stay","pdf"];
-function selectWorkspaceTab(tab){
- if(!availableTabs.includes(tab))tab="loads";
- for(const t of availableTabs)$(t).hidden=t!==tab;
- for(const el of $("tabs").querySelectorAll("button"))el.classList.toggle("active",el.dataset.tab===tab);
- for(const a of document.querySelectorAll(".ws-nav [data-tab-target]")){
-  const selected=a.dataset.tabTarget===tab;
-  a.classList.toggle("active",selected);
-  if(selected)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");
- }
- if(tab==="loads")renderLoadForm();
-}
-$("tabs").onclick=e=>{const b=e.target.closest("[data-tab]");if(!b)return;history.replaceState(null,"","#"+b.dataset.tab);selectWorkspaceTab(b.dataset.tab)};
-window.addEventListener("hashchange",()=>selectWorkspaceTab(location.hash.slice(1)));
-selectWorkspaceTab(location.hash.slice(1)||"loads");
+// Form refresh is module-specific; all route changes and selected nav states are centralized.
+document.addEventListener("gtadesk:tabchange", event => {
+ if(event.detail.tab==="loads")renderLoadForm();
+});
+window.GtaDeskNavigation.sync();
 
 // Original reference data copied unchanged from zaraex_import.
 let stayLocations=null, cityMunicipalities=null;
