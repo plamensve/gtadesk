@@ -1,0 +1,90 @@
+/* zaraex: base · original cascade block 1 */
+:root{font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;color:#192c3e;background:#f3f6f9}*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0}button,input,select,textarea{font:inherit}button{cursor:pointer}.wrap{max-width:1320px;margin:auto;padding:28px 24px 80px}.bar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:29px}.bar a{color:#355b75;text-decoration:none;font-weight:700}.bar span{color:#71889a;font-size:12px}.intro h1{font-size:34px;margin:0 0 8px;letter-spacing:-.04em}.intro p{color:#768a9b;line-height:1.6;margin:0 0 27px}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}.tabs button{border:1px solid #d9e5ec;background:#fff;color:#506e80;padding:12px 16px;border-radius:12px;font-weight:700}.tabs button.active{background:#1d455f;color:white;border-color:#1d455f}.panel{background:#fff;border:1px solid #dde6ed;border-radius:18px;padding:25px;margin-bottom:20px}.panel h2{font-size:20px;margin:0 0 9px}.panel p{color:#728596;font-size:13px;line-height:1.7}.fields{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px}.field{display:grid;gap:7px}.field label{font-size:12px;color:#5d7081;font-weight:700}.field input,.field select,.field textarea{min-width:0;border:1px solid #d4e0e8;border-radius:10px;padding:12px;background:#f9fbfd;color:#182d3d}.field input:focus,.field select:focus{outline:2px solid #b2dff2}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:19px}.actions button,.small{border:0;border-radius:10px;background:#224d68;color:#fff;font-weight:700;padding:11px 15px}.actions button.secondary,.small.secondary{background:#e9f0f4;color:#335770}.actions button.danger,.small.danger{background:#f8e7e7;color:#a23d3d}.scroll{overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px;margin-top:16px}th,td{text-align:left;padding:12px;border-bottom:1px solid #e9eff3;white-space:nowrap}th{color:#718494;background:#f7fafc;font-size:12px}.empty{color:#92a2af;text-align:center;padding:24px}.hint{background:#f3f8fb;border:1px solid #dceaf2;border-radius:12px;padding:14px;color:#557082;font-size:12px;line-height:1.6;margin-top:15px}.note{color:#688194;font-size:13px;min-height:22px}.upload{display:block;border:2px dashed #bed4e1;border-radius:15px;background:#f9fcfe;padding:36px;text-align:center;cursor:pointer;color:#4b718a}.upload input{display:none}.filelist{display:grid;gap:9px;margin-top:18px}.file{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#f4f8fb;padding:12px;border-radius:10px;font-size:13px}.file button{border:0;background:#e2edf3;border-radius:8px;padding:7px 10px}.guard{min-height:100vh;display:grid;place-items:center;color:#678094}.status{margin-top:12px;color:#ad4747;font-size:13px}.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:850px){.fields{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}}@media(max-width:510px){.wrap{padding:18px 12px}.fields{grid-template-columns:1fr}.panel{padding:17px}.intro h1{font-size:28px}}.address-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:17px}.address-card{border:1px solid #d9e5ec;border-radius:13px;background:#fff;padding:14px;text-align:left;min-height:105px;display:flex;flex-direction:column;gap:7px}.address-card:hover{border-color:#6fa2bf;background:#f8fcff}.address-card strong{font-size:14px}.address-card span{font-size:12px;color:#6f8698;line-height:1.5}.address-card .edit-row{display:flex;gap:8px;margin-top:auto}.address-card .edit-row button{background:#edf3f7;border:0;border-radius:7px;color:#3c617b;padding:7px 9px;font-size:12px;font-weight:650}.address-card .edit-row button:hover{background:#dceaf2}
+
+/* zaraex: gtadesk-ui-polish · original cascade block 2 */
+.ui-icon{width:18px;height:18px;flex-shrink:0;vertical-align:middle;transition:transform .2s ease}
+button,a,input,select{transition:background-color .2s ease,border-color .2s ease,box-shadow .2s ease,transform .2s ease}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #74c7ee;outline-offset:3px}
+button:enabled:hover{filter:brightness(1.035)}
+button:enabled:active{transform:translateY(1px)}
+button:disabled{cursor:not-allowed}
+.panel,.card,.address-card{box-shadow:0 7px 24px rgba(24,62,86,.035)}
+.panel,.card,.address-card{transition:box-shadow .2s ease,border-color .2s ease,transform .2s ease}
+.card:hover,.address-card:hover{border-color:#b4d2e3;box-shadow:0 14px 30px rgba(24,62,86,.09)}
+.tabs button.active{box-shadow:0 8px 20px rgba(26,72,99,.15)}
+.nav .nav-link:hover{background:#e6f2f8}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23536e80' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:40px!important}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+
+/* Consistent navigation on all workspace pages, including mobile */
+.ws-icon{width:18px;height:18px;flex:0 0 18px;stroke-width:1.8;display:block}
+@media(max-width:700px){.ws-icon{width:21px;height:21px;flex-basis:21px}}
+body{padding-left:264px}
+.workspace-sidebar{width:264px;position:fixed;left:0;top:0;bottom:0;z-index:20;background:#fff;border-right:1px solid #e1e7ee;padding:28px 19px;display:flex;flex-direction:column;gap:32px;overflow-y:auto}
+.ws-brand{display:flex;gap:12px;align-items:center;text-decoration:none;color:#17283a;font-size:15px;font-weight:850;letter-spacing:.15em}
+.ws-mark{width:40px;height:40px;display:grid;place-items:center;background:#e6f4fa;border:1px solid #d5e7f0;border-radius:12px;font-size:24px;flex-shrink:0}
+.ws-heading{font-size:10px;text-transform:uppercase;letter-spacing:.15em;font-weight:750;color:#90a0ad;margin:0 10px -22px}
+.ws-nav{display:grid;gap:5px}.ws-nav a,.ws-disabled{display:flex;align-items:center;gap:13px;padding:13px 14px;border-radius:12px;text-decoration:none;color:#66798a;font-size:14px;font-weight:600}.ws-nav a.active{background:#eaf3f8;color:#164762}.ws-nav a:hover{background:#edf5fa}.ws-disabled{opacity:.48;cursor:not-allowed}.ws-symbol{font-size:21px;line-height:1;width:23px;text-align:center;flex-shrink:0}
+@media(max-width:700px){body{padding-left:74px}.workspace-sidebar{width:74px;padding:18px 8px;gap:25px}.ws-brand{justify-content:center}.ws-label,.ws-heading{display:none}.ws-nav a,.ws-disabled{justify-content:center;padding:13px 7px;gap:0}.wrap{padding:18px 12px 60px}}
+.ws-mark{padding:3px;overflow:hidden;background:#fff;border-color:#dbe7ef}.ws-mark img{width:100%;height:100%;display:block;object-fit:contain}
+
+/* GTA Desk enterprise technology design system */
+:root{--gta-bg:#040d1d;--gta-surface:#0b2036;--gta-border:#285471;--gta-ink:#e9f7ff;--gta-muted:#a0c5d7;--gta-accent:#5cddff;--gta-red:#ef4567;color-scheme:dark}
+
+:root{background:#040d1d;color:#e9f7ff}body{background:radial-gradient(ellipse at 70% -8%,#11638a38,transparent 45%),linear-gradient(180deg,#06182c,#040d1d);color:#e9f7ff}
+.workspace-sidebar{background:linear-gradient(175deg,#040c1b,#0a1328 67%,#050a16);border-right-color:#244c6b;box-shadow:9px 0 40px #0007}
+.ws-brand{color:#fff}.ws-heading{color:#75a6c4}.ws-nav a,.ws-disabled{color:#9cc6dc}.ws-nav a.active{background:linear-gradient(95deg,#6e102c99,#42142c66);color:#fff;border:1px solid #e14e69;box-shadow:inset 3px 0 #ff3f64}.ws-nav a:hover{background:#103452;color:#fff}
+.bar a{color:#a5e4f7}.bar span{color:#8dbacf}.intro h1{color:#f5fcff}.intro p{color:#a0c5d7}
+.tabs button{background:#0c253c;border-color:#315f7b;color:#bfdeed}.tabs button.active{background:#12577b;color:#fff;border-color:#45bcdf;box-shadow:0 0 24px #1fbdff23}
+.panel{background:linear-gradient(145deg,#0c253ce8,#081a2edc);border-color:#2c5671;box-shadow:0 14px 35px #0003;color:#e9f7ff}
+.panel h2{color:#f2fbff}.panel p{color:#9dbfd1}
+.field label{color:#bad9e7}.field input,.field select,.field textarea{background-color:#08192d;color:#e9f7ff;border-color:#355e77}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid #38b4df}
+.actions button,.small{background:#12658d;color:#fff}.actions button.secondary,.small.secondary{background:#1a4059;color:#d8f3ff}.actions button.danger,.small.danger{background:#592637;color:#ffb4bf}
+th{background:#102d45;color:#b6d9e9}td{color:#e1f5ff}th,td{border-bottom-color:#24475f}
+.empty,.note{color:#91b8ce}.hint{background:#0d3047;border-color:#315b74;color:#b9d7e7}
+.upload{background:#0b243a;border-color:#36758f;color:#bfe5f5}.file{background:#0d2a43;color:#eafaff}.file button{background:#184660;color:#d2ecf8}
+.address-card{background:#0b263c;border-color:#305d77;color:#e9f7ff}.address-card:hover{background:#123c57;border-color:#55b9dc}.address-card span{color:#a4c8d9}.address-card .edit-row button{background:#1d4d66;color:#e0f4ff}.address-card .edit-row button:hover{background:#266484}
+.guard{color:#afd8eb}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #6cddfb;outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* Consistent contrast for saved residence addresses in the dark UI */
+.stay-presets-panel{margin-top:18px;background:linear-gradient(145deg,#102d45,#0a2035);border-color:#376983;color:#eaf8ff}
+.stay-presets-panel h2{color:#f5fcff}
+.stay-presets-panel p,.stay-presets-panel .hint{color:#b7d7e7}
+.stay-presets-panel .address-card{background:#0b263c;color:#eefaff;border-color:#396983}
+.stay-presets-panel .address-card strong{color:#fff}
+.stay-presets-panel .address-card span{color:#b8d8e8}
+.stay-presets-panel .address-card .edit-row button{background:#194861;color:#e8faff}
+.stay-presets-panel .address-card .edit-row button:hover{background:#286783}
+
+/* zaraex: gtadesk-light-theme · original cascade block 3 */
+:root{color-scheme:light;--paper:#f3fbff;--panel:#ffffff;--ink:#102d43;--muted:#526f82;--line:#c5dfed;--cyan:#00a9b4}html,body{background:#f3fbff!important;color:#102d43!important}button,input,select,textarea{font:inherit}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #00a9b4;outline-offset:2px}input::placeholder,textarea::placeholder{color:#607e91!important;opacity:1}input:disabled,select:disabled{color:#68879b!important;opacity:.78}select,select option{background-color:#fff!important;color:#102d43!important}button:disabled{opacity:.55}a{color:#006f86}
+body{background:radial-gradient(ellipse at 85% 0%,#bdf3fc,transparent 45%),#f3fbff!important;color:#102d43!important}.workspace-sidebar{background:linear-gradient(170deg,#fff,#eaf9ff)!important;border-right:1px solid #c7e2ed!important;box-shadow:8px 0 28px #2b799212!important}.ws-brand,.ws-heading,.ws-nav a,.ws-disabled{color:#18394e!important}.ws-nav a.active{background:#d3f8fb!important;border:1px solid #00aab5!important;box-shadow:inset 3px 0 #00abb4!important;color:#073849!important}.ws-nav a:hover{background:#e5f8fb!important}.bar a,.bar span,.intro h1,.intro p{color:#18394e!important}
+.tabs button{background:#fff!important;color:#143d51!important;border:1px solid #bfdbe7!important}.tabs button.active{background:#c8f8fa!important;color:#073b4a!important;border-color:#00aeb6!important;box-shadow:0 4px 18px #00afba22!important}
+.panel,.stay-presets-panel{background:linear-gradient(145deg,#fff,#f4fcff)!important;border:1px solid #bfdde9!important;box-shadow:0 12px 32px #27698714!important;color:#102d43!important}.panel h2,.panel p,.field label,.hint,.note,.empty,.guard,.stay-presets-panel h2,.stay-presets-panel p,.stay-presets-panel .hint{color:#173d54!important}.hint{background:#ecf9fd!important;border-color:#c7e6f0!important}
+.field input,.field select,.field textarea,.panel input,.panel select,.panel textarea{background-color:#fff!important;color:#102d43!important;border:1px solid #b3d2e2!important;box-shadow:0 1px 2px #2b63820a!important}.field select,.panel select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23065f78' stroke-width='2.3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")!important;background-repeat:no-repeat!important;background-position:right 13px center!important;background-size:21px 21px!important;padding-right:44px!important}.field input[type=date],.panel input[type=date]{color-scheme:light!important}.field input[type=date]::-webkit-calendar-picker-indicator,.panel input[type=date]::-webkit-calendar-picker-indicator{filter:none!important}
+.actions button,.small{background:#008f9d!important;color:#fff!important}.actions button.secondary,.small.secondary{background:#e0f3f8!important;color:#154254!important}.actions button.danger,.small.danger{background:#ffe4e9!important;color:#93354a!important}.upload{background:#f5fcff!important;border-color:#a9d7e5!important;color:#18465d!important}.file{background:#edf8fc!important;color:#163d51!important}.file button{background:#d8eff6!important;color:#17445a!important}
+th{background:#eaf7fb!important;color:#17445a!important}td{color:#173d51!important}th,td{border-color:#d7eaf2!important}.address-card,.stay-presets-panel .address-card{background:#fff!important;border:1px solid #c2dfeb!important;color:#153c51!important}.address-card:hover{background:#ecfbfd!important}.address-card strong,.address-card span,.stay-presets-panel .address-card strong,.stay-presets-panel .address-card span{color:#173d51!important}.address-card .edit-row button,.stay-presets-panel .address-card .edit-row button{background:#e2f3f8!important;color:#18455b!important}.status{color:#a9324c!important}
+
+/* zaraex: gtadesk-brand-update · original cascade block 4 */
+.workspace-sidebar .gtad-brand-logo{display:block;width:210px;max-width:100%;height:auto}.workspace-sidebar .ws-brand{min-height:54px}@media(max-width:700px){.workspace-sidebar .gtad-brand-logo{width:52px;max-width:none;height:48px;object-fit:cover;object-position:left}}
+
+/* zaraex: reference-menu-unification · original cascade block 5 */
+/* Uniform navigation and light reference styling with tab deep links */
+.workspace-sidebar{background:linear-gradient(180deg,#fff,#f0faff)!important;border-right:1px solid #cfe4ee!important;box-shadow:7px 0 28px #2677930b!important;padding:28px 17px!important;gap:30px!important}
+.workspace-sidebar .gtad-brand-logo{width:188px;max-width:100%;height:auto}
+.ws-heading{font-size:10px;color:#64889d!important}
+.workspace-sidebar .ws-nav{gap:7px}
+.workspace-sidebar .ws-nav a{color:#153a52!important;padding:13px 12px;border-radius:10px;font-size:13px;font-weight:670;background:transparent!important;gap:13px;border:0!important}
+.workspace-sidebar .ws-nav a.active{background:linear-gradient(120deg,#08c8bd,#0087a8)!important;color:white!important;box-shadow:0 5px 16px #009dba26!important}
+.workspace-sidebar .ws-nav a:hover{background:#e7f9fc!important;color:#006e82!important}
+.workspace-sidebar .ws-nav a.active:hover{background:linear-gradient(120deg,#08c8bd,#0087a8)!important;color:#fff!important}
+.workspace-sidebar .ws-nav .ws-icon{width:19px;height:19px;flex:0 0 19px}
+.wrap{background:radial-gradient(circle at 80% 14%,#e5f8fc,transparent 38%),linear-gradient(135deg,#fafdff,#eff9fe);max-width:none;min-height:100vh}
+.panel{border-radius:17px!important;box-shadow:0 10px 28px #176a8710!important}
+@media(max-width:700px){.workspace-sidebar{padding:18px 7px!important}.workspace-sidebar .gtad-brand-logo{width:52px;height:46px;max-width:none;object-fit:cover;object-position:left}.workspace-sidebar .ws-nav a{justify-content:center;padding:13px 6px;gap:0;font-size:0}.workspace-sidebar .ws-nav .ws-icon{width:23px;height:23px;flex-basis:23px}}
+
+/* Stay declaration layout */
+.stay-fields{margin-top:18px}
+.stay-preset-title{font-size:16px}

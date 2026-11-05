@@ -1,0 +1,43 @@
+/* certifications: base · original cascade block 1 */
+:root{font-family:Inter,system-ui,"Segoe UI",sans-serif;background:#f3fbff;color:#103249}*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;padding-left:252px}button,input,select,textarea{font:inherit}button{cursor:pointer}.sidebar{position:fixed;inset:0 auto 0 0;width:252px;padding:30px 20px;background:linear-gradient(170deg,#fff,#eaf9ff);border-right:1px solid #c5e0eb;display:flex;flex-direction:column;gap:24px}.brand img{width:194px;height:auto}.nav{display:grid;gap:7px}.nav a{display:flex;align-items:center;gap:12px;color:#3b6479;font-size:14px;font-weight:700;text-decoration:none;padding:13px;border-radius:11px}.nav a:hover,.nav a.active{background:#d8f5f9;color:#086377}.nav svg{height:21px;width:21px;flex-shrink:0}.wrap{max-width:1450px;margin:auto;padding:30px 35px 75px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px}.subtitle{letter-spacing:.15em;text-transform:uppercase;font-size:11px;color:#6c8a9d;font-weight:800}h1{font-size:clamp(29px,4vw,43px);letter-spacing:-.04em;margin:12px 0 8px}p{line-height:1.5;color:#658296}.tabs{display:flex;gap:9px;flex-wrap:wrap;margin:27px 0}.tabs button,.btn{border:1px solid #b6dbe9;background:#fff;color:#184c67;border-radius:11px;padding:11px 16px;font-weight:750}.tabs button.active,.btn.primary{background:#008f9f;color:#fff;border-color:#008f9f}.panel{background:white;border:1px solid #cce2eb;border-radius:18px;padding:24px;margin-bottom:20px;box-shadow:0 12px 32px #1b72920b}h2{font-size:19px;margin:0 0 13px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px}.field{display:grid;gap:6px}.field span{font-size:12px;font-weight:750;color:#56748b}.field input,.field select{width:100%;border:1px solid #b7d4e2;border-radius:10px;padding:11px 12px;background:#fbfeff;color:#123c51;min-width:0}input:focus,select:focus,button:focus-visible{outline:3px solid #5ccbd9;outline-offset:2px}.wide{grid-column:span 2}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}.scroll{overflow-x:auto;max-height:650px;overflow-y:auto}table{border-collapse:collapse;width:100%;font-size:12px;min-width:850px}th,td{text-align:left;border-bottom:1px solid #e0eef3;padding:11px;vertical-align:top}th{position:sticky;top:0;background:#eff9fb;color:#56758a;z-index:1}td{color:#234c62}td button{color:#008f9f;border:0;background:transparent;font-weight:800}.muted{font-size:12px;color:#648094}.status{min-height:22px;font-size:13px;color:#126b62;margin-top:12px}.status.bad{color:#bd3752}.pill{padding:8px 14px;background:#e4f9f7;border-radius:30px;font-size:12px;color:#20685f;font-weight:800}.search{max-width:400px;width:100%}.searchbar{display:flex;gap:12px;margin:12px 0;flex-wrap:wrap;align-items:center}.searchbar .field{flex:1}.num{font-variant-numeric:tabular-nums}.hint{background:#eff9fb;padding:13px 15px;border-radius:12px;color:#4d7187;font-size:12px;margin:15px 0}.printsheet{font-family:"Times New Roman",serif;color:#111;background:white;padding:20mm 14mm;max-width:210mm;margin:auto;min-height:270mm;font-size:14pt;line-height:1.65}.printsheet h3{text-align:center;font-size:16pt}.printsheet p{color:#111}.printsheet img{max-width:72mm;max-height:40mm;object-fit:contain}.preview{overflow:auto;background:#e9f2f5;border-radius:14px;padding:15px}.docfooter{display:flex;justify-content:space-between;gap:15px;align-items:flex-end;margin-top:45px}.docfooter small{font-size:11pt}@media(max-width:1100px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:700px){body{padding-left:68px}.sidebar{width:68px;padding:17px 7px}.brand img{width:50px;max-height:48px;object-fit:cover;object-position:left}.nav a{font-size:0;justify-content:center;padding:12px 5px}.wrap{padding:20px 13px}.grid{grid-template-columns:1fr}.wide{grid-column:span 1}.panel{padding:17px}.top{align-items:flex-start}.printsheet{padding:12mm}}@media print{body{padding:0!important;background:white}.sidebar,.wrap,.actions,.tabs,.panel,.top{display:none!important}#print-target{display:block!important}.printsheet{padding:15mm;border:0;min-height:0;max-width:none}.printsheet img{max-height:42mm}@page{size:A4;margin:8mm}}
+
+/* Searchable company selector — the dropdown overlays the form without changing the shared sidebar. */
+.company-field{position:relative;z-index:8}
+.company-field>label{font-size:12px;font-weight:750;color:#56748b}
+.company-combobox{position:relative;min-width:0}
+.company-combobox #company-search{width:100%;min-width:0;background:#fbfeff;border:1px solid #b7d4e2;border-radius:10px;padding:11px 12px;color:#123c51}
+.company-combobox #company-search:focus{outline:3px solid #5ccbd9;outline-offset:2px}
+.company-suggestions{position:absolute;top:calc(100% + 5px);left:0;right:0;z-index:50;max-height:285px;overflow-y:auto;overscroll-behavior:contain;background:#fff;border:1px solid #b6dbe9;border-radius:12px;box-shadow:0 15px 40px #174f6b33;padding:6px}
+.company-suggestions[hidden]{display:none!important}
+.company-option{padding:11px 12px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:43px;color:#163e52;font-size:13px}
+.company-option:hover,.company-option.is-highlighted{background:#def5f8;color:#074d64}
+.company-option .company-name{font-weight:750;overflow-wrap:anywhere}
+.company-option .company-eik{color:#5a8298;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:12px}
+.company-empty,.company-more{padding:11px 12px;color:#668698;font-size:12px}
+.company-more{border-top:1px solid #e4eff4}
+.company-help{font-size:11px;line-height:1.4;color:#668698;min-height:15px}
+@media(max-width:700px){.company-option{align-items:flex-start;flex-direction:column;gap:3px}.company-option .company-eik{white-space:normal}}
+
+/* Company registry management — editing and reversible archive, consistent with the GTA Desk interface. */
+.company-list-controls{display:flex;align-items:center;flex-wrap:wrap;gap:14px;margin:13px 0 17px}
+.company-list-controls .search{min-width:min(100%,265px);border:1px solid #b7d4e2;border-radius:10px;padding:11px 12px;background:#fff;color:#123c51}
+.company-show-archived{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#325d72;font-weight:600;cursor:pointer}
+.company-show-archived input{accent-color:#008f9f;width:16px;height:16px}
+.company-editor-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.company-table{min-width:690px}
+.company-table td{white-space:normal}
+.company-row-actions{display:flex;gap:7px;flex-wrap:wrap}
+.company-row-actions button{border:1px solid #b6dbe9;border-radius:9px;padding:7px 11px;background:#f3fbff;color:#126578;font-weight:750;font-size:12px}
+.company-row-actions button:hover{background:#dff5f8}
+.company-row-actions button.archive{border-color:#e9c1c4;background:#fff3f3;color:#a0424b}
+.company-row-actions button.restore{border-color:#bee3d3;background:#eaf9f2;color:#196b4d}
+.company-row-actions button:disabled,.company-editor-actions button:disabled{opacity:.5;cursor:not-allowed}
+.company-status-pill{font-size:12px;color:#13715b;font-weight:750}
+.company-status-pill.archived{color:#916e46}
+.company-table tr.is-archived td{color:#718b9a}
+
+/* Printable certificate and preview layout */
+.printsheet .prepared-by{margin-top:25px}
+.printsheet .signature-label{float:right}
+.printsheet .legal-note{font-size:11pt}
+.preview-actions{margin-bottom:12px}
