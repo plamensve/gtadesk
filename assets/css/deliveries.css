@@ -136,3 +136,9 @@ tr.row-shared td{background:#eaf2ff!important;border-bottom-color:#cbdaf5}
 #records-body input:disabled{background:#f0f3f5;color:#60788a;cursor:not-allowed}
 .row-lock-indicator{display:inline-block;font-size:12px;margin-left:3px;vertical-align:middle}
 #row-actions-menu button:disabled{opacity:.45;cursor:not-allowed}
+
+/* Wide workspace: use nearly all space between sidebar and right viewport edge. */
+body.gta-deliveries-page .wrap{max-width:none;width:100%;margin:0;padding-left:18px;padding-right:18px}
+body.gta-deliveries-page .panel{width:100%;max-width:none}
+@media(min-width:1500px){body.gta-deliveries-page .wrap{padding-left:20px;padding-right:20px}}
+@media(max-width:700px){body.gta-deliveries-page .wrap{padding-left:12px;padding-right:12px}}
