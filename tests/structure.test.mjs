@@ -81,11 +81,11 @@ test("navigation links use canonical tab routes", () => {
 test("live Sofia clock is present on every page", () => {
   for (const page of pages) {
     const html = read(page);
-    assert.match(html, /data-gta-clock/, page);
-    assert.match(html, /assets\\/css\\/clock\\.css/, page);
-    assert.match(html, /assets\\/js\\/clock\\.js/, page);
+    assert.ok(html.includes("data-gta-clock"), page);
+    assert.ok(html.includes("assets/css/clock.css"), page);
+    assert.ok(html.includes("assets/js/clock.js"), page);
   }
   const clock = read("assets/js/clock.js");
-  assert.match(clock, /Europe\\/Sofia/);
-  assert.match(clock, /setInterval\\(refresh,1000\\)/);
+  assert.ok(clock.includes("Europe/Sofia"));
+  assert.ok(clock.includes("setInterval(refresh,1000)"));
 });
