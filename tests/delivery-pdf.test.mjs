@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
@@ -130,4 +131,9 @@ test("Matching invoice PDF is included once for multiple selected deliveries wit
   "embed:png-for-row-b","summary","draw","save"
  ]);
  assert.deepEqual(progress,[[1,3],[2,3],[3,3]]);
+});
+
+test("PDF cover dates use DD/MM/YYYY",()=>{
+ const source=readFileSync(new URL("../assets/js/delivery-pdf.js",import.meta.url),"utf8");
+ assert.match(source,/formatDateDMY\(date\)/);
 });

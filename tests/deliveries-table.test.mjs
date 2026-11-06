@@ -38,8 +38,11 @@ test("Inline editor markup stays valid and PDF indicators stay in action cells",
     assert.doesNotMatch(input,/<span/i,"Markup must not be embedded inside input attributes");
     assert.doesNotMatch(input,/doc-indicator|📎/);
   }
-  assert.match(row,/<td class="actions-cell">[\s\S]*row-doc-dot has-docs[\s\S]*<\/td>/);
-  assert.equal((row.match(/class="row-doc-dot/g)||[]).length,1,"Exactly one document indicator per row");
+  assert.match(row,/data-ark-docs="delivery-1"/);
+  assert.match(row,/class="ark-doc-trigger has-docs"/);
+  assert.match(row,/class="ark-doc-count">1/);
+  assert.doesNotMatch(row,/row-doc-dot/);
+  assert.match(row,/<td class="actions-cell">[\s\S]*row-actions-trigger[\s\S]*<\/td>/);
 });
 
 test("Locked delivery fields remain disabled",()=>{
@@ -215,4 +218,38 @@ test("Declaration cards use uniform typography, consistent spacing and equal-siz
   assert.match(block,/grid-template-rows:30px 30px/);
   assert.match(block,/width:100%;[\s\S]*?height:30px/);
   assert.match(block,/\.group-card-archive\{/);
+});
+
+test("Declaration removal requires a typed confirmation and tracks Storage cleanup",()=>{
+ assert.match(html,/id="group-delete-declaration"/);
+ assert.match(html,/id="delete-active-declaration"/);
+ assert.match(html,/id="delete-declaration-dialog"/);
+ assert.match(html,/id="delete-declaration-confirm"/);
+ assert.match(js,/previewDeclarationDeletion/);
+ assert.match(js,/deleteDeclarationMetadata/);
+ assert.match(js,/runQueuedFileCleanup/);
+ assert.match(js,/removed\.queued_paths/);
+});
+test("ARK PDFs use a separate clickable file badge instead of a dot over row actions",()=>{
+ const source=js.slice(js.indexOf("function rowHtml("),js.indexOf("function renderRows("));
+ assert.match(source,/ark-doc-trigger/);
+ assert.match(source,/data-ark-docs/);
+ assert.match(source,/ark-doc-count/);
+ assert.doesNotMatch(source,/row-doc-dot/);
+ assert.match(js,/openDocs\(\{type:"row",id:arkTrigger.dataset.arkDocs\}\)/);
+});
+test("Delivery dates use DD/MM/YYYY in form widgets, tables, Excel exports, and Sofia clock",()=>{
+ assert.match(js,/installDayMonthYearInputs\(document\)/);
+ assert.match(js,/const prettyDate = date => formatDateDMY\(date\)/);
+ assert.match(js,/formatDateDMY\(declarationDateOf\(r.declaration_no\)\)/);
+ assert.match(html,/class="gta-clock-date">--\/--\/----/);
+ const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
+ assert.match(css,/\.date-display-wrap/);
+ assert.match(css,/\.date-native-input/);
+});
+test("ARK, invoice and declaration numbers use larger consistent typography",()=>{
+ const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
+ assert.match(css,/\.ark-copy-value\{[\s\S]*?font-size:15px/);
+ assert.match(css,/\.invoice-copy-value\{[\s\S]*?font-size:13\.5px/);
+ assert.match(css,/\.decl-label\{[\s\S]*?font-size:14px/);
 });

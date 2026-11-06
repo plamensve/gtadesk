@@ -18,9 +18,9 @@ function at(utc) {
 }
 
 test("clock shows Bulgarian winter time even when host is UTC", () => {
-  assert.deepEqual(at("2026-11-06T13:23:45Z"), { date:"06.11.2026", time:"15:23:45", dateTime:"2026-11-06T15:23:45" });
+  assert.deepEqual(at("2026-11-06T13:23:45Z"), { date:"06/11/2026", time:"15:23:45", dateTime:"2026-11-06T15:23:45" });
 });
 
 test("clock handles summer daylight-saving time in Sofia", () => {
-  assert.deepEqual(at("2026-07-06T12:13:14Z"), { date:"06.07.2026", time:"15:13:14", dateTime:"2026-07-06T15:13:14" });
+  assert.deepEqual(at("2026-07-06T12:13:14Z"), { date:"06/07/2026", time:"15:13:14", dateTime:"2026-07-06T15:13:14" });
 });
