@@ -17,6 +17,7 @@ test("Inline editor markup stays valid and PDF indicators stay in action cells",
   const renderer=runInNewContext(js.slice(start,end)+";rowHtml",{
     documents:[{delivery_id:"delivery-1"}],
     selectedRowId:null,
+    selectedDeliveryIds:new Set(),
     safe:value=>String(value??""),
     prettyDate:value=>value??"—",
     visibleNote:r=>String(r.notes??""),
@@ -39,7 +40,7 @@ test("Locked delivery fields remain disabled",()=>{
   const start=js.indexOf("function rowHtml(r,number){");
   const end=js.indexOf("function renderRows(){",start);
   const renderer=runInNewContext(js.slice(start,end)+";rowHtml",{
-    documents:[],selectedRowId:null,safe:value=>String(value??""),
+    documents:[],selectedRowId:null,selectedDeliveryIds:new Set(),safe:value=>String(value??""),
     prettyDate:()=> "—",visibleNote:r=>String(r.notes??""),usage:()=> "unused",usageLabel:()=> "Неизползван"
   });
   const row=renderer({id:"delivery-2",ark:"26BG000000000982636S9",declaration_no:"123",is_locked:true},2);
@@ -72,7 +73,7 @@ test("Clicking a declaration PDF badge opens its documents without changing sele
   const end=js.indexOf('\\$("group-list").addEventListener("contextmenu"'.replace('\\$','$'),start);
   assert.ok(start>=0&&end>start);
   const scope={
-    activeDeclaration:"121",currentPage:2,
+    activeDeclaration:"121",currentPage:2,selectedDeliveryIds:new Set(),
     opened:null,renderCalls:0,resetCalls:0,
     $:()=>({addEventListener:(_,cb)=>{scope.click=cb;}}),
     openDocs:target=>{scope.opened=target;},
