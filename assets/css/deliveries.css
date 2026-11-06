@@ -980,3 +980,34 @@ body.gta-deliveries-page .group-card-operations > .group-card-docs .group-card-u
   text-overflow:clip;
   white-space:nowrap;
 }
+
+/* Declaration archive download only: original stacked archive-books vector. */
+body.gta-deliveries-page .group-card-operations > .group-card-archive{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  cursor:pointer;
+  white-space:nowrap;
+}
+body.gta-deliveries-page .group-card-archive .archive-download-icon{
+  display:block;
+  flex:0 0 21px;
+  width:21px;
+  height:21px;
+  max-width:21px;
+  max-height:21px;
+  object-fit:contain;
+  pointer-events:none;
+  user-select:none;
+}
+body.gta-deliveries-page .group-card-archive .archive-download-label{
+  display:inline-block;
+  font:inherit;
+  line-height:1;
+  white-space:nowrap;
+}
+body.gta-deliveries-page .group-card-archive:hover{
+  border-color:#63bdc7;
+  background:#e4f3fa;
+}
