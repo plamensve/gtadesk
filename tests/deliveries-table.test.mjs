@@ -66,3 +66,31 @@ test("Declaration cards use a separate document badge in the right column",()=>{
   assert.match(js,/group-card-main/);
   assert.match(js,/group-card-docs/);
 });
+
+test("Clicking a declaration PDF badge opens its documents without changing selection",()=>{
+  const start=js.indexOf('\\$("group-list").addEventListener("click"'.replace('\\$','$'));
+  const end=js.indexOf('\\$("group-list").addEventListener("contextmenu"'.replace('\\$','$'),start);
+  assert.ok(start>=0&&end>start);
+  const scope={
+    activeDeclaration:"121",currentPage:2,
+    opened:null,renderCalls:0,resetCalls:0,
+    $:()=>({addEventListener:(_,cb)=>{scope.click=cb;}}),
+    openDocs:target=>{scope.opened=target;},
+    render:()=>{scope.renderCalls++;},
+    formReset:()=>{scope.resetCalls++;}
+  };
+  runInNewContext(js.slice(start,end),scope);
+  const card={dataset:{declaration:"123"}};
+  const pdfEvent={target:{closest:selector=>selector==="[data-declaration]"?card:selector===".group-card-docs"?{}:null},preventDefault(){this.prevented=true;}};
+  scope.click(pdfEvent);
+  assert.equal(scope.opened.type,"group");
+  assert.equal(scope.opened.name,"123");
+  assert.equal(scope.activeDeclaration,"121");
+  assert.equal(scope.renderCalls,0);
+  assert.equal(scope.resetCalls,0);
+  const cardEvent={target:{closest:selector=>selector==="[data-declaration]"?card:null},preventDefault(){}};
+  scope.click(cardEvent);
+  assert.equal(scope.activeDeclaration,"123");
+  assert.equal(scope.renderCalls,1);
+  assert.equal(scope.resetCalls,1);
+});
