@@ -859,3 +859,113 @@ body.gta-deliveries-page #records-table th{
  body.gta-deliveries-page #records-table .ark-doc-trigger,
  body.gta-deliveries-page #records-table .invoice-attach-trigger{width:28px;flex-basis:28px}
 }
+
+/* Control geometry: fit upload/preview icons and labels entirely inside their borders. */
+body.gta-deliveries-page .group-list .group-card{
+  grid-template-columns:minmax(0,1fr) 152px;
+  column-gap:10px;
+}
+body.gta-deliveries-page .group-list .group-card[data-declaration=""]{
+  grid-template-columns:minmax(0,1fr);
+}
+body.gta-deliveries-page .group-card .group-card-operations{
+  box-sizing:border-box;
+  width:152px;
+  min-width:152px;
+  max-width:152px;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-template-rows:32px 32px;
+  gap:6px;
+  align-content:center;
+}
+body.gta-deliveries-page .group-card .group-card-operations > .group-card-mini{
+  box-sizing:border-box;
+  display:flex;
+  min-width:0;
+  max-width:100%;
+  width:100%;
+  height:32px;
+  min-height:32px;
+  max-height:32px;
+  gap:5px;
+  padding:4px 6px;
+  overflow:hidden;
+  border-radius:8px;
+  align-items:center;
+  justify-content:center;
+  font-size:11px;
+  font-weight:700;
+  line-height:1.1;
+  white-space:nowrap;
+}
+body.gta-deliveries-page .group-card-operations .group-card-upload-label{
+  display:block;
+  min-width:0;
+  flex:0 1 auto;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+body.gta-deliveries-page .group-card-operations .document-upload-icon,
+body.gta-deliveries-page .group-card-operations .document-view-icon{
+  display:block;
+  flex:0 0 17px;
+  width:17px;
+  height:17px;
+  max-width:17px;
+  max-height:17px;
+}
+body.gta-deliveries-page .group-card .group-card-operations > .group-card-archive{
+  grid-column:1/-1;
+  width:100%;
+  max-width:100%;
+}
+body.gta-deliveries-page #records-table .ark-doc-trigger,
+body.gta-deliveries-page #records-table .invoice-attach-trigger{
+  box-sizing:border-box;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 33px;
+  width:33px;
+  min-width:33px;
+  max-width:33px;
+  height:32px;
+  min-height:32px;
+  max-height:32px;
+  gap:2px;
+  padding:3px;
+  overflow:hidden;
+  border-radius:8px;
+}
+body.gta-deliveries-page #records-table .ark-doc-trigger .document-upload-icon,
+body.gta-deliveries-page #records-table .ark-doc-trigger .document-view-icon,
+body.gta-deliveries-page #records-table .invoice-attach-trigger .document-upload-icon,
+body.gta-deliveries-page #records-table .invoice-attach-trigger .document-view-icon{
+  display:block;
+  flex:0 1 19px;
+  width:19px;
+  max-width:19px;
+  height:19px;
+  max-height:19px;
+}
+body.gta-deliveries-page #records-table .ark-doc-count,
+body.gta-deliveries-page #records-table .invoice-document-count{
+  flex:0 0 auto;
+  font-size:9px;
+  line-height:1;
+}
+body.gta-deliveries-page #records-table tr > :nth-child(10){width:8%!important}
+body.gta-deliveries-page #records-table tr > :nth-child(12){width:4%!important}
+body.gta-deliveries-page #records-table th.actions-heading{
+  font-size:10px;
+  text-align:center;
+}
+@media(max-width:1100px){
+ body.gta-deliveries-page .group-list .group-card{
+   grid-template-columns:minmax(0,1fr) 145px;
+ }
+ body.gta-deliveries-page .group-card .group-card-operations{
+   width:145px;min-width:145px;max-width:145px;
+ }
+}
