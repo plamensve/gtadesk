@@ -31,8 +31,7 @@ test("Only selected rows and declaration-wide documents are included",()=>{
   assert.deepEqual(bundle.documents.map(d=>d.id),["doc-decl","doc-a"]);
   assert.equal(bundle.rowsWithoutDocuments,0);
   assert.equal(bundle.selectedCount,1);
-  const mixed=prepareCustomsBundle([first,other],[],new Set(["row-a","row-c"]));
-  assert.deepEqual(mixed.declarationNos,["123","124"]);
+  assert.throws(()=>prepareCustomsBundle([first,other],[],new Set(["row-a","row-c"])),/една декларация/);
 });
 
 function fakePdfFactory(events){
@@ -139,7 +138,7 @@ test("PDF cover dates use DD/MM/YYYY",()=>{
  assert.match(source,/formatDateDMY\(date\)/);
 });
 
-test("Selected rows with different invoice numbers and declarations remain in the same bundle",()=>{
+test("Different invoices within one declaration are bundled together, but mixed declarations are rejected",()=>{
  const a={...first,invoice_no:"invoice-A",invoice_date:"2026-11-01"};
  const b={...second,invoice_no:"invoice-B",invoice_date:"2026-11-02"};
  const c={...other,invoice_no:"invoice-C",invoice_date:"2026-11-03"};
@@ -153,20 +152,20 @@ test("Selected rows with different invoice numbers and declarations remain in th
   {id:"inv-b",invoice_no:"invoice-B",invoice_date:"2026-11-02",filename:"invoice-b.pdf"},
   {id:"inv-c",invoice_no:"invoice-C",invoice_date:"2026-11-03",filename:"invoice-c.pdf"}
  ];
- const bundle=prepareCustomsBundle([a,b,c],docs,new Set(["row-a","row-b","row-c"]),invoices);
- assert.equal(bundle.selectedCount,3);
- assert.deepEqual(bundle.rows.map(r=>r.id),["row-a","row-b","row-c"]);
- assert.deepEqual(bundle.declarationNos,["123","124"]);
- assert.deepEqual(bundle.declarationDocuments.map(d=>d.id),["decl-a","decl-c"]);
- assert.deepEqual(bundle.documents.map(d=>d.id),["decl-a","decl-c","ark-b","inv-a","inv-b","inv-c"]);
- assert.equal(customsPdfFileName(bundle.declarationNos),"Украинска_митница_избрани_доставки.pdf");
+ const bundle=prepareCustomsBundle([a,b,c],docs,new Set(["row-a","row-b"]),invoices);
+ assert.equal(bundle.selectedCount,2);
+ assert.deepEqual(bundle.rows.map(r=>r.id),["row-a","row-b"]);
+ assert.deepEqual(bundle.declarationNos,["123"]);
+ assert.deepEqual(bundle.documents.map(d=>d.id),["decl-a","ark-b","inv-a","inv-b"]);
+ assert.equal(customsPdfFileName(bundle.declarationNos),"Украинска_митница_декларация_123.pdf");
+ assert.throws(()=>prepareCustomsBundle([a,b,c],docs,new Set(["row-a","row-c"]),invoices),/една декларация/);
 });
-test("Mixed declarations: each delivery information page keeps its own declaration number",async()=>{
+test("Each selected delivery uses the selected declaration in its cover page",async()=>{
  const rowA={...first,invoice_no:"A",invoice_date:"2026-11-01"};
- const rowC={...other,invoice_no:"C",invoice_date:"2026-11-02"};
- const b=prepareCustomsBundle([rowA,rowC],[],new Set(["row-a","row-c"]));
+ const rowB={...second,invoice_no:"B",invoice_date:"2026-11-02"};
+ const bundle=prepareCustomsBundle([rowA,rowB],[],new Set(["row-a","row-b"]));
  const titles=[];
- await mergeCustomsPdfs(b,async()=>{throw Error("No attachments");},fakePdfFactory([]),()=>{},
+ await mergeCustomsPdfs(bundle,async()=>{throw Error("No attachments");},fakePdfFactory([]),()=>{},
    async(row,{declarationNo})=>{titles.push([row.id,declarationNo]);return "image-"+row.id;});
- assert.deepEqual(titles,[["row-a","123"],["row-c","124"]]);
+ assert.deepEqual(titles,[["row-a","123"],["row-b","123"]]);
 });

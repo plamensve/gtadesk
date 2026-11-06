@@ -17,7 +17,10 @@ export function prepareCustomsBundle(records,documents,selectedIds,invoiceDocume
   const rows=records.filter(row=>selectedIds.has(row.id));
   if(!rows.length)throw new Error("Маркирай поне една доставка от таблицата.");
   const declarationNos=[...new Set(rows.map(row=>row.declaration_no).filter(Boolean))];
-  const declarationNo=declarationNos.length===1?declarationNos[0]:null;
+  if(declarationNos.length!==1||rows.some(row=>row.declaration_no!==declarationNos[0])){
+    throw new Error("Избраните доставки трябва да са от една декларация.");
+  }
+  const declarationNo=declarationNos[0];
   // Declaration-wide PDFs are included once per selected declaration,
   // regardless of invoice number or the original order of checkboxes.
   const declarationDocuments=documents.filter(d=>declarationNos.includes(d.declaration_no)&&d.delivery_id==null).sort((a,b)=>
