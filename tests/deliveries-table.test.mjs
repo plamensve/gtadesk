@@ -236,7 +236,7 @@ test("ARK PDFs use a separate clickable file badge instead of a dot over row act
  assert.match(source,/data-ark-docs/);
  assert.match(source,/ark-doc-count/);
  assert.doesNotMatch(source,/row-doc-dot/);
- assert.match(js,/openDocs\(\{type:"row",id:arkTrigger.dataset.arkDocs\}\)/);
+ assert.match(js,/openDocs\(\{type:"row",id:arkTrigger.dataset.arkDocs\},\{previewIfSingle:true\}\)/);
 });
 test("Delivery dates use DD.MM.YYYY in form widgets, tables, Excel exports, and Sofia clock",()=>{
  assert.match(js,/installDayMonthYearInputs\(document\)/);
