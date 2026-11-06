@@ -3,7 +3,7 @@ import { documentsForInvoice } from "./invoice-documents.js";
 export function sortDeliveryRows(a,b){
   // Known invoice dates first (newest first), then creation order (newest first).
   const da=a.invoice_date||"",db=b.invoice_date||"";
-  if(da!==db)return da?db.localeCompare(da):-1;
+  if(da!==db)return !da?1:!db?-1:db.localeCompare(da);
   const ca=a.created_at||"",cb=b.created_at||"";
   return cb.localeCompare(ca)||String(b.id||"").localeCompare(String(a.id||""));
 }
@@ -30,7 +30,7 @@ function uniqueFilename(name,used){
  * invoice. All metadata and file contents remain in private Supabase Storage.
  */
 export function planDeclarationArchive(declarationNo,records,deliveryDocs,invoiceDocs){
-  const rows=records.filter(r=>r.declaration_no===declarationNo);
+  const rows=records.filter(r=>r.declaration_no===declarationNo).sort(sortDeliveryRows);
   if(!declarationNo||!rows.length)throw new Error("Няма доставки към избраната декларация.");
   const root="Декларация "+safeSegment(declarationNo);
   const dirs=[root+"/",root+"/Придружаващи документи/",root+"/Анализ/"];
