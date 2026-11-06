@@ -228,3 +228,28 @@ body.gta-deliveries-page .scroll{border:1px solid #dceaf0;border-radius:12px;max
 body.gta-deliveries-page .group-card{transition:border-color .15s,background .15s,box-shadow .15s}
 body.gta-deliveries-page .group-card:focus-visible{outline:2px solid #00a3b1;outline-offset:3px}
 @media(max-width:700px){body.gta-deliveries-page .panel{padding:15px 13px}#records-table{min-width:1270px}}
+
+/* Move the Sofia clock into the available space above the delivery heading. */
+body.gta-deliveries-page .delivery-heading-line{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:8px;min-height:31px}
+body.gta-deliveries-page .gta-clock-deliveries{min-width:210px;width:218px;max-width:100%;height:32px;justify-content:center;gap:7px;padding:5px 9px;border-radius:9px;box-shadow:none;white-space:nowrap}
+body.gta-deliveries-page .gta-clock-deliveries .gta-clock-date{min-width:63px;font-size:10px}
+body.gta-deliveries-page .gta-clock-deliveries .gta-clock-time{min-width:75px;font-size:13px;letter-spacing:0}
+body.gta-deliveries-page .gta-clock-deliveries .gta-clock-zone{font-size:10px;padding-left:6px}
+body.gta-deliveries-page .top{grid-template-columns:minmax(0,1fr) minmax(540px,1.15fr);align-items:center;column-gap:22px}
+body.gta-deliveries-page .top>div:first-child{min-width:0}
+@media(max-width:1450px){body.gta-deliveries-page .top{grid-template-columns:minmax(0,1fr)}body.gta-deliveries-page .header-summary{grid-column:1;grid-row:2}}
+@media(max-width:600px){body.gta-deliveries-page .delivery-heading-line{gap:8px}body.gta-deliveries-page .gta-clock-deliveries{width:205px;min-width:205px}}
+
+/* PDF attachment info belongs on the right-hand side of each declaration card. */
+body.gta-deliveries-page .group-list .group-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;justify-content:stretch}
+body.gta-deliveries-page .group-card-main{display:flex;flex-direction:column;gap:5px;min-width:0;text-align:left}
+body.gta-deliveries-page .group-card-main .group-remaining{line-height:1.35}
+body.gta-deliveries-page .group-card-main .used-label{max-width:100%;white-space:normal}
+body.gta-deliveries-page .group-card-docs{display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;align-self:center;background:#f1f6f9;border:1px solid #e0e9ed;border-radius:8px;padding:7px 8px;color:#77919f!important;font-weight:700;font-size:10px}
+body.gta-deliveries-page .group-card-docs.has-docs{color:#078272!important;background:#e7f7f1;border-color:#a5dccc}
+body.gta-deliveries-page .group-card-docs svg{width:14px;height:14px;flex:none}
+body.gta-deliveries-page .group-card-docs span{font-size:10px;color:inherit!important}
+@media(max-width:900px){body.gta-deliveries-page .group-list .group-card{gap:7px}body.gta-deliveries-page .group-card-docs{padding:6px}}
+
+/* Anchored action menu, clearly separated from the clicked row and viewport edges. */
+body.gta-deliveries-page .context-menu{border-radius:12px;border-color:#c7dfe8;box-shadow:0 16px 40px rgba(15,54,76,.18)}

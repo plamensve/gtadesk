@@ -46,3 +46,22 @@ test("Locked delivery fields remain disabled",()=>{
   assert.equal(inputs.length,3);
   assert.ok(inputs.every(tag=>tag.includes(" disabled ")),"All edit fields must be disabled for locked deliveries");
 });
+
+test("Sofia clock is in the delivery header, not the sidebar",()=>{
+  const header=html.slice(html.indexOf('<header class="top">'),html.indexOf('</header>')+9);
+  assert.match(header,/gta-clock-deliveries/);
+  assert.doesNotMatch(html,/gta-sidebar-clock-wrap/);
+});
+test("Imported worksheet notes are hidden, manually written notes remain visible",()=>{
+  const start=js.indexOf("function visibleNote("),end=js.indexOf("function groups()",start);
+  assert.ok(start>=0&&end>start);
+  const visibleNote=runInNewContext(js.slice(start,end)+";visibleNote");
+  const imported={notes:"H=CE7802EE; I=2.11",source_sheet:"186",source_row:5,source_extra:{workbook:"original.xls"}};
+  assert.equal(visibleNote(imported),"");
+  assert.equal(visibleNote({...imported,notes:"Моля, проверете фактурата."}),"Моля, проверете фактурата.");
+  assert.equal(visibleNote({...imported,source_extra:{...imported.source_extra,notes_edited:true}}),imported.notes);
+});
+test("Declaration cards use a separate document badge in the right column",()=>{
+  assert.match(js,/group-card-main/);
+  assert.match(js,/group-card-docs/);
+});
