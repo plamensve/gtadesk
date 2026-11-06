@@ -99,14 +99,22 @@ function renderGroups(){
   const slice=options.slice(groupPage*GROUP_PAGE_SIZE,(groupPage+1)*GROUP_PAGE_SIZE);
   $("group-list").innerHTML=slice.map(([name,g])=>{
     const used=!!name&&g.used===g.count;
-    const docCount=documents.filter(d=>d.declaration_no===name).length;
-    return '<button type="button" class="group-card '+(used?"used ":"")+(activeDeclaration===name?"selected":"")+
-      '" data-declaration="'+safe(name)+'" aria-pressed="'+(activeDeclaration===name)+'">'+
-      '<span class="group-card-main"><b>'+(name?"Декларация "+safe(name):"Всички декларации")+'</b>'+
+    const docCount=documents.filter(d=>d.declaration_no===name&&d.document_kind!=="analysis").length;
+    const analysisCount=documents.filter(d=>d.declaration_no===name&&d.document_kind==="analysis").length;
+    const date=declarationDateOf(name);
+    return '<div class="group-card '+(used?"used ":"")+(activeDeclaration===name?"selected":"")+'" data-declaration="'+safe(name)+'">'+
+      '<button type="button" class="group-card-main group-card-select" data-group-select="'+safe(name)+'" aria-pressed="'+(activeDeclaration===name)+'">'+
+      '<b>'+(name?"Декларация "+safe(name):"Всички декларации")+'</b>'+
       '<span>'+g.count+' доставки · '+litersFormat(g.liters)+'</span>'+
       '<span class="group-remaining">Оставащи: '+litersFormat(g.remaining)+'</span>'+
-      '<span class="group-status-slot">'+(used?'<span class="used-label">✓ Използвана</span>':g.used?'<span class="used-label">'+g.used+' използвани реда</span>':'<span class="used-label used-label-placeholder" aria-hidden="true">✓ Използвана</span>')+'</span></span>'+
-      (name?'<span class="group-card-docs '+(docCount?'has-docs':'no-docs')+'" title="Кликни за качване и преглед на PDF документи · '+docCount+' прикачени"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.4 11.6-8.7 8.7a6 6 0 0 1-8.5-8.5l9.5-9.5a4 4 0 0 1 5.7 5.7l-9.5 9.5a2 2 0 0 1-2.8-2.8l8.8-8.8"/></svg><span>'+(docCount?docCount+' PDF':'Няма PDF')+'</span></span>':'')+'</button>';
+      '<span class="declaration-card-date">'+(name?"Дата: "+(date?prettyDate(date):"не е въведена"):"")+'</span>'+
+      '<span class="group-status-slot">'+(used?'<span class="used-label">✓ Използвана</span>':g.used?'<span class="used-label">'+g.used+' използвани реда</span>':'<span class="used-label used-label-placeholder" aria-hidden="true">✓ Използвана</span>')+'</span></button>'+
+      (name?'<div class="group-card-operations">'+
+       '<button type="button" class="group-card-mini group-card-docs '+(docCount?'has-docs':'no-docs')+'" data-group-docs="'+safe(name)+'" title="Придружаващи PDF: '+docCount+'">PDF '+(docCount||"")+'</button>'+
+       '<button type="button" class="group-card-mini group-card-analysis '+(analysisCount?'has-docs':'')+'" data-group-analysis="'+safe(name)+'" title="Качи или виж анализ на декларацията">Анализ'+(analysisCount?' ✓':'')+'</button>'+
+       '<button type="button" class="group-card-mini" data-group-date="'+safe(name)+'" title="Редактирай дата на декларацията">Дата</button>'+
+       '<button type="button" class="group-card-mini group-card-archive" data-group-archive="'+safe(name)+'" title="Изтегли ZIP архива с папки по АРК">ZIP ↓</button>'+
+       '</div>':'')+'</div>';
   }).join("");
   $("group-page-info").textContent="Страница "+(groupPage+1)+" от "+pageCount+" · "+all.length+" декларации";
   $("group-previous").disabled=groupPage===0;$("group-next").disabled=groupPage>=pageCount-1;
