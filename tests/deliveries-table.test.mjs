@@ -110,3 +110,17 @@ test("Actions column stays pinned to the table edge",()=>{
   assert.match(css,/scrollbar-gutter:auto/);
   assert.match(css,/#records-table th\.actions-heading,#records-table td\.actions-cell\s*\{[\s\S]*?position:sticky;right:0/);
 });
+
+test("Customs selection checkboxes are inside the row-number column",()=>{
+  const source=js.slice(js.indexOf("function rowHtml("),js.indexOf("function renderRows("));
+  assert.match(source,/data-export-select/);
+  assert.match(source,/delivery-check-ui/);
+  assert.match(source,/row-export-selected/);
+});
+test("Customs export controls and pinned pdf-lib are present",()=>{
+  assert.match(html,/id="customs-export"/);
+  assert.match(html,/Свали документи за украинска митница/);
+  assert.match(html,/pdf-lib@1\.17\.1/);
+  assert.match(js,/prepareCustomsBundle/);
+  assert.match(js,/mergeCustomsPdfs/);
+});
