@@ -1,0 +1,28 @@
+name: Recover stuck Pages deployment
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/recover-pages.yml
+permissions:
+  contents: read
+  deployments: write
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mark stuck deployment inactive
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          STUCK_SHA: c834dd255a073396e42bf542dc4b918fad88ae48
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/$GH_REPO/deployments?sha=$STUCK_SHA&per_page=100" --jq '.[] | [.id,.environment,.sha] | @tsv' |
+          while IFS=$'\t' read -r id environment sha; do
+            if [[ "$environment" == "github-pages" ]]; then
+              echo "Deactivating stuck Pages deployment $id"
+              gh api --method POST "repos/$GH_REPO/deployments/$id/statuses" -f state=inactive -f description="Clear stuck GitHub Pages deployment" >/dev/null
+            fi
+          done
