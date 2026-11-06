@@ -448,21 +448,133 @@ body.gta-deliveries-page .docs-entry-controls button{
   cursor:pointer;
 }
 
-/* Keep PDF and Analysis action buttons identical even when attachment counts change. */
-body.gta-deliveries-page .group-card-operations > .group-card-docs,
-body.gta-deliveries-page .group-card-operations > .group-card-analysis {
+/* Unified declaration card typography and spacing. All cards keep the same fixed height. */
+body.gta-deliveries-page .group-list .group-card{
+  height:112px;
+  min-height:112px;
+  max-height:112px;
+  padding:12px 14px;
+  column-gap:12px;
+  grid-template-columns:minmax(0,1fr) 112px;
+  align-items:center;
+}
+body.gta-deliveries-page .group-list .group-card[data-declaration=""]{
+  grid-template-columns:minmax(0,1fr);
+}
+body.gta-deliveries-page .group-card .group-card-select{
+  display:grid;
+  grid-template-rows:17px repeat(3,14px) 19px;
+  align-content:center;
+  gap:2px;
+  width:100%;
+  min-width:0;
+  height:100%;
+  padding:0;
+  margin:0;
+  font-family:inherit;
+  text-align:left;
+}
+body.gta-deliveries-page .group-card .group-card-select > b{
+  display:block;
+  font-family:inherit;
+  font-size:13px;
+  font-weight:750;
+  line-height:17px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+body.gta-deliveries-page .group-card .group-card-select > span:not(.group-status-slot){
+  display:block;
+  min-width:0;
+  font-family:inherit;
+  font-size:11px;
+  font-weight:450;
+  line-height:14px;
+  letter-spacing:0;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+body.gta-deliveries-page .group-card .group-card-select > .declaration-card-date{
+  color:#29718a;
+  font-size:11px;
+}
+body.gta-deliveries-page .group-card .group-status-slot{
+  display:flex;
+  width:100%;
+  height:19px;
+  min-height:19px;
+  align-items:center;
+  overflow:hidden;
+}
+body.gta-deliveries-page .group-card .group-status-slot .used-label{
+  box-sizing:border-box;
+  display:inline-block;
+  max-width:100%;
+  height:18px;
+  padding:2px 7px;
+  border-radius:5px;
+  font-family:inherit;
+  font-size:10px;
+  font-weight:750;
+  line-height:14px;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  overflow:hidden;
+}
+body.gta-deliveries-page .group-card .group-card-operations{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-template-rows:30px 30px;
+  gap:6px;
+  align-content:center;
+  min-width:0;
+  width:112px;
+  padding:0;
+  margin:0;
+}
+body.gta-deliveries-page .group-card-operations > .group-card-mini{
   box-sizing:border-box;
   display:flex;
   width:100%;
-  height:29px;
   min-width:0;
-  min-height:29px;
-  max-height:29px;
+  height:30px;
+  min-height:30px;
+  max-height:30px;
+  padding:4px;
   margin:0;
-  padding:3px 4px;
-  justify-self:stretch;
   align-self:stretch;
-  align-items:center;
+  justify-self:stretch;
   justify-content:center;
+  align-items:center;
+  border-radius:7px;
+  font-family:inherit;
+  font-size:10.5px;
+  font-weight:700;
+  line-height:1;
+  letter-spacing:0;
   white-space:nowrap;
+  text-align:center;
+  cursor:pointer;
+}
+body.gta-deliveries-page .group-card-operations > .group-card-docs,
+body.gta-deliveries-page .group-card-operations > .group-card-analysis{
+  width:100%;
+  height:30px;
+  min-height:30px;
+  max-height:30px;
+  padding:4px;
+}
+body.gta-deliveries-page .group-card-operations > .group-card-archive{
+  grid-column:1/-1;
+  width:100%;
+}
+@media(max-width:680px){
+  body.gta-deliveries-page .group-list .group-card{
+    height:116px;
+    min-height:116px;
+    max-height:116px;
+  }
 }
