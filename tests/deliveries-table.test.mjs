@@ -200,3 +200,15 @@ test("Upload actions use the hand cursor on hover",()=>{
   assert.match(css,/\.group-card-operations button,[\s\S]*?#docs-upload,[\s\S]*?cursor:pointer/);
   assert.match(css,/file-selector-button/);
 });
+
+test("PDF and Analysis declaration buttons share full grid-cell dimensions",()=>{
+  const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
+  const start=css.indexOf("/* Keep PDF and Analysis action buttons identical");
+  assert.ok(start>=0);
+  const block=css.slice(start);
+  assert.match(block,/\.group-card-operations > \.group-card-docs,/);
+  assert.match(block,/\.group-card-operations > \.group-card-analysis/);
+  assert.match(block,/width:100%/);
+  assert.match(block,/height:29px/);
+  assert.match(block,/align-self:stretch/);
+});
