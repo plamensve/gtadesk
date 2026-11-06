@@ -159,7 +159,22 @@ async function updateGroup(name,used){
   finally{busy=false;}
 }
 function closeMenus(){for(const id of ["group-menu","row-menu","row-actions-menu"])$(id).hidden=true;document.querySelectorAll("[data-row-menu][aria-expanded=true]").forEach(button=>button.setAttribute("aria-expanded","false"));menuTarget=null;}
-function openMenu(id,x,y){closeMenus();const menu=$(id);menu.hidden=false;menu.style.left=Math.max(8,Math.min(x,window.innerWidth-menu.offsetWidth-8))+"px";menu.style.top=Math.max(8,Math.min(y,window.innerHeight-menu.offsetHeight-8))+"px";}
+function openMenu(id,x,y){
+  closeMenus();
+  const menu=$(id);
+  // Portal to body prevents clipping by scrollable table containers.
+  if(menu.parentElement!==document.body)document.body.appendChild(menu);
+  menu.hidden=false;
+  menu.style.visibility="hidden";
+  menu.style.left="0px";menu.style.top="0px";
+  const rect=menu.getBoundingClientRect(),gap=8;
+  const left=Math.max(gap,Math.min(x,window.innerWidth-rect.width-gap));
+  const below=y+rect.height+gap<=window.innerHeight;
+  const top=below?y:Math.max(gap,y-rect.height-6);
+  menu.style.left=left+"px";
+  menu.style.top=Math.max(gap,Math.min(top,window.innerHeight-rect.height-gap))+"px";
+  menu.style.visibility="visible";
+}
 const arkInput=$("field-ark");
 const arkValidation=$("ark-validation");
 const arkValidIcon=$("ark-valid-icon");
