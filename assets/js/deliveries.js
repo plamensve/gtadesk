@@ -397,8 +397,12 @@ $("group-list").addEventListener("click",event=>{
     return;
   }
   if(event.target.closest("button")&&!event.target.closest("[data-group-select]"))return;
-  // Selection is independent of active declaration and invoice number.
-  // Keep already checked deliveries while navigating between declarations.
+  // A customs PDF belongs to one declaration. Switching to another
+  // declaration clears the previous selection, regardless of invoice numbers.
+  if(name!==activeDeclaration){
+    selectedDeliveryIds.clear();
+    $("customs-export-progress").textContent="";
+  }
   activeDeclaration=name;currentPage=0;render();formReset();
 });
 $("group-list").addEventListener("contextmenu",event=>{
@@ -496,8 +500,14 @@ $("records-body").addEventListener("change",async event=>{
     const row=records.find(r=>r.id===selected.dataset.exportSelect);
     if(!row)return;
     if(selected.checked){
-      // A customs bundle can include deliveries with different invoices
-      // and from different declarations. Do not discard previous checks.
+      // Different invoices are allowed, but selected deliveries must share
+      // the same declaration. Start a fresh selection if it changes.
+      for(const id of selectedDeliveryIds){
+        if(records.find(r=>r.id===id)?.declaration_no!==row.declaration_no){
+          selectedDeliveryIds.clear();
+          break;
+        }
+      }
       selectedDeliveryIds.add(row.id);
     }else selectedDeliveryIds.delete(row.id);
     $("customs-export-progress").textContent="";
