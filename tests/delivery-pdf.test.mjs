@@ -131,3 +131,8 @@ test("Matching invoice PDF is included once for multiple selected deliveries wit
  ]);
  assert.deepEqual(progress,[[1,3],[2,3],[3,3]]);
 });
+
+test("PDF cover dates use DD/MM/YYYY",()=>{
+ const source=readFileSync(new URL("../assets/js/delivery-pdf.js",import.meta.url),"utf8");
+ assert.match(source,/formatDateDMY\(date\)/);
+});
