@@ -1,0 +1,8 @@
+.gta-clock{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap;width:max-content;max-width:100%;padding:10px 14px;border:1px solid #c5e3ec;border-radius:12px;background:linear-gradient(135deg,#fff,#f2fbfe);color:#16465e;box-shadow:0 6px 20px #2167830f;font-family:Inter,system-ui,"Segoe UI",Arial,sans-serif;font-size:12px;font-weight:750;line-height:1.3;white-space:nowrap;font-variant-numeric:tabular-nums}
+.gta-clock-date{color:#567b8d;font-size:12px}
+.gta-clock-time{color:#047d91;font-size:17px;font-weight:850;letter-spacing:.025em}
+.gta-clock-zone{border-left:1px solid #cfe4ec;padding-left:10px;color:#678b9c;font-size:11px;font-weight:800}
+.gta-clock-login{margin:0 0 24px}
+.gta-clock-header,.gta-clock-toolbar{margin-left:auto;flex-shrink:0}
+@media(max-width:900px){.gta-clock-header,.gta-clock-toolbar{margin-left:0}}
+@media(max-width:640px){.gta-clock{gap:7px;padding:8px 10px;font-size:11px}.gta-clock-time{font-size:15px}.gta-clock-zone{padding-left:7px}}

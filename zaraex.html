@@ -1,6 +1,6 @@
 <!doctype html><html lang="bg"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>ZaraEx инструменти | GTA Desk</title><link rel="stylesheet" href="./assets/css/zaraex.css">
 
-<link rel="stylesheet" href="./assets/css/sidebar.css?v=1"></head>
+<link rel="stylesheet" href="./assets/css/sidebar.css?v=1"><link rel="stylesheet" href="./assets/css/clock.css?v=1"></head>
 <body class="gta-zaraex-page"><aside class="sidebar workspace-sidebar gta-unified-sidebar" aria-label="Постоянна навигация" hidden>
 <a class="brand ws-brand gta-sidebar-brand" href="./dashboard.html" aria-label="GTA Desk"><img class="gtad-brand-logo" src="./assets/gtadesk-logo.svg" alt="GTA Desk" width="210" height="62"></a>
 <div class="gta-sidebar-menu"><div class="caption ws-heading gta-sidebar-caption">Навигация</div>
@@ -16,7 +16,7 @@
 <div class="side-bottom gta-sidebar-account"><div class="account-label">Влезли сте като</div><div class="account-email" id="account-email"></div><button class="logout" id="logout" type="button" aria-label="Изход от профила" title="Изход от профила"><svg class="logout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="./assets/icons.svg#logout"></use></svg><span class="logout-label">Изход от профила</span></button></div>
 </aside><div id="guard" class="guard">Проверка на достъпа...</div><div class="wrap" id="app" hidden>
 <header class="bar"><a href="./dashboard.html"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m6 6-6-6 6-6"/></svg> GTA DESK / Основен панел</a><span>ZaraEx · Уеб инструменти</span></header>
-<div class="intro"><h1 id="workspace-title">Товарения</h1><p id="workspace-description">Регистър на товаренията.</p></div>
+<div class="intro"><h1 id="workspace-title">Товарения</h1><p id="workspace-description">Регистър на товаренията.</p><time class="gta-clock gta-clock-toolbar" data-gta-clock aria-label="Дата и текущ час в София"><span class="gta-clock-date">--.--.----</span><span class="gta-clock-time">--:--:--</span><span class="gta-clock-zone">София</span></time></div>
 <nav class="tabs" id="tabs"><button data-tab="loads" class="active">Товарения</button><button data-tab="settings">Номенклатури</button><button data-tab="stay">НАП · Престой</button><button data-tab="pdf">PDF инструменти</button></nav>
 <section id="loads">
 <div class="panel"><h2>Ново товарене</h2><p>Създай товарене или редактирай съществуващ запис. Черновите се съхраняват само в тази браузърна сесия. За дългосрочно съхранение ще е необходима защитена база данни.</p>
@@ -29,4 +29,4 @@
 <section id="pdf" hidden><div class="panel"><h2>PDF инструменти</h2><div class="tabs" id="pdf-tabs"><button data-pdf="images" class="active">Изображения към PDF</button><button data-pdf="merge">Обединяване на PDF</button><button data-pdf="compress">Компресиране на PDF</button></div><label class="upload" id="pdf-upload">+ Избери файлове от устройството<input id="pdf-files" type="file" multiple accept="image/*"></label><div class="filelist" id="pdf-files-list"></div><div class="actions"><button id="pdf-run">Създай PDF</button><button class="secondary" id="pdf-clear">Изчисти</button></div><div id="pdf-status" class="status"></div><div class="hint">PDF операциите се изпълняват локално в браузъра чрез външна JavaScript библиотека. Не качваме документите към Supabase. При обединяване цифровите подписи могат да станат невалидни. Компресирането е базово и не гарантира по-малък файл.</div></div></section>
 </div>
 <script src="./assets/js/navigation.js?v=1"></script>
-<script type="module" src="./assets/js/zaraex.js"></script></body></html>
+<script type="module" src="./assets/js/zaraex.js"></script><script src="./assets/js/clock.js?v=1" defer></script></body></html>
