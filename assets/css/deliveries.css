@@ -708,3 +708,50 @@ body.gta-deliveries-page #delete-declaration-status{font-size:12px;color:#a43846
 #records-table td.actions-cell .row-actions-trigger{
   margin-inline:auto;
 }
+
+/* A recognizable blue document + upward arrow on every upload affordance. */
+body.gta-deliveries-page .document-upload-icon{
+  display:inline-block;flex:none;width:19px;height:19px;object-fit:contain;
+  vertical-align:middle;pointer-events:none;user-select:none;
+}
+body.gta-deliveries-page .group-card-operations .group-card-mini{
+  gap:3px;padding-inline:2px;font-size:9.5px;cursor:pointer;
+}
+body.gta-deliveries-page .group-card-operations .document-upload-icon{
+  width:14px;height:14px;
+}
+body.gta-deliveries-page .group-card-operations .group-card-upload-label{
+  min-width:0;white-space:nowrap;
+}
+body.gta-deliveries-page .group-card-operations .upload-file-ready{
+  display:inline-flex;align-items:center;justify-content:center;flex:none;
+  width:14px;height:14px;color:#fff;background:#109a64;
+  border-radius:50%;font-size:11px;font-weight:800;line-height:1;
+}
+body.gta-deliveries-page #records-table .ark-doc-trigger .document-upload-icon,
+body.gta-deliveries-page #records-table .invoice-attach-trigger .document-upload-icon{
+  width:22px;height:22px;
+}
+body.gta-deliveries-page #records-table .ark-doc-trigger,
+body.gta-deliveries-page #records-table .invoice-attach-trigger,
+body.gta-deliveries-page .group-card-operations .group-card-docs,
+body.gta-deliveries-page .group-card-operations .group-card-analysis,
+body.gta-deliveries-page #docs-upload,
+body.gta-deliveries-page #docs-file,
+body.gta-deliveries-page #docs-file::file-selector-button{
+  cursor:pointer;
+}
+body.gta-deliveries-page #docs-upload{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+}
+body.gta-deliveries-page #docs-upload .document-upload-icon{
+  width:23px;height:23px;padding:2px;background:#fff;border-radius:6px;
+}
+body.gta-deliveries-page #group-documents,
+body.gta-deliveries-page #row-actions-menu [data-row-action="documents"]{
+  display:flex;align-items:center;gap:7px;cursor:pointer;
+}
+body.gta-deliveries-page #group-documents .document-upload-icon,
+body.gta-deliveries-page #row-actions-menu .document-upload-icon{
+  width:19px;height:19px;
+}
