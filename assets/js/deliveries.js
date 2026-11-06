@@ -81,8 +81,8 @@ function renderGroups(){
 function rowHtml(r,number){
   const field=(key,label,cls="")=>'<input class="inline-field '+cls+'" data-field="'+key+'" aria-label="'+label+'" value="'+safe(r[key]??"")+'" maxlength="'+(key==="notes"?4000:250)+'" '+(r.is_locked?"disabled title=\"Редът е само за четене\"":"")+'>';
   return '<tr data-id="'+safe(r.id)+'" class="'+(usage(r)==="used"?"row-used ":usage(r)==="shared"?"row-shared ":"")+(selectedRowId===r.id?"row-selected":"")+'">'+
-    '<td class="row-number">'+number+'</td><td>'+prettyDate(r.delivered_on)+'</td><td class="mono">'+safe(r.ark)+'</td>'+
-    '<td class="invoice-number">'+safe(r.invoice_no||"—")+'</td><td><span class="decl-label">'+safe(r.declaration_no)+'</span></td>'+
+    '<td class="row-number">'+number+'</td><td>'+prettyDate(r.delivered_on)+'</td><td class="mono copyable-number" title="Маркирай и копирай АРК номера">'+safe(r.ark)+'</td>'+
+    '<td class="invoice-number copyable-number" title="Маркирай и копирай номера на фактурата">'+safe(r.invoice_no||"—")+'</td><td><span class="decl-label">'+safe(r.declaration_no)+'</span></td>'+
     '<td>'+field("tractor","Влекач")+'</td><td>'+field("tanker","Цистерна")+'</td>'+
     '<td class="number">'+(r.quantity_liters==null?"—":Number(r.quantity_liters).toLocaleString("bg-BG",{maximumFractionDigits:3}))+'</td>'+
     '<td>'+safe(r.destination||"—")+'</td><td>'+field("notes","Бележка","notes")+'</td>'+
@@ -287,7 +287,7 @@ $("records-body").addEventListener("click",event=>{
     trigger.setAttribute("aria-expanded","true");
     return;
   }
-  if(event.target.closest("input"))return;
+  if(event.target.closest("input,.copyable-number"))return;
   const id=event.target.closest("tr[data-id]")?.dataset.id;
   if(id){selectedRowId=id;renderRows();}
 });
