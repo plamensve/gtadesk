@@ -258,3 +258,34 @@ body.gta-deliveries-page .context-menu{border-radius:12px;border-color:#c7dfe8;b
 body.gta-deliveries-page .group-card-docs{cursor:pointer;transition:background-color .15s,border-color .15s,box-shadow .15s}
 body.gta-deliveries-page .group-card-docs:hover{background:#ddf4f0;border-color:#81cfc2;box-shadow:0 0 0 2px rgba(0,153,155,.12)}
 body.gta-deliveries-page .group-card-docs.no-docs:hover{background:#eaf7fa;border-color:#9bcad8}
+
+/* Stable declaration cards: reserve the status-label slot, avoiding a layout jump on use. */
+body.gta-deliveries-page .group-list .group-card{
+  height:110px;min-height:110px;max-height:110px;
+  overflow:hidden;
+}
+body.gta-deliveries-page .group-card-main{gap:4px;min-width:0;overflow:hidden}
+body.gta-deliveries-page .group-status-slot{
+  display:flex;align-items:center;height:20px;min-height:20px;width:100%;overflow:hidden;
+}
+body.gta-deliveries-page .group-status-slot .used-label{
+  display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;line-height:15px;padding:2px 7px;
+}
+body.gta-deliveries-page .group-status-slot .used-label-placeholder{visibility:hidden}
+@media(max-width:900px){
+  body.gta-deliveries-page .group-list .group-card{height:122px;min-height:122px;max-height:122px}
+}
+
+/* Let the rightmost actions column reach the table edge, including on horizontal scroll. */
+body.gta-deliveries-page .scroll{scrollbar-gutter:auto;scrollbar-width:thin;scrollbar-color:#aac5d1 transparent}
+#records-table th.actions-heading,#records-table td.actions-cell{
+  position:sticky;right:0;background:#fff;z-index:2;
+  border-left:1px solid #e3edf2;background-clip:padding-box;
+}
+#records-table thead th.actions-heading{background:#edf7fa;z-index:4}
+#records-table tbody tr:nth-child(even):not(.row-used):not(.row-shared) td.actions-cell{background:#fbfdfe}
+#records-table tbody tr.row-used td.actions-cell{background:#eaf7ef!important}
+#records-table tbody tr.row-shared td.actions-cell{background:#eaf2ff!important}
+#records-table tbody tr.row-selected td.actions-cell{box-shadow:inset 0 1px #0da4b0,inset 0 -1px #0da4b0}
+#records-table tbody tr:hover td.actions-cell{background-color:#f0fafd}

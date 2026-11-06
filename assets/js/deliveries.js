@@ -96,7 +96,7 @@ function renderGroups(){
       '<span class="group-card-main"><b>'+(name?"Декларация "+safe(name):"Всички декларации")+'</b>'+
       '<span>'+g.count+' доставки · '+litersFormat(g.liters)+'</span>'+
       '<span class="group-remaining">Оставащи: '+litersFormat(g.remaining)+'</span>'+
-      (used?'<span class="used-label">✓ Използвана</span>':g.used?'<span class="used-label">'+g.used+' използвани реда</span>':"")+'</span>'+
+      '<span class="group-status-slot">'+(used?'<span class="used-label">✓ Използвана</span>':g.used?'<span class="used-label">'+g.used+' използвани реда</span>':'<span class="used-label used-label-placeholder" aria-hidden="true">✓ Използвана</span>')+'</span></span>'+
       (name?'<span class="group-card-docs '+(docCount?'has-docs':'no-docs')+'" title="Кликни за качване и преглед на PDF документи · '+docCount+' прикачени"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.4 11.6-8.7 8.7a6 6 0 0 1-8.5-8.5l9.5-9.5a4 4 0 0 1 5.7 5.7l-9.5 9.5a2 2 0 0 1-2.8-2.8l8.8-8.8"/></svg><span>'+(docCount?docCount+' PDF':'Няма PDF')+'</span></span>':'')+'</button>';
   }).join("");
   $("group-page-info").textContent="Страница "+(groupPage+1)+" от "+pageCount+" · "+all.length+" декларации";
