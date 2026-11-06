@@ -46,7 +46,7 @@ function visibleNote(record){
   // Legacy workbook import filled notes with "A=...; H=..."; keep those in source data,
   // but don't present them as manually entered user notes.
   const fromWorkbook=Boolean(record.source_sheet&&record.source_row&&record.source_extra?.workbook);
-  const isGenerated=/^(?:[A-Z]=[^;]*(?:;\\s*|$))+$/u.test(note.trim());
+  const isGenerated=/^[A-Z]=/u.test(note.trim());
   return fromWorkbook&&isGenerated?"":note;
 }
 function groups(){
