@@ -1,3 +1,4 @@
+import { formatDateDMY } from "./date-format.js";
 import { invoiceKey, documentsForInvoice, invoiceDisplay } from "./invoice-documents.js";
 
 /**
@@ -8,7 +9,7 @@ import { invoiceKey, documentsForInvoice, invoiceDisplay } from "./invoice-docum
  */
 const chronological=(a,b)=>String(a.created_at||"").localeCompare(String(b.created_at||""))||String(a.filename||"").localeCompare(String(b.filename||""));
 const display=value=>value===null||value===undefined||String(value).trim()===""?"—":String(value);
-const dateLabel=date=>/^\d{4}-\d{2}-\d{2}/.test(String(date??""))?String(date).slice(8,10)+"."+String(date).slice(5,7)+"."+String(date).slice(0,4):display(date);
+const dateLabel=date=>/^\d{4}-\d{2}-\d{2}/.test(String(date??""))?formatDateDMY(date):display(date);
 const litersLabel=value=>value===null||value===undefined||value===""?"—":new Intl.NumberFormat("bg-BG",{maximumFractionDigits:3}).format(Number(value));
 const statusLabel=row=>({used:"Използван",unused:"Неизползван",shared:"Общ"})[row.usage_status||(row.is_used?"used":"unused")]||"Неизползван";
 
