@@ -315,3 +315,21 @@ body{background:#f3faff!important}
 @media(max-width:1200px){.dash-workspace{grid-template-columns:minmax(0,1fr)!important}.dash-visual{display:none}.dash-tools.dash-tools-grouped{grid-template-columns:repeat(2,minmax(0,1fr))}.dash-module-group:first-child{grid-column:1/-1}}
 @media(max-width:850px){.dash-tools.dash-tools-grouped{grid-template-columns:1fr}.dash-module-group:first-child{grid-column:auto}.dash-bottom{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.gta-sidebar-clock-wrap{display:none}.dash-group-grid{grid-template-columns:1fr}.dash-bottom{grid-template-columns:1fr}}
+
+/* Compact sidebar clock: override global clock minimum width and spacing. */
+.gta-sidebar-clock-wrap{padding:8px 2px 6px}
+.gta-sidebar-clock-wrap .gta-clock-sidebar{
+  box-sizing:border-box;display:flex;width:100%;min-width:0;max-width:100%;
+  flex-wrap:wrap;justify-content:center;align-items:center;
+  gap:3px 7px;padding:7px 5px;border-radius:9px;
+  box-shadow:none;white-space:normal;
+}
+.gta-sidebar-clock-wrap .gta-clock-date{
+  min-width:0;font-size:10px;line-height:1.3;
+}
+.gta-sidebar-clock-wrap .gta-clock-time{
+  min-width:0;font-size:12px;line-height:1.3;letter-spacing:0;
+}
+.gta-sidebar-clock-wrap .gta-clock-zone{
+  min-width:0;padding-left:6px;font-size:9px;line-height:1.3;
+}
