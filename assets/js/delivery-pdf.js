@@ -16,9 +16,12 @@ const statusLabel=row=>({used:"Използван",unused:"Неизползва�
 export function prepareCustomsBundle(records,documents,selectedIds,invoiceDocuments=[]){
   const rows=records.filter(row=>selectedIds.has(row.id));
   if(!rows.length)throw new Error("Маркирай поне една доставка от таблицата.");
-  const declarationNo=rows[0].declaration_no;
-  if(rows.some(row=>row.declaration_no!==declarationNo))throw new Error("Избраните доставки трябва да са от една декларация.");
-  const declarationDocuments=documents.filter(d=>d.declaration_no===declarationNo&&d.delivery_id==null).sort(chronological);
+  const declarationNos=[...new Set(rows.map(row=>row.declaration_no).filter(Boolean))];
+  const declarationNo=declarationNos.length===1?declarationNos[0]:null;
+  // Declaration-wide PDFs are included once per selected declaration,
+  // regardless of invoice number or the original order of checkboxes.
+  const declarationDocuments=documents.filter(d=>declarationNos.includes(d.declaration_no)&&d.delivery_id==null).sort((a,b)=>
+    declarationNos.indexOf(a.declaration_no)-declarationNos.indexOf(b.declaration_no)||chronological(a,b));
   const rowDocumentsById=new Map(rows.map(row=>[row.id,documents.filter(d=>d.delivery_id===row.id).sort(chronological)]));
   const rowDocuments=rows.flatMap(row=>rowDocumentsById.get(row.id));
   const seenInvoiceKeys=new Set();
@@ -33,7 +36,7 @@ export function prepareCustomsBundle(records,documents,selectedIds,invoiceDocume
   }
   const rowsWithoutDocuments=rows.filter(row=>!rowDocumentsById.get(row.id).length&&!documentsForInvoice(invoiceDocuments,row).length).length;
   return {
-    declarationNo,rows,declarationDocuments,rowDocumentsById,invoiceDocumentsByRowId,
+    declarationNo,declarationNos,rows,declarationDocuments,rowDocumentsById,invoiceDocumentsByRowId,
     documents:[...declarationDocuments,...rowDocuments,...uniqueInvoiceDocuments],rowsWithoutDocuments,
     selectedCount:rows.length,declarationDocumentCount:declarationDocuments.length,
     rowDocumentCount:rowDocuments.length
@@ -143,7 +146,7 @@ export async function mergeCustomsPdfs(bundle,downloadPdf,PDFDocument,onProgress
   for(const doc of bundle.declarationDocuments)await appendDocument(doc);
   for(const [index,row] of bundle.rows.entries()){
     try{
-      const png=await renderRowPage(row,{index:index+1,total:bundle.rows.length,declarationNo:bundle.declarationNo});
+      const png=await renderRowPage(row,{index:index+1,total:bundle.rows.length,declarationNo:row.declaration_no});
       const image=await combined.embedPng(png);
       const page=combined.addPage([595.28,841.89]); // A4
       page.drawImage(image,{x:0,y:0,width:595.28,height:841.89});
@@ -157,7 +160,9 @@ export async function mergeCustomsPdfs(bundle,downloadPdf,PDFDocument,onProgress
   return combined.save();
 }
 
-export function customsPdfFileName(declarationNo){
-  const normalized=String(declarationNo).replace(/[^\p{L}\p{N}_-]+/gu,"_").slice(0,80)||"bez_nomer";
+export function customsPdfFileName(declarationNos){
+  const numbers=Array.isArray(declarationNos)?declarationNos:[declarationNos];
+  if(numbers.filter(Boolean).length!==1)return "Украинска_митница_избрани_доставки.pdf";
+  const normalized=String(numbers.find(Boolean)).replace(/[^\p{L}\p{N}_-]+/gu,"_").slice(0,80)||"bez_nomer";
   return "Украинска_митница_декларация_"+normalized+".pdf";
 }
