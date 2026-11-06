@@ -13,7 +13,7 @@ const prettyDate = date => date ? date.slice(8,10)+"."+date.slice(5,7)+"."+date.
 const declarationDateOf=no=>declarationDetails.get(no)||"";
 const PAGE_SIZE = 40, GROUP_PAGE_SIZE = 4;
 let records=[], activeDeclaration="", currentPage=0, groupPage=0, editId=null, selectedRowId=null, busy=false;
-let menuTarget=null,documents=[],invoiceDocuments=[],docsTarget=null,declarationDetails=new Map(),archiveBusy=false,declarationDateTarget=null;
+let menuTarget=null,documents=[],invoiceDocuments=[],docsTarget=null,declarationDetails=new Map(),archiveBusy=false;
 let pdfPreviewObjectUrl=null,pdfPreviewRequest=0,pdfDocumentBusy=false,activePreviewDocumentId=null;
 const selectedDeliveryIds=new Set();
 const createFields=["delivered_on","ark","declaration_no","counterparty","quantity_liters","invoice_no","invoice_date"];
@@ -112,7 +112,7 @@ function renderGroups(){
       (name?'<div class="group-card-operations">'+
        '<button type="button" class="group-card-mini group-card-docs '+(docCount?'has-docs':'no-docs')+'" data-group-docs="'+safe(name)+'" title="Придружаващи PDF: '+docCount+'">PDF '+(docCount||"")+'</button>'+
        '<button type="button" class="group-card-mini group-card-analysis '+(analysisCount?'has-docs':'')+'" data-group-analysis="'+safe(name)+'" title="Качи или виж анализ на декларацията">Анализ'+(analysisCount?' ✓':'')+'</button>'+
-       '<button type="button" class="group-card-mini" data-group-date="'+safe(name)+'" title="Редактирай дата на декларацията">Дата</button>'+
+
        '<button type="button" class="group-card-mini group-card-archive" data-group-archive="'+safe(name)+'" title="Изтегли ZIP архива с папки по АРК">ZIP ↓</button>'+
        '</div>':'')+'</div>';
   }).join("");
@@ -284,32 +284,6 @@ async function persistDeclarationDate(name,date){
   if(error)throw error;
   declarationDetails.set(name,data.declaration_date);
 }
-function openDeclarationDate(name){
-  declarationDateTarget=name;
-  $("declaration-date-title").textContent="Дата на декларация "+name;
-  $("declaration-date-input").value=declarationDateOf(name);
-  $("declaration-date-status").textContent="";
-  $("declaration-date-dialog").showModal();
-}
-$("declaration-date-close").addEventListener("click",()=>$("declaration-date-dialog").close());
-$("declaration-date-clear").addEventListener("click",()=>{
-  $("declaration-date-input").value="";
-  $("declaration-date-form").requestSubmit();
-});
-$("declaration-date-form").addEventListener("submit",async event=>{
-  event.preventDefault();
-  const name=declarationDateTarget;
-  if(!name||busy)return;
-  const button=$("declaration-date-save");button.disabled=true;
-  $("declaration-date-status").textContent="Запазване…";
-  try{
-    await persistDeclarationDate(name,$("declaration-date-input").value);
-    render();
-    $("declaration-date-dialog").close();
-    status("Датата на декларация "+name+" е актуализирана.");
-  }catch(error){$("declaration-date-status").textContent="Грешка: "+error.message;}
-  finally{button.disabled=false;}
-});
 async function downloadDeclarationArchive(name){
   if(archiveBusy)return;
   archiveBusy=true;
@@ -338,7 +312,6 @@ async function downloadDeclarationArchive(name){
 $("group-list").addEventListener("click",event=>{
   const btn=event.target.closest("[data-declaration]");if(!btn)return;
   const name=btn.dataset.declaration;
-  if(name&&event.target.closest("[data-group-date]")){openDeclarationDate(name);return;}
   if(name&&event.target.closest("[data-group-analysis]")){openDocs({type:"analysis",name});return;}
   if(name&&event.target.closest("[data-group-archive]")){downloadDeclarationArchive(name);return;}
   // Clicking the PDF badge opens this declaration's documents without changing the active filter.

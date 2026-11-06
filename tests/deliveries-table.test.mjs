@@ -165,18 +165,38 @@ test("Declaration date is available in the form and next to declaration number",
  const block=js.slice(js.indexOf("function rowHtml("),js.indexOf("function renderRows("));
  assert.match(block,/decl-date-inline/);
  assert.match(block,/declarationDateOf\(r.declaration_no\)/);
- assert.match(html,/declaration-date-dialog/);
+ assert.doesNotMatch(html,/id="declaration-date-dialog"/);
+ assert.match(js,/persistDeclarationDate/);
 });
-test("Declaration cards offer separate PDF, analysis, date and ZIP actions",()=>{
+test("Declaration cards offer PDF, analysis and ZIP actions without a date button",()=>{
  const block=js.slice(js.indexOf("function renderGroups("),js.indexOf("function rowHtml("));
- for(const selector of ["data-group-docs","data-group-analysis","data-group-date","data-group-archive"]){
+ for(const selector of ["data-group-docs","data-group-analysis","data-group-archive"]){
   assert.ok(block.includes(selector),selector);
  }
  assert.match(block,/group-status-slot/);
+ assert.doesNotMatch(block,/data-group-date/);
+ assert.match(block,/declaration-card-date/);
 });
 test("Separate declaration analysis uses a document_kind discriminator",()=>{
  assert.match(js,/document_kind:t.type==="analysis"\?"analysis":"supporting"/);
  assert.match(js,/target.type==="analysis"\?d.document_kind==="analysis"/);
  assert.match(js,/createDeclarationZip/);
  assert.match(html,/jszip@3\.10\.1/);
+});
+
+test("Declaration cards fill their grid columns and keep the previous low profile",()=>{
+  const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
+  const block=css.slice(css.indexOf("/* Declarational workspace: fixed card geometry"),css.indexOf("/* Invoice: remove unused gap"));
+  assert.match(block,/body\.gta-deliveries-page \.group-list \.group-card\{[\s\S]*?width:100%;min-width:0;max-width:none/);
+  assert.match(block,/height:112px;min-height:112px;max-height:112px/);
+  assert.match(block,/group-card\[data-declaration=""\]/);
+  assert.match(block,/grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+  assert.match(block,/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+  assert.doesNotMatch(block,/width:calc\(\(100% - 30px\)\/4\)/);
+});
+
+test("Upload actions use the hand cursor on hover",()=>{
+  const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
+  assert.match(css,/\.group-card-operations button,[\s\S]*?#docs-upload,[\s\S]*?cursor:pointer/);
+  assert.match(css,/file-selector-button/);
 });
