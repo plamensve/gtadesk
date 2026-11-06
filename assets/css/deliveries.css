@@ -178,3 +178,5 @@ body.gta-deliveries-page .summary-remaining strong{color:#087967}
 @media(max-width:1450px){body.gta-deliveries-page .top{grid-template-columns:minmax(260px,1fr) auto}body.gta-deliveries-page .header-summary{grid-column:1/-1;grid-row:2}}
 @media(max-width:800px){body.gta-deliveries-page .top{grid-template-columns:1fr}body.gta-deliveries-page .header-summary{grid-column:1;grid-row:auto;grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:560px){body.gta-deliveries-page .header-summary{grid-template-columns:1fr}}
+
+.docs-dialog{border:1px solid #b6dbe9;border-radius:18px;padding:24px;width:min(580px,95vw);color:#103249}.docs-dialog::backdrop{background:#102d4088}.docs-title,.docs-entry{display:flex;justify-content:space-between;align-items:center;gap:12px}.docs-entry{padding:10px;border-bottom:1px solid #d1e7ed;overflow-wrap:anywhere}#docs-file{display:block;margin:16px 0}#docs-list{margin-top:15px}.doc-indicator{font-weight:700;color:#07836e!important}
