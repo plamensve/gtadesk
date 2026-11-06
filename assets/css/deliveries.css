@@ -339,3 +339,19 @@ body.gta-deliveries-page #docs-preview-frame{display:block;width:100%;height:min
   body.gta-deliveries-page .docs-entry-controls{justify-content:flex-start}
   body.gta-deliveries-page .docs-dialog{padding:16px}
 }
+
+/* Compact invoice reference with document attachment indicator. */
+#records-table th:nth-child(4),#records-table td:nth-child(4){
+  width:235px;min-width:235px;max-width:235px;padding-inline:8px;
+}
+#records-table td.invoice-number{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+#records-table .invoice-cell-content{display:flex;align-items:center;justify-content:space-between;gap:5px;min-width:0}
+#records-table .invoice-copy-value{display:inline-block;min-width:0;user-select:text;-webkit-user-select:text;font-size:12px;font-weight:750;white-space:nowrap;letter-spacing:0}
+#records-table .invoice-attach-trigger{position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;
+  width:28px;height:30px;border-radius:7px;border:1px solid #c9e1e9;background:#f3fafc;color:#287e94;cursor:pointer;
+  transition:background .14s,border-color .14s}
+#records-table .invoice-attach-trigger svg{width:15px;height:15px;pointer-events:none}
+#records-table .invoice-attach-trigger:hover{background:#dff5f5;border-color:#51aebf}
+#records-table .invoice-attach-trigger:focus-visible{outline:2px solid #008f9f;outline-offset:2px}
+#records-table .invoice-doc-dot{position:absolute;top:2px;right:2px;width:7px;height:7px;border-radius:50%;background:#bccfd6}
+#records-table .invoice-attach-trigger.has-docs .invoice-doc-dot{background:#159b62}

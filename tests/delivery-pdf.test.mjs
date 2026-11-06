@@ -113,3 +113,21 @@ test("Cover page includes Bulgarian delivery labels and saved values",()=>{
 test("Download filename includes declaration number",()=>{
   assert.equal(customsPdfFileName("123"),"Украинска_митница_декларация_123.pdf");
 });
+
+test("Matching invoice PDF is included once for multiple selected deliveries with the same number and date",async()=>{
+ const sharedInvoice={id:"invoice-1",invoice_no:"7001301629",invoice_date:"2026-10-11",filename:"invoice.pdf"};
+ const otherDay={id:"invoice-2",invoice_no:"7001301629",invoice_date:"2026-10-12",filename:"wrong-date.pdf"};
+ const a={...first,invoice_date:"2026-10-11"};
+ const b={...second,invoice_no:"7001301629",invoice_date:"2026-10-11"};
+ const bundle=prepareCustomsBundle([a,b],[],new Set(["row-a","row-b"]),[sharedInvoice,otherDay]);
+ assert.deepEqual(bundle.documents.map(d=>d.id),["invoice-1"]);
+ assert.equal(bundle.invoiceDocumentsByRowId.get("row-a").length,1);
+ assert.equal(bundle.invoiceDocumentsByRowId.get("row-b").length,0);
+ const events=[],progress=[];
+ await mergeCustomsPdfs(bundle,async doc=>{events.push("download:"+doc.filename);return fakeDownload(doc);},fakePdfFactory(events),(done,total)=>progress.push([done,total]),fakePng);
+ assert.deepEqual(events,[
+  "embed:png-for-row-a","summary","draw","download:invoice.pdf","parse","attachment",
+  "embed:png-for-row-b","summary","draw","save"
+ ]);
+ assert.deepEqual(progress,[[1,3],[2,3],[3,3]]);
+});

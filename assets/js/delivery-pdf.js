@@ -1,3 +1,5 @@
+import { invoiceKey, documentsForInvoice, invoiceDisplay } from "./invoice-documents.js";
+
 /**
  * Ukrainian customs PDF package.
  * The declaration's attachments come first, followed by one readable GTA Desk
@@ -10,7 +12,7 @@ const dateLabel=date=>/^\d{4}-\d{2}-\d{2}/.test(String(date??""))?String(date).s
 const litersLabel=value=>value===null||value===undefined||value===""?"—":new Intl.NumberFormat("bg-BG",{maximumFractionDigits:3}).format(Number(value));
 const statusLabel=row=>({used:"Използван",unused:"Неизползван",shared:"Общ"})[row.usage_status||(row.is_used?"used":"unused")]||"Неизползван";
 
-export function prepareCustomsBundle(records,documents,selectedIds){
+export function prepareCustomsBundle(records,documents,selectedIds,invoiceDocuments=[]){
   const rows=records.filter(row=>selectedIds.has(row.id));
   if(!rows.length)throw new Error("Маркирай поне една доставка от таблицата.");
   const declarationNo=rows[0].declaration_no;
@@ -18,10 +20,20 @@ export function prepareCustomsBundle(records,documents,selectedIds){
   const declarationDocuments=documents.filter(d=>d.declaration_no===declarationNo&&d.delivery_id==null).sort(chronological);
   const rowDocumentsById=new Map(rows.map(row=>[row.id,documents.filter(d=>d.delivery_id===row.id).sort(chronological)]));
   const rowDocuments=rows.flatMap(row=>rowDocumentsById.get(row.id));
-  const rowsWithoutDocuments=rows.filter(row=>!rowDocumentsById.get(row.id).length).length;
+  const seenInvoiceKeys=new Set();
+  const invoiceDocumentsByRowId=new Map();
+  const uniqueInvoiceDocuments=[];
+  for(const row of rows){
+    const key=invoiceKey(row.invoice_no,row.invoice_date);
+    const matched=key&&!seenInvoiceKeys.has(key)?documentsForInvoice(invoiceDocuments,row).sort(chronological):[];
+    if(key)seenInvoiceKeys.add(key);
+    invoiceDocumentsByRowId.set(row.id,matched);
+    uniqueInvoiceDocuments.push(...matched);
+  }
+  const rowsWithoutDocuments=rows.filter(row=>!rowDocumentsById.get(row.id).length&&!documentsForInvoice(invoiceDocuments,row).length).length;
   return {
-    declarationNo,rows,declarationDocuments,rowDocumentsById,
-    documents:[...declarationDocuments,...rowDocuments],rowsWithoutDocuments,
+    declarationNo,rows,declarationDocuments,rowDocumentsById,invoiceDocumentsByRowId,
+    documents:[...declarationDocuments,...rowDocuments,...uniqueInvoiceDocuments],rowsWithoutDocuments,
     selectedCount:rows.length,declarationDocumentCount:declarationDocuments.length,
     rowDocumentCount:rowDocuments.length
   };
@@ -82,7 +94,7 @@ export function renderDeliveryCoverPng(row,{index=1,total=1,declarationNo=row.de
   const left=80,right=610,width=500;
   const rows=[
     [["Дата на доставка",dateLabel(row.delivered_on)],["Номер на декларация",display(row.declaration_no)]],
-    [["АРК номер",display(row.ark)],["Номер на фактура",display(row.invoice_no)]],
+    [["АРК номер",display(row.ark)],["Фактура № / Дата",invoiceDisplay(row)]],
     [["Количество (литри)",litersLabel(row.quantity_liters)+" л"],["Статус",statusLabel(row)]],
     [["Влекач",display(row.tractor)],["Цистерна",display(row.tanker)]],
     [["Място на произход",display(row.counterparty)],["Място / направление",display(row.destination)]]
@@ -139,6 +151,7 @@ export async function mergeCustomsPdfs(bundle,downloadPdf,PDFDocument,onProgress
       throw new Error("Не може да се създаде PDF страница за АРК "+display(row.ark)+": "+(error?.message||String(error)));
     }
     for(const doc of bundle.rowDocumentsById.get(row.id)||[])await appendDocument(doc);
+    for(const doc of bundle.invoiceDocumentsByRowId?.get(row.id)||[])await appendDocument(doc);
   }
   return combined.save();
 }

@@ -16,6 +16,9 @@ test("Inline editor markup stays valid and PDF indicators stay in action cells",
   assert.ok(start>=0&&end>start,"Row renderer must exist");
   const renderer=runInNewContext(js.slice(start,end)+";rowHtml",{
     documents:[{delivery_id:"delivery-1"}],
+    invoiceDocuments:[],
+    documentsForInvoice:()=>[],
+    invoiceDisplay:record=>record.invoice_no||"—",
     selectedRowId:null,
     selectedDeliveryIds:new Set(),
     safe:value=>String(value??""),
@@ -42,7 +45,7 @@ test("Locked delivery fields remain disabled",()=>{
   const start=js.indexOf("function rowHtml(r,number){");
   const end=js.indexOf("function renderRows(){",start);
   const renderer=runInNewContext(js.slice(start,end)+";rowHtml",{
-    documents:[],selectedRowId:null,selectedDeliveryIds:new Set(),safe:value=>String(value??""),
+    documents:[],invoiceDocuments:[],documentsForInvoice:()=>[],invoiceDisplay:r=>r.invoice_no||"—",selectedRowId:null,selectedDeliveryIds:new Set(),safe:value=>String(value??""),
     prettyDate:()=> "—",visibleNote:r=>String(r.notes??""),usage:()=> "unused",usageLabel:()=> "Неизползван"
   });
   const row=renderer({id:"delivery-2",ark:"26BG000000000982636S9",declaration_no:"123",is_locked:true},2);
@@ -145,4 +148,13 @@ test("PDF document manager has preview, download and delete actions",()=>{
   assert.match(js,/window\.confirm/);
   assert.match(js,/resetDocPreview/);
   assert.match(js,/await loadDocs\(\);render\(\);renderDocs\(\)/);
+});
+
+test("Invoice field includes invoice date and paperclip upload action",()=>{
+ assert.match(html,/name="invoice_date" type="date"/);
+ const source=js.slice(js.indexOf("function rowHtml("),js.indexOf("function renderRows("));
+ assert.match(source,/invoiceDisplay\(r\)/);
+ assert.match(source,/data-invoice-docs/);
+ assert.match(source,/invoice-attach-trigger/);
+ assert.match(js,/gta_invoice_documents/);
 });
