@@ -95,7 +95,7 @@ function renderGroups(){
 }
 function rowHtml(r,number){
   const docCount=documents.filter(d=>d.delivery_id===r.id).length;
-  const field=(key,label,cls="")=>'<input class="inline-field '+cls+'" data-field="'+key+'" aria-label="'+label+'" value="'+safe(r[key]??"")+'" maxlength="'+(key==="notes"?4000:250)+'" '+'<span class="doc-indicator" title="PDF документи">📎 '+(docCount||'—')+'</span>'+(r.is_locked?"disabled title=\"Редът е само за четене\"":"")+'>';
+  const field=(key,label,cls="")=>'<input class="inline-field '+cls+'" data-field="'+key+'" aria-label="'+label+'" value="'+safe(r[key]??"")+'" maxlength="'+(key==="notes"?4000:250)+'" autocomplete="off"'+(r.is_locked?' disabled title="Редът е само за четене"':'')+'>';
   return '<tr data-id="'+safe(r.id)+'" class="'+(usage(r)==="used"?"row-used ":usage(r)==="shared"?"row-shared ":"")+(selectedRowId===r.id?"row-selected":"")+'">'+
     '<td class="row-number">'+number+'</td><td>'+prettyDate(r.delivered_on)+'</td><td class="mono copyable-number" title="Маркирай и копирай АРК номера">'+safe(r.ark)+'</td>'+
     '<td class="invoice-number copyable-number" title="Маркирай и копирай номера на фактурата">'+safe(r.invoice_no||"—")+'</td><td><span class="decl-label">'+safe(r.declaration_no)+'</span></td>'+
@@ -103,7 +103,7 @@ function rowHtml(r,number){
     '<td class="number">'+(r.quantity_liters==null?"—":Number(r.quantity_liters).toLocaleString("bg-BG",{maximumFractionDigits:3}))+'</td>'+
     '<td>'+safe(r.destination||"—")+'</td><td>'+field("notes","Бележка","notes")+'</td>'+
     '<td data-status-cell="true" class="usage-status-cell">'+('<span class="usage-label usage-'+usage(r)+'">'+safe(usageLabel(usage(r)))+'</span>')+'</td>'+
-    '<td class="actions-cell"><button type="button" class="row-actions-trigger" data-row-menu="'+safe(r.id)+'" aria-label="Действия за АРК '+safe(r.ark)+'" aria-haspopup="menu" aria-expanded="false" title="Действия">⋮</button>'+(r.is_locked?'<span class="row-lock-indicator" title="Само за четене">🔒</span>':"")+'</td></tr>';
+    '<td class="actions-cell"><button type="button" class="row-actions-trigger" data-row-menu="'+safe(r.id)+'" aria-label="Действия за АРК '+safe(r.ark)+' · '+docCount+' PDF документа" aria-haspopup="menu" aria-expanded="false" title="Действия · '+docCount+' PDF"><span aria-hidden="true">⋮</span><span class="row-doc-dot '+(docCount?'has-docs':'no-docs')+'" aria-hidden="true"></span></button>'+(r.is_locked?'<span class="row-lock-indicator" title="Само за четене">🔒</span>':"")+'</td></tr>';
 }
 function renderRows(){
   const rows=visibleRows(),pageCount=Math.max(1,Math.ceil(rows.length/PAGE_SIZE));
@@ -325,7 +325,7 @@ $("records-body").addEventListener("dblclick",event=>{
     }
     return;
   }
-  if(event.target.closest("input,[data-status-cell]"))return;
+  if(event.target.closest("input,button,[data-status-cell]"))return;
   const id=event.target.closest("tr[data-id]")?.dataset.id;
   const record=records.find(r=>r.id===id);
   if(record)edit(record);
