@@ -8,7 +8,7 @@ import { execFileSync } from "node:child_process";
 const root = fileURLToPath(new URL("../", import.meta.url));
 const modules = ["login", "dashboard", "zaraex", "certifications", "deliveries"];
 const pages = ["index.html", "dashboard.html", "zaraex.html", "certifications.html", "deliveries.html"];
-const allJS = [...modules, "navigation", "globe", "orbits", "dom"];
+const allJS = [...modules, "navigation", "globe", "orbits", "dom", "clock"];
 
 function read(path) {
   return readFileSync(join(root, path), "utf8");
@@ -43,7 +43,7 @@ test("HTML uses external styles and scripts only", () => {
 });
 
 test("CSS local backgrounds resolve against the stylesheet directory", () => {
-  for (const name of [...modules, "sidebar", "globe"]) {
+  for (const name of [...modules, "sidebar", "globe", "clock"]) {
     const path = `assets/css/${name}.css`;
     const css = read(path);
     assert.ok(css.trim(), path);
@@ -75,4 +75,17 @@ test("navigation links use canonical tab routes", () => {
       assert.ok(!html.includes(`zaraex.html#${tab}`), `${page}: legacy hash ${tab}`);
     }
   }
+});
+
+
+test("live Sofia clock is present on every page", () => {
+  for (const page of pages) {
+    const html = read(page);
+    assert.match(html, /data-gta-clock/, page);
+    assert.match(html, /assets\\/css\\/clock\\.css/, page);
+    assert.match(html, /assets\\/js\\/clock\\.js/, page);
+  }
+  const clock = read("assets/js/clock.js");
+  assert.match(clock, /Europe\\/Sofia/);
+  assert.match(clock, /setInterval\\(refresh,1000\\)/);
 });
