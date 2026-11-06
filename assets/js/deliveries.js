@@ -57,6 +57,20 @@ function visibleRows(){
     return !q||[r.ark,r.invoice_no,r.declaration_no,r.tractor,r.tanker,r.counterparty,r.destination,r.notes,r.source_sheet].some(v=>normalize(v).includes(q));
   });
 }
+const litersOf=record=>{
+  const value=Number(record.quantity_liters);
+  return record.quantity_liters==null||record.quantity_liters===""||!Number.isFinite(value)?0:value;
+};
+const litersFormat=value=>new Intl.NumberFormat("bg-BG",{maximumFractionDigits:3}).format(value)+" л";
+function renderHeaderSummary(){
+  const total=records.reduce((sum,record)=>sum+litersOf(record),0);
+  const remaining=records.reduce((sum,record)=>sum+(usage(record)==="used"?0:litersOf(record)),0);
+  $("summary-count").textContent=new Intl.NumberFormat("bg-BG").format(records.length);
+  $("summary-total").textContent=litersFormat(total);
+  $("summary-remaining").textContent=litersFormat(remaining);
+  const missing=records.filter(record=>record.quantity_liters==null||record.quantity_liters==="").length;
+  $("header-summary").title=missing?missing+" доставки са без въведено количество и се изчисляват като 0 л.":"Използваните редове се изключват от оставащото количество. Статус „Общ“ остава включен.";
+}
 function renderGroups(){
   const all=groups(),filter=$("group-filter").value,q=normalize($("group-search").value);
   $("declaration-options").innerHTML=all.map(([name])=>'<option value="'+safe(name)+'"></option>').join("");
@@ -75,7 +89,7 @@ function renderGroups(){
   }).join("");
   $("group-page-info").textContent="Страница "+(groupPage+1)+" от "+pageCount+" · "+all.length+" декларации";
   $("group-previous").disabled=groupPage===0;$("group-next").disabled=groupPage>=pageCount-1;
-  $("metrics").textContent=records.length+" доставки · "+all.length+" декларации";
+  renderHeaderSummary();
   $("active-group").textContent=activeDeclaration?"Декларация "+activeDeclaration:"Всички декларации";
 }
 function rowHtml(r,number){
