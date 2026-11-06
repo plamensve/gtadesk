@@ -187,3 +187,8 @@ body.gta-deliveries-page .summary-remaining strong{color:#087967}
 .gta-clock-sidebar .gta-clock-date{min-width:0;font-size:11px}
 .gta-clock-sidebar .gta-clock-time{min-width:0;font-size:14px}
 .gta-clock-sidebar .gta-clock-zone{font-size:10px;padding-left:6px}
+
+/* Floating context menus are outside the scrollable table and stay fully visible. */
+.context-menu{z-index:10000;max-height:calc(100dvh - 16px);overflow-y:auto;min-width:205px;padding:7px;border-radius:12px;box-shadow:0 18px 50px #12394a33}
+.context-menu button{min-height:40px;transition:background-color .15s ease}
+.context-menu button:focus-visible{outline:2px solid #0097a7;outline-offset:-2px}
