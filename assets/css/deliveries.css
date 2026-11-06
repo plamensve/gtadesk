@@ -289,3 +289,24 @@ body.gta-deliveries-page .scroll{scrollbar-gutter:auto;scrollbar-width:thin;scro
 #records-table tbody tr.row-shared td.actions-cell{background:#eaf2ff!important}
 #records-table tbody tr.row-selected td.actions-cell{box-shadow:inset 0 1px #0da4b0,inset 0 -1px #0da4b0}
 #records-table tbody tr:hover td.actions-cell{background-color:#f0fafd}
+
+/* Shipment selection for Ukrainian customs PDF export. */
+#records-table th.row-number-heading,#records-body td.row-number{width:74px;min-width:74px;max-width:74px;padding-inline:5px}
+#records-table .row-number-wrap{display:inline-flex;align-items:center;justify-content:center;gap:9px;white-space:nowrap}
+#records-table .row-index{min-width:15px;text-align:right}
+#records-table .delivery-select-label{position:relative;display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;cursor:pointer}
+#records-table input.delivery-select{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer;z-index:1}
+#records-table .delivery-check-ui{display:flex;align-items:center;justify-content:center;width:19px;height:19px;border:2px solid #a3c1cf;border-radius:5px;background:#fff;transition:background .13s,border-color .13s}
+#records-table .delivery-check-ui svg{width:15px;height:15px;stroke:white;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+#records-table input.delivery-select:checked+.delivery-check-ui{background:#159b62;border-color:#159b62}
+#records-table input.delivery-select:checked+.delivery-check-ui svg{opacity:1}
+#records-table input.delivery-select:focus-visible+.delivery-check-ui{outline:3px solid #20a2c3;outline-offset:3px}
+#records-table tbody tr.row-export-selected td,#records-table tbody tr.row-export-selected:hover td{background:#dcf6e8!important;border-bottom-color:#9bdbbb}
+#records-table tbody tr.row-export-selected td.row-number{box-shadow:inset 3px 0 #159b62}
+#records-table tbody tr.row-export-selected td.actions-cell{background:#dcf6e8!important}
+.deliveries-pagination{display:flex;align-items:center;gap:10px}
+.customs-export-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-left:auto}
+.customs-export-controls .customs-clear{padding:7px 10px}
+.customs-export-controls #customs-export{white-space:normal;text-align:center;min-height:40px}
+.customs-export-progress{min-height:16px;margin-top:8px}
+@media(max-width:850px){.customs-export-controls{width:100%;margin-left:0;justify-content:flex-end}}

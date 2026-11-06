@@ -1,6 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.58.0";
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "../../config.js";
 import { escapeHtml } from "./dom.js";
+import { prepareCustomsBundle, mergeCustomsPdfs, customsPdfFileName } from "./delivery-pdf.js";
 
 const $ = id => document.getElementById(id);
 const client = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
@@ -9,6 +10,7 @@ const prettyDate = date => date ? date.slice(8,10)+"."+date.slice(5,7)+"."+date.
 const PAGE_SIZE = 40, GROUP_PAGE_SIZE = 4;
 let records=[], activeDeclaration="", currentPage=0, groupPage=0, editId=null, selectedRowId=null, busy=false;
 let menuTarget=null,documents=[],docsTarget=null;
+const selectedDeliveryIds=new Set();
 const createFields=["delivered_on","ark","declaration_no","counterparty","quantity_liters","invoice_no"];
 const csvFields=["delivered_on","document_date","ark","invoice_no","declaration_no","tractor","tanker","quantity_liters","counterparty","destination","notes","usage_status"];
 const status=(message,bad=false)=>{$("status").textContent=message;$("status").classList.toggle("bad",bad);};
@@ -107,14 +109,26 @@ function renderGroups(){
 function rowHtml(r,number){
   const docCount=documents.filter(d=>d.delivery_id===r.id).length;
   const field=(key,label,cls="")=>'<input class="inline-field '+cls+'" data-field="'+key+'" aria-label="'+label+'" value="'+safe(key==="notes"?visibleNote(r):(r[key]??""))+'" maxlength="'+(key==="notes"?4000:250)+'" autocomplete="off"'+(r.is_locked?' disabled title="Редът е само за четене"':'')+'>';
-  return '<tr data-id="'+safe(r.id)+'" class="'+(usage(r)==="used"?"row-used ":usage(r)==="shared"?"row-shared ":"")+(selectedRowId===r.id?"row-selected":"")+'">'+
-    '<td class="row-number">'+number+'</td><td>'+prettyDate(r.delivered_on)+'</td><td class="mono copyable-number" title="Маркирай и копирай АРК номера">'+safe(r.ark)+'</td>'+
+  return '<tr data-id="'+safe(r.id)+'" class="'+(usage(r)==="used"?"row-used ":usage(r)==="shared"?"row-shared ":"")+(selectedRowId===r.id?"row-selected ":"")+(selectedDeliveryIds.has(r.id)?"row-export-selected":"")+'">'+
+    '<td class="row-number"><span class="row-number-wrap"><span class="row-index">'+number+'</span><label class="delivery-select-label" title="Избери доставка за митническия PDF"><input type="checkbox" class="delivery-select" data-export-select="'+safe(r.id)+'" aria-label="Избери АРК '+safe(r.ark)+' за украинска митница"'+(selectedDeliveryIds.has(r.id)?' checked':'')+'><span class="delivery-check-ui" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.3 4.3L19 7"/></svg></span></label></span></td><td>'+prettyDate(r.delivered_on)+'</td><td class="mono copyable-number" title="Маркирай и копирай АРК номера">'+safe(r.ark)+'</td>'+
     '<td class="invoice-number copyable-number" title="Маркирай и копирай номера на фактурата">'+safe(r.invoice_no||"—")+'</td><td><span class="decl-label">'+safe(r.declaration_no)+'</span></td>'+
     '<td>'+field("tractor","Влекач")+'</td><td>'+field("tanker","Цистерна")+'</td>'+
     '<td class="number">'+(r.quantity_liters==null?"—":Number(r.quantity_liters).toLocaleString("bg-BG",{maximumFractionDigits:3}))+'</td>'+
     '<td>'+safe(r.destination||"—")+'</td><td>'+field("notes","Бележка","notes")+'</td>'+
     '<td data-status-cell="true" class="usage-status-cell">'+('<span class="usage-label usage-'+usage(r)+'">'+safe(usageLabel(usage(r)))+'</span>')+'</td>'+
     '<td class="actions-cell"><button type="button" class="row-actions-trigger" data-row-menu="'+safe(r.id)+'" aria-label="Действия за АРК '+safe(r.ark)+' · '+docCount+' PDF документа" aria-haspopup="menu" aria-expanded="false" title="Действия · '+docCount+' PDF"><span aria-hidden="true">⋮</span><span class="row-doc-dot '+(docCount?'has-docs':'no-docs')+'" aria-hidden="true"></span></button>'+(r.is_locked?'<span class="row-lock-indicator" title="Само за четене">🔒</span>':"")+'</td></tr>';
+}
+function updateCustomsSelectionUI(){
+  const selected=records.filter(r=>selectedDeliveryIds.has(r.id));
+  const count=selected.length;
+  $("customs-selected-count").textContent=count?count+" избрани "+(count===1?"доставка":"доставки"):"Няма избрани доставки";
+  $("customs-export").disabled=!count||busy;
+  $("customs-clear-selection").hidden=!count;
+}
+function clearCustomsSelection(){
+  selectedDeliveryIds.clear();
+  renderRows();
+  $("customs-export-progress").textContent="";
 }
 function renderRows(){
   const rows=visibleRows(),pageCount=Math.max(1,Math.ceil(rows.length/PAGE_SIZE));
@@ -124,6 +138,7 @@ function renderRows(){
   $("pagination").textContent=rows.length+" записа · страница "+(currentPage+1)+" от "+pageCount;
   $("previous").disabled=currentPage===0;$("next").disabled=currentPage>=pageCount-1;
   $("export").disabled=!rows.length;
+  updateCustomsSelectionUI();
 }
 function render(){renderGroups();renderRows();}
 async function load(){
@@ -135,7 +150,9 @@ async function load(){
     list.push(...data);
     if(data.length<1000)break;
   }
-  records=list;await loadDocs();render();status("Данните са актуални.");
+  records=list;
+  for(const id of selectedDeliveryIds)if(!records.some(r=>r.id===id))selectedDeliveryIds.delete(id);
+  await loadDocs();render();status("Данните са актуални.");
 }
 async function updateRow(id,patch){
   if(busy)return false;
@@ -243,6 +260,7 @@ $("group-list").addEventListener("click",event=>{
     openDocs({type:"group",name});
     return;
   }
+  if(name&&[...selectedDeliveryIds].some(id=>records.find(r=>r.id===id)?.declaration_no!==name))selectedDeliveryIds.clear();
   activeDeclaration=name;currentPage=0;render();formReset();
 });
 $("group-list").addEventListener("contextmenu",event=>{
@@ -305,7 +323,50 @@ for(const id of ["search","date-from","date-to"])$(id).addEventListener("input",
 $("clear-filters").addEventListener("click",()=>{$("search").value="";$("date-from").value="";$("date-to").value="";activeDeclaration="";currentPage=0;render();});
 $("previous").addEventListener("click",()=>{currentPage--;renderRows();});
 $("next").addEventListener("click",()=>{currentPage++;renderRows();});
+$("customs-clear-selection").addEventListener("click",clearCustomsSelection);
+$("customs-export").addEventListener("click",async()=>{
+  if(busy)return;
+  const progress=$("customs-export-progress");
+  let bundle;
+  try{
+    bundle=prepareCustomsBundle(records,documents,selectedDeliveryIds);
+    // Include the manually entered note, never the generated legacy Excel-import note.
+    bundle.rows=bundle.rows.map(row=>({...row,notes:visibleNote(row)}));
+    if(!window.PDFLib?.PDFDocument)throw Error("Библиотеката за създаване на PDF не е заредена. Обнови страницата и опитай отново.");
+  }catch(error){status(error.message,true);progress.textContent=error.message;return;}
+  busy=true;updateCustomsSelectionUI();
+  try{
+    const bytes=await mergeCustomsPdfs(bundle,async doc=>{
+      const {data,error}=await client.storage.from(bucket).download(doc.storage_path);
+      if(error)throw error;
+      return data;
+    },window.PDFLib.PDFDocument,(done,total)=>{progress.textContent="Подготвяне на PDF: "+done+" от "+total+" части…";});
+    const blob=new Blob([bytes],{type:"application/pdf"});
+    const url=URL.createObjectURL(blob);
+    const link=document.createElement("a");link.href=url;link.download=customsPdfFileName(bundle.declarationNo);
+    document.body.appendChild(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+    const pages=bundle.rows.length,files=bundle.documents.length;
+    progress.textContent="Готово: "+pages+" "+(pages===1?"избрана доставка":"избрани доставки")+" (информационни PDF страници) и "+files+" прикачени PDF файла в общ документ.";
+    status("PDF файлът за украинска митница е подготвен.");
+  }catch(error){const message="Грешка при обединяване: "+error.message;status(message,true);progress.textContent=message;}
+  finally{busy=false;updateCustomsSelectionUI();}
+});
 $("records-body").addEventListener("change",async event=>{
+  const selected=event.target.closest("input[data-export-select]");
+  if(selected){
+    const row=records.find(r=>r.id===selected.dataset.exportSelect);
+    if(!row)return;
+    if(selected.checked){
+      for(const id of selectedDeliveryIds){
+        if(records.find(r=>r.id===id)?.declaration_no!==row.declaration_no)selectedDeliveryIds.delete(id);
+      }
+      selectedDeliveryIds.add(row.id);
+    }else selectedDeliveryIds.delete(row.id);
+    $("customs-export-progress").textContent="";
+    renderRows();
+    return;
+  }
   const input=event.target.closest("input[data-field]");if(!input)return;
   const tr=input.closest("tr[data-id]"),record=records.find(r=>r.id===tr.dataset.id);
   if(!record)return;
@@ -327,6 +388,7 @@ async function deleteDelivery(record){
     const {data,error}=await client.from("gta_deliveries").delete().eq("id",record.id).select("id").single();
     if(error)throw error;if(!data)throw Error("Неуспешно изтриване.");
     records=records.filter(r=>r.id!==record.id);
+    selectedDeliveryIds.delete(record.id);
     if(editId===record.id)formReset();
     render();status("Доставката е изтрита.");
   }catch(error){status("Грешка: "+error.message,true);}

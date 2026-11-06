@@ -17,6 +17,7 @@ test("Inline editor markup stays valid and PDF indicators stay in action cells",
   const renderer=runInNewContext(js.slice(start,end)+";rowHtml",{
     documents:[{delivery_id:"delivery-1"}],
     selectedRowId:null,
+    selectedDeliveryIds:new Set(),
     safe:value=>String(value??""),
     prettyDate:value=>value??"—",
     visibleNote:r=>String(r.notes??""),
@@ -26,8 +27,10 @@ test("Inline editor markup stays valid and PDF indicators stay in action cells",
   const record={id:"delivery-1",ark:"26BG000000000982636S9",invoice_no:"7001301629",declaration_no:"165",quantity_liters:31986,tractor:"CE8708EH",tanker:"CE7996XT",notes:"",is_locked:false};
   const row=renderer(record,1);
   const inputs=[...row.matchAll(/<input\b[^>]*>/g)].map(m=>m[0]);
-  assert.equal(inputs.length,3,"Three inline edit fields expected");
-  for(const input of inputs){
+  assert.equal(inputs.length,4,"Three inline editors and one selection checkbox expected");
+  const editors=inputs.filter(input=>input.includes('class="inline-field'));
+  assert.equal(editors.length,3);
+  for(const input of editors){
     assert.doesNotMatch(input,/<span/i,"Markup must not be embedded inside input attributes");
     assert.doesNotMatch(input,/doc-indicator|📎/);
   }
@@ -39,13 +42,17 @@ test("Locked delivery fields remain disabled",()=>{
   const start=js.indexOf("function rowHtml(r,number){");
   const end=js.indexOf("function renderRows(){",start);
   const renderer=runInNewContext(js.slice(start,end)+";rowHtml",{
-    documents:[],selectedRowId:null,safe:value=>String(value??""),
+    documents:[],selectedRowId:null,selectedDeliveryIds:new Set(),safe:value=>String(value??""),
     prettyDate:()=> "—",visibleNote:r=>String(r.notes??""),usage:()=> "unused",usageLabel:()=> "Неизползван"
   });
   const row=renderer({id:"delivery-2",ark:"26BG000000000982636S9",declaration_no:"123",is_locked:true},2);
   const inputs=[...row.matchAll(/<input\b[^>]*>/g)].map(m=>m[0]);
-  assert.equal(inputs.length,3);
-  assert.ok(inputs.every(tag=>tag.includes(" disabled ")),"All edit fields must be disabled for locked deliveries");
+  const editors=inputs.filter(input=>input.includes('class="inline-field'));
+  const selection=inputs.filter(input=>input.includes('class="delivery-select'));
+  assert.equal(editors.length,3);
+  assert.equal(selection.length,1);
+  assert.ok(editors.every(tag=>tag.includes(" disabled ")),"All editing fields must be disabled for locked deliveries");
+  assert.ok(!selection[0].includes(" disabled "), "Locked deliveries remain selectable for PDF export");
 });
 
 test("Sofia clock is in the delivery header, not the sidebar",()=>{
@@ -72,7 +79,7 @@ test("Clicking a declaration PDF badge opens its documents without changing sele
   const end=js.indexOf('\\$("group-list").addEventListener("contextmenu"'.replace('\\$','$'),start);
   assert.ok(start>=0&&end>start);
   const scope={
-    activeDeclaration:"121",currentPage:2,
+    activeDeclaration:"121",currentPage:2,selectedDeliveryIds:new Set(),
     opened:null,renderCalls:0,resetCalls:0,
     $:()=>({addEventListener:(_,cb)=>{scope.click=cb;}}),
     openDocs:target=>{scope.opened=target;},
@@ -109,4 +116,18 @@ test("Actions column stays pinned to the table edge",()=>{
   const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
   assert.match(css,/scrollbar-gutter:auto/);
   assert.match(css,/#records-table th\.actions-heading,#records-table td\.actions-cell\s*\{[\s\S]*?position:sticky;right:0/);
+});
+
+test("Customs selection checkboxes are inside the row-number column",()=>{
+  const source=js.slice(js.indexOf("function rowHtml("),js.indexOf("function renderRows("));
+  assert.match(source,/data-export-select/);
+  assert.match(source,/delivery-check-ui/);
+  assert.match(source,/row-export-selected/);
+});
+test("Customs export controls and pinned pdf-lib are present",()=>{
+  assert.match(html,/id="customs-export"/);
+  assert.match(html,/Свали документи за украинска митница/);
+  assert.match(html,/pdf-lib@1\.17\.1/);
+  assert.match(js,/prepareCustomsBundle/);
+  assert.match(js,/mergeCustomsPdfs/);
 });
