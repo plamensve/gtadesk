@@ -103,12 +103,12 @@ tr.row-shared td{background:#eaf2ff!important;border-bottom-color:#cbdaf5}
 /* ARK identifier readability: keep the complete long number legible. */
 #records-body td.mono{font-size:15px;font-weight:750;letter-spacing:.15px;line-height:1.5;white-space:nowrap;color:#103b54;padding-inline:14px}
 #records-body tr.row-used td.mono{color:#28724d}
-#records-body td:nth-child(2),#records-table th:nth-child(2){min-width:290px}
+#records-body td:nth-child(3),#records-table th:nth-child(3){min-width:290px}
 
 /* Compact deliveries register: reclaim former actions column. */
 #records-table{min-width:1020px}
-#records-table th:nth-child(2),#records-body td:nth-child(2){min-width:290px}
-#records-table th:nth-child(9),#records-body td:nth-child(9){min-width:200px}
+#records-table th:nth-child(3),#records-body td:nth-child(3){min-width:290px}
+#records-table th:nth-child(10),#records-body td:nth-child(10){min-width:200px}
 #row-actions-menu .danger{color:#b43c52}
 
 /* Compact vertical-ellipsis action column: menu floats outside the scrollable table. */
@@ -119,7 +119,11 @@ tr.row-shared td{background:#eaf2ff!important;border-bottom-color:#cbdaf5}
 
 /* Keep the ARK and invoice columns adjacent without sacrificing ARK legibility. */
 #records-table{table-layout:auto;width:100%;min-width:1100px}
-#records-table th:nth-child(2),#records-body td:nth-child(2){width:250px;min-width:250px;max-width:250px}
-#records-table th:nth-child(3),#records-body td:nth-child(3){width:112px;min-width:112px;max-width:112px}
-#records-body td:nth-child(2){padding-right:8px}
-#records-body td:nth-child(3){padding-left:6px}
+#records-table th:nth-child(3),#records-body td:nth-child(3){width:250px;min-width:250px;max-width:250px}
+#records-table th:nth-child(4),#records-body td:nth-child(4){width:112px;min-width:112px;max-width:112px}
+#records-body td:nth-child(3){padding-right:8px}
+#records-body td:nth-child(4){padding-left:6px}
+
+/* Sequential row numbers across filtered pages. */
+#records-table th.row-number-heading,#records-body td.row-number{width:44px;min-width:44px;max-width:44px;text-align:center;padding-inline:5px;font-variant-numeric:tabular-nums;color:#698597}
+#records-body td.row-number{font-size:12px;font-weight:750}

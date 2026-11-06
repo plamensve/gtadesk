@@ -77,10 +77,10 @@ function renderGroups(){
   $("metrics").textContent=records.length+" доставки · "+all.length+" декларации";
   $("active-group").textContent=activeDeclaration?"Декларация "+activeDeclaration:"Всички декларации";
 }
-function rowHtml(r){
+function rowHtml(r,number){
   const field=(key,label,cls="")=>'<input class="inline-field '+cls+'" data-field="'+key+'" aria-label="'+label+'" value="'+safe(r[key]??"")+'" maxlength="'+(key==="notes"?4000:250)+'">';
   return '<tr data-id="'+safe(r.id)+'" class="'+(usage(r)==="used"?"row-used ":usage(r)==="shared"?"row-shared ":"")+(selectedRowId===r.id?"row-selected":"")+'">'+
-    '<td>'+prettyDate(r.delivered_on)+'</td><td class="mono">'+safe(r.ark)+'</td>'+
+    '<td class="row-number">'+number+'</td><td>'+prettyDate(r.delivered_on)+'</td><td class="mono">'+safe(r.ark)+'</td>'+
     '<td>'+safe(r.invoice_no||"—")+'</td><td><span class="decl-label">'+safe(r.declaration_no)+'</span></td>'+
     '<td>'+field("tractor","Влекач")+'</td><td>'+field("tanker","Цистерна")+'</td>'+
     '<td class="number">'+(r.quantity_liters==null?"—":Number(r.quantity_liters).toLocaleString("bg-BG",{maximumFractionDigits:3}))+'</td>'+
@@ -91,8 +91,8 @@ function rowHtml(r){
 function renderRows(){
   const rows=visibleRows(),pageCount=Math.max(1,Math.ceil(rows.length/PAGE_SIZE));
   currentPage=Math.min(currentPage,pageCount-1);
-  $("records-body").innerHTML=rows.slice(currentPage*PAGE_SIZE,(currentPage+1)*PAGE_SIZE).map(rowHtml).join("")||
-    '<tr><td colspan="11" class="empty">Няма намерени доставки.</td></tr>';
+  $("records-body").innerHTML=rows.slice(currentPage*PAGE_SIZE,(currentPage+1)*PAGE_SIZE).map((record,index)=>rowHtml(record,currentPage*PAGE_SIZE+index+1)).join("")||
+    '<tr><td colspan="12" class="empty">Няма намерени доставки.</td></tr>';
   $("pagination").textContent=rows.length+" записа · страница "+(currentPage+1)+" от "+pageCount;
   $("previous").disabled=currentPage===0;$("next").disabled=currentPage>=pageCount-1;
   $("export").disabled=!rows.length;
