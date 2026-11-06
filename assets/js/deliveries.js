@@ -9,7 +9,7 @@ const prettyDate = date => date ? date.slice(8,10)+"."+date.slice(5,7)+"."+date.
 const PAGE_SIZE = 40, GROUP_PAGE_SIZE = 4;
 let records=[], activeDeclaration="", currentPage=0, groupPage=0, editId=null, selectedRowId=null, busy=false;
 let menuTarget=null;
-const createFields=["delivered_on","ark","declaration_no","invoice_no"];
+const createFields=["delivered_on","ark","declaration_no","counterparty","quantity_liters","invoice_no"];
 const csvFields=["delivered_on","document_date","ark","invoice_no","declaration_no","tractor","tanker","quantity_liters","counterparty","destination","notes","usage_status"];
 const status=(message,bad=false)=>{$("status").textContent=message;$("status").classList.toggle("bad",bad);};
 const normalize=value=>String(value??"").trim().toLocaleLowerCase("bg");
@@ -178,7 +178,10 @@ $("delivery-form").addEventListener("submit",async event=>{
   if(!form.reportValidity()||busy)return;
   const payload=Object.fromEntries(createFields.map(key=>[key,String(form.elements[key].value).trim()]));
   if(editId&&records.find(r=>r.id===editId)?.is_locked){$("form-status").textContent="Редът е заключен.";return;}
-  if(!payload.delivered_on||!payload.ark||!payload.declaration_no)return;
+  if(!payload.delivered_on||!payload.ark||!payload.declaration_no||!payload.counterparty)return;
+  const quantity=Number(payload.quantity_liters);
+  if(!Number.isFinite(quantity)||quantity<=0){$("form-status").textContent="Въведете валидно количество, по-голямо от 0 литра.";return;}
+  payload.quantity_liters=quantity;
   busy=true;$("save").disabled=true;$("form-status").textContent="Записване...";
   try{
     const query=editId?client.from("gta_deliveries").update(payload).eq("id",editId).select("id"):
