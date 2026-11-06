@@ -7,7 +7,7 @@
   const time = new Intl.DateTimeFormat("bg-BG", {timeZone:"Europe/Sofia",hour:"2-digit",minute:"2-digit",second:"2-digit",hourCycle:"h23"});
   const parts = format => Object.fromEntries(format.formatToParts(new Date()).map(p => [p.type,p.value]));
   function refresh() {
-    const d=parts(date), t=parts(time), day=d.day+"."+d.month+"."+d.year, hour=t.hour+":"+t.minute+":"+t.second;
+    const d=parts(date), t=parts(time), day=d.day+"/"+d.month+"/"+d.year, hour=t.hour+":"+t.minute+":"+t.second;
     for (const clock of clocks) {
       clock.querySelector(".gta-clock-date").textContent=day;
       clock.querySelector(".gta-clock-time").textContent=hour;
