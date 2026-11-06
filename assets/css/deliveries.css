@@ -399,13 +399,6 @@ body.gta-deliveries-page .group-card .group-card-mini:focus-visible{outline:2px 
 body.gta-deliveries-page .group-card .group-card-mini.has-docs{background:#e2f6ee;border-color:#8bdab8;color:#087a58!important}
 body.gta-deliveries-page .group-card .group-card-archive{background:#eef8fc;color:#096d89}
 body.gta-deliveries-page .group-archive-progress{font-size:11px;margin-top:6px;min-height:14px}
-body.gta-deliveries-page .declaration-date-form{display:grid;gap:12px;margin-top:18px}
-body.gta-deliveries-page .declaration-date-form label{font-size:12px;font-weight:750;color:#50758b}
-body.gta-deliveries-page .declaration-date-form input{
- width:100%;min-height:43px;padding:10px 12px;
- background:#fafeff;border:1px solid #b8d5e1;border-radius:9px;color:#173e54
-}
-body.gta-deliveries-page .declaration-date-form .actions{display:flex;gap:9px;flex-wrap:wrap}
 /* Fill the available row at every screen size: no narrow cards in wide grid tracks. */
 @media(max-width:1350px){
   body.gta-deliveries-page .group-list{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -435,3 +428,22 @@ body.gta-deliveries-page .declaration-date-form .actions{display:flex;gap:9px;fl
 #records-table th:nth-child(5),#records-table td:nth-child(5){width:160px;min-width:160px;max-width:160px;padding-inline:6px}
 #records-table .decl-reference{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
 #records-table .decl-date-inline{font-size:11px;font-variant-numeric:tabular-nums;color:#507a8b}
+
+/* Three compact card actions; declaration date is shown as metadata, not a button. */
+body.gta-deliveries-page .group-card-operations{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-template-rows:29px 29px;
+  align-content:center;
+}
+body.gta-deliveries-page .group-card-operations .group-card-archive{
+  grid-column:1/-1;
+}
+/* All PDF upload affordances use an unmistakably interactive cursor. */
+body.gta-deliveries-page .group-card-operations button,
+body.gta-deliveries-page .invoice-attach-trigger,
+body.gta-deliveries-page #docs-upload,
+body.gta-deliveries-page .docs-upload-controls input[type="file"],
+body.gta-deliveries-page .docs-upload-controls input[type="file"]::file-selector-button,
+body.gta-deliveries-page .docs-entry-controls button{
+  cursor:pointer;
+}
