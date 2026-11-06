@@ -19,6 +19,7 @@ test("Inline editor markup stays valid and PDF indicators stay in action cells",
     selectedRowId:null,
     safe:value=>String(value??""),
     prettyDate:value=>value??"—",
+    visibleNote:r=>String(r.notes??""),
     usage:()=>"unused",
     usageLabel:()=>"Неизползван"
   });
@@ -39,7 +40,7 @@ test("Locked delivery fields remain disabled",()=>{
   const end=js.indexOf("function renderRows(){",start);
   const renderer=runInNewContext(js.slice(start,end)+";rowHtml",{
     documents:[],selectedRowId:null,safe:value=>String(value??""),
-    prettyDate:()=> "—",usage:()=> "unused",usageLabel:()=> "Неизползван"
+    prettyDate:()=> "—",visibleNote:r=>String(r.notes??""),usage:()=> "unused",usageLabel:()=> "Неизползван"
   });
   const row=renderer({id:"delivery-2",ark:"26BG000000000982636S9",declaration_no:"123",is_locked:true},2);
   const inputs=[...row.matchAll(/<input\b[^>]*>/g)].map(m=>m[0]);
