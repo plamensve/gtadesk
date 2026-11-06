@@ -99,3 +99,8 @@ tr.row-shared td{background:#eaf2ff!important;border-bottom-color:#cbdaf5}
 .usage-label{display:inline-flex;padding:6px 9px;border-radius:7px;font-weight:800;font-size:11px}
 .usage-unused{background:#edf3f6;color:#6e8593}.usage-used{background:#d2eddb;color:#276945}.usage-shared{background:#dce8ff;color:#285da1}
 .usage-status-cell:hover .usage-label{outline:1px solid #80b5ca}
+
+/* ARK identifier readability: keep the complete long number legible. */
+#records-body td.mono{font-size:15px;font-weight:750;letter-spacing:.15px;line-height:1.5;white-space:nowrap;color:#103b54;padding-inline:14px}
+#records-body tr.row-used td.mono{color:#28724d}
+#records-body td:nth-child(2),#records-table th:nth-child(2){min-width:290px}
