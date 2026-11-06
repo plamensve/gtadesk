@@ -242,7 +242,7 @@ test("Delivery dates use DD.MM.YYYY in form widgets, tables, Excel exports, and 
  assert.match(js,/installDayMonthYearInputs\(document\)/);
  assert.match(js,/const prettyDate = date => formatDateDMY\(date\)/);
  assert.match(js,/formatDateDMY\(declarationDateOf\(r.declaration_no\)\)/);
- assert.match(html,/class="gta-clock-date">--\.\.--/);
+ assert.ok(html.includes('class="gta-clock-date">--.--.----'));
  const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
  assert.match(css,/\.date-display-wrap/);
  assert.match(css,/\.date-native-input/);
