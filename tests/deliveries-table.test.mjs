@@ -200,3 +200,19 @@ test("Upload actions use the hand cursor on hover",()=>{
   assert.match(css,/\.group-card-operations button,[\s\S]*?#docs-upload,[\s\S]*?cursor:pointer/);
   assert.match(css,/file-selector-button/);
 });
+
+test("Declaration cards use uniform typography, consistent spacing and equal-size actions",()=>{
+  const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
+  const block=css.slice(css.indexOf("/* Unified declaration card typography and spacing."));
+  assert.ok(block.length>1000);
+  assert.match(block,/height:112px;[\s\S]*?min-height:112px;[\s\S]*?max-height:112px/);
+  assert.match(block,/grid-template-rows:17px repeat\(3,14px\) 19px/);
+  assert.match(block,/font-size:13px/);
+  assert.match(block,/font-size:11px/);
+  assert.match(block,/font-variant-numeric:tabular-nums/);
+  assert.match(block,/\.group-card-operations > \.group-card-docs,[\s\S]*?\.group-card-operations > \.group-card-analysis\{/);
+  assert.match(block,/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+  assert.match(block,/grid-template-rows:30px 30px/);
+  assert.match(block,/width:100%;[\s\S]*?height:30px/);
+  assert.match(block,/\.group-card-archive\{/);
+});
