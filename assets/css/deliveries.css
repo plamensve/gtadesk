@@ -355,3 +355,77 @@ body.gta-deliveries-page #docs-preview-frame{display:block;width:100%;height:min
 #records-table .invoice-attach-trigger:focus-visible{outline:2px solid #008f9f;outline-offset:2px}
 #records-table .invoice-doc-dot{position:absolute;top:2px;right:2px;width:7px;height:7px;border-radius:50%;background:#bccfd6}
 #records-table .invoice-attach-trigger.has-docs .invoice-doc-dot{background:#159b62}
+
+/* Declarational workspace: fixed card geometry and individually accessible actions. */
+body.gta-deliveries-page .group-list .group-card{
+  box-sizing:border-box;flex:0 1 calc((100% - 30px)/4);
+  min-width:255px;max-width:none;width:calc((100% - 30px)/4);
+  height:132px;min-height:132px;max-height:132px;
+  padding:11px 12px;grid-template-columns:minmax(0,1fr) 112px;gap:8px;
+  align-items:stretch;overflow:hidden;
+}
+body.gta-deliveries-page .group-card .group-card-select{
+  display:flex;flex-direction:column;align-items:stretch;text-align:left;
+  background:none;border:0;border-radius:6px;cursor:pointer;
+  color:inherit;margin:0;padding:0;gap:3px;min-width:0;width:100%;
+}
+body.gta-deliveries-page .group-card-select:focus-visible{
+  outline:2px solid #0296a9;outline-offset:2px;
+}
+body.gta-deliveries-page .group-card .declaration-card-date{font-size:10px;color:#226d85}
+body.gta-deliveries-page .group-card-operations{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-auto-rows:29px;align-content:center;gap:5px;min-width:0;
+}
+body.gta-deliveries-page .group-card .group-card-mini{
+  cursor:pointer;border:1px solid #d0e4eb;background:#fff;border-radius:8px;
+  display:inline-flex;justify-content:center;align-items:center;min-width:0;
+  padding:3px;font-size:10px;line-height:1.1;font-weight:750;
+  color:#1c667c;white-space:nowrap;
+  transition:background .15s,border-color .15s;
+}
+body.gta-deliveries-page .group-card .group-card-mini:hover{background:#e7f5f8;border-color:#63bdc7}
+body.gta-deliveries-page .group-card .group-card-mini:focus-visible{outline:2px solid #0296a9;outline-offset:2px}
+body.gta-deliveries-page .group-card .group-card-mini.has-docs{background:#e2f6ee;border-color:#8bdab8;color:#087a58!important}
+body.gta-deliveries-page .group-card .group-card-archive{background:#eef8fc;color:#096d89}
+body.gta-deliveries-page .group-archive-progress{font-size:11px;margin-top:6px;min-height:14px}
+body.gta-deliveries-page .declaration-date-form{display:grid;gap:12px;margin-top:18px}
+body.gta-deliveries-page .declaration-date-form label{font-size:12px;font-weight:750;color:#50758b}
+body.gta-deliveries-page .declaration-date-form input{
+ width:100%;min-height:43px;padding:10px 12px;
+ background:#fafeff;border:1px solid #b8d5e1;border-radius:9px;color:#173e54
+}
+body.gta-deliveries-page .declaration-date-form .actions{display:flex;gap:9px;flex-wrap:wrap}
+@media(max-width:1250px){
+ body.gta-deliveries-page .group-list .group-card{
+  width:calc((100% - 20px)/3);flex-basis:calc((100% - 20px)/3)
+ }
+}
+@media(max-width:920px){
+ body.gta-deliveries-page .group-list .group-card{
+  width:calc((100% - 10px)/2);flex-basis:calc((100% - 10px)/2)
+ }
+}
+@media(max-width:580px){
+ body.gta-deliveries-page .group-list .group-card{
+  width:100%;flex-basis:100%;
+ }
+}
+
+/* Invoice: remove unused gap and show recognizable verified PDF icon. */
+#records-table th:nth-child(4),#records-table td:nth-child(4){
+ width:228px;min-width:228px;max-width:228px;padding-inline:6px;
+}
+#records-table .invoice-cell-content{display:inline-flex;justify-content:flex-start;align-items:center;gap:5px;max-width:100%}
+#records-table .invoice-copy-value{font-size:11px;letter-spacing:-.2px}
+#records-table .invoice-attach-trigger{width:29px;height:29px;padding:3px;gap:2px}
+#records-table .invoice-attach-trigger.has-docs{background:#dff5e9;border-color:#70c89b;color:#087b4c}
+#records-table .invoice-attach-trigger.has-docs:hover{background:#c8efd9;border-color:#38a974}
+#records-table .invoice-document-count{font-family:system-ui,sans-serif;font-size:9px;font-weight:850;line-height:1;color:inherit}
+#records-table .invoice-attach-trigger.has-docs svg{width:15px;flex:none}
+#records-table .invoice-doc-dot{display:none}
+
+/* A declaration number and date share one compact, readable cell. */
+#records-table th:nth-child(5),#records-table td:nth-child(5){width:160px;min-width:160px;max-width:160px;padding-inline:6px}
+#records-table .decl-reference{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+#records-table .decl-date-inline{font-size:11px;font-variant-numeric:tabular-nums;color:#507a8b}
