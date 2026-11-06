@@ -28,7 +28,7 @@ function formReset(){
   $("form-title").textContent="Нова доставка";$("save").textContent="Запиши доставка";
   $("cancel").hidden=true;$("delivery-form").elements.declaration_no.value=activeDeclaration||"";
   $("form-status").textContent="";
-  arkInput.setCustomValidity("");arkValidation.textContent="АРК: точно 21 символа";arkValidation.style.color="";
+  arkInput.setCustomValidity("");arkValidation.textContent="";arkValidation.hidden=true;arkValidation.style.color="";
 }
 function edit(record){
   if(record.is_locked){status("Редът е заключен. Отключи го от менюто ⋮, за да го редактираш.",true);return;}
@@ -150,7 +150,8 @@ function validateArk(){
   const length=Array.from(arkInput.value).length;
   const valid=length===21;
   arkInput.setCustomValidity(valid?"":"АРК номерът трябва да съдържа точно 21 символа (въведени: "+length+").");
-  arkValidation.textContent=valid?"АРК номерът е с правилна дължина (21 символа).":"АРК: "+length+"/21 символа — необходима е точна дължина.";
+  arkValidation.textContent=valid||length===0?"":"АРК номерът трябва да съдържа точно 21 символа (въведени: "+length+").";
+  arkValidation.hidden=valid||length===0;
   arkValidation.style.color=valid?"#166f62":"#b52f46";
   return valid;
 }
