@@ -755,3 +755,107 @@ body.gta-deliveries-page #group-documents .document-upload-icon,
 body.gta-deliveries-page #row-actions-menu .document-upload-icon{
   width:19px;height:19px;
 }
+
+/* Uniform document controls: folder + upload arrow when empty, eye for existing files. */
+body.gta-deliveries-page .document-upload-icon,
+body.gta-deliveries-page .document-view-icon{
+  display:inline-block;flex:none;width:20px;height:20px;
+  object-fit:contain;vertical-align:middle;
+  pointer-events:none;user-select:none;
+}
+body.gta-deliveries-page .group-card-operations .document-upload-icon,
+body.gta-deliveries-page .group-card-operations .document-view-icon{
+  width:17px;height:17px;
+}
+body.gta-deliveries-page #records-table .ark-doc-trigger .document-upload-icon,
+body.gta-deliveries-page #records-table .ark-doc-trigger .document-view-icon,
+body.gta-deliveries-page #records-table .invoice-attach-trigger .document-upload-icon,
+body.gta-deliveries-page #records-table .invoice-attach-trigger .document-view-icon{
+  width:21px;height:21px;
+}
+body.gta-deliveries-page .group-card-operations button,
+body.gta-deliveries-page #records-table .ark-doc-trigger,
+body.gta-deliveries-page #records-table .invoice-attach-trigger,
+body.gta-deliveries-page #docs-upload,
+body.gta-deliveries-page #docs-file::file-selector-button{
+  cursor:pointer!important;
+}
+body.gta-deliveries-page .group-card-mini.has-docs .document-view-icon{
+  filter:none;
+}
+
+/* Desktop table: use the entire available width instead of overflowing it.
+   Fixed percentages sum to 100%, and inputs shrink with their cells. */
+body.gta-deliveries-page #records-table{
+  table-layout:fixed;
+  width:100%;
+  min-width:0!important;
+  max-width:100%;
+  border-collapse:collapse;
+}
+body.gta-deliveries-page .scroll{
+  min-width:0;
+  max-width:100%;
+  overflow-x:hidden;
+  overflow-y:auto;
+}
+body.gta-deliveries-page #records-table thead th,
+body.gta-deliveries-page #records-table tbody td{
+  box-sizing:border-box;
+  min-width:0!important;
+  max-width:none!important;
+  padding-left:clamp(3px,.36vw,7px);
+  padding-right:clamp(3px,.36vw,7px);
+}
+body.gta-deliveries-page #records-table tr > :nth-child(1){width:4%!important}
+body.gta-deliveries-page #records-table tr > :nth-child(2){width:7.5%!important}
+body.gta-deliveries-page #records-table tr > :nth-child(3){width:16.5%!important}
+body.gta-deliveries-page #records-table tr > :nth-child(4){width:15%!important}
+body.gta-deliveries-page #records-table tr > :nth-child(5){width:12%!important}
+body.gta-deliveries-page #records-table tr > :nth-child(6){width:7%!important}
+body.gta-deliveries-page #records-table tr > :nth-child(7){width:7%!important}
+body.gta-deliveries-page #records-table tr > :nth-child(8){width:5%!important}
+body.gta-deliveries-page #records-table tr > :nth-child(9){width:6.5%!important}
+body.gta-deliveries-page #records-table tr > :nth-child(10){width:9%!important}
+body.gta-deliveries-page #records-table tr > :nth-child(11){width:7.5%!important}
+body.gta-deliveries-page #records-table tr > :nth-child(12){width:3%!important}
+body.gta-deliveries-page #records-table td:nth-child(2),
+body.gta-deliveries-page #records-table td:nth-child(8),
+body.gta-deliveries-page #records-table td:nth-child(9){
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+body.gta-deliveries-page #records-table .ark-content,
+body.gta-deliveries-page #records-table .invoice-cell-content{
+  min-width:0;width:100%;display:flex;align-items:center;gap:4px;
+}
+body.gta-deliveries-page #records-table .ark-copy-value,
+body.gta-deliveries-page #records-table .invoice-copy-value{
+  display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;
+}
+body.gta-deliveries-page #records-table .inline-field{
+  box-sizing:border-box;width:100%;min-width:0;max-width:100%;
+}
+body.gta-deliveries-page #records-table td.actions-cell,
+body.gta-deliveries-page #records-table th.actions-heading{
+  text-align:center;padding-inline:1px;
+}
+body.gta-deliveries-page #records-table td.usage-status-cell{
+  padding-left:4px;padding-right:10px;overflow:hidden;
+}
+body.gta-deliveries-page #records-table .usage-label{
+  padding:5px 6px;font-size:11px;
+}
+body.gta-deliveries-page #records-table .row-actions-trigger{
+  width:30px;height:33px;
+}
+body.gta-deliveries-page #records-table th{
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+@media(max-width:1400px){
+ body.gta-deliveries-page #records-table .ark-copy-value{font-size:13px}
+ body.gta-deliveries-page #records-table .invoice-copy-value{font-size:12px}
+ body.gta-deliveries-page #records-table .decl-label{font-size:12px}
+ body.gta-deliveries-page #records-table .decl-date-inline{font-size:10px}
+ body.gta-deliveries-page #records-table .ark-doc-trigger,
+ body.gta-deliveries-page #records-table .invoice-attach-trigger{width:28px;flex-basis:28px}
+}

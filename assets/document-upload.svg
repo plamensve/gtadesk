@@ -1,9 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-labelledby="title">
-<title id="title">Качване на документ</title>
-<path d="M19 4h26a7 7 0 0 1 7 7v28" fill="none" stroke="#3A9CDE" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M19 4 6 17v34a6 6 0 0 0 6 6h24" fill="none" stroke="#3A9CDE" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M19 4v10a4 4 0 0 1-4 4H6Z" fill="#BEDCFF" stroke="#3A9CDE" stroke-width="3.5" stroke-linejoin="round"/>
-<path d="M15 25h28M15 32h28M15 39h18" fill="none" stroke="#3A9CDE" stroke-width="3.5" stroke-linecap="round"/>
-<rect x="34.5" y="35" width="25" height="25" rx="6" fill="#BEDCFF" stroke="#3A9CDE" stroke-width="3"/>
-<path d="M47 54V41m0 0-6.5 6.5M47 41l6.5 6.5" fill="none" stroke="#238BCE" stroke-width="4.3" stroke-linecap="round" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" aria-hidden="true">
+<path fill="#FFB80D" d="M6 13a5 5 0 0 1 5-5h20l7 7h15a5 5 0 0 1 5 5v30H6z"/>
+<rect x="4" y="19" width="52" height="36" rx="6" fill="#FFC83D"/>
+<circle cx="47" cy="47" r="16" fill="#18CC29" stroke="#fff" stroke-width="3"/>
+<path d="M47 56V37m0 0-8 9m8-9 8 9" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

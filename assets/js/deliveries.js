@@ -115,8 +115,8 @@ function renderGroups(){
       '<span class="declaration-card-date">'+(name?"Дата: "+(date?prettyDate(date):"не е въведена"):"")+'</span>'+
       '<span class="group-status-slot">'+(used?'<span class="used-label">✓ Използвана</span>':g.used?'<span class="used-label">'+g.used+' използвани реда</span>':'<span class="used-label used-label-placeholder" aria-hidden="true">✓ Използвана</span>')+'</span></button>'+
       (name?'<div class="group-card-operations">'+
-       '<button type="button" class="group-card-mini group-card-docs '+(docCount?'has-docs':'no-docs')+'" data-group-docs="'+safe(name)+'" title="Придружаващи PDF: '+docCount+'">'+(docCount?'<span class="upload-file-ready" aria-hidden="true">✓</span>':'<img class="document-upload-icon" src="./assets/document-upload.svg" alt="" aria-hidden="true">')+'<span class="group-card-upload-label">PDF'+(docCount?' '+docCount:'')+'</span></button>'+
-       '<button type="button" class="group-card-mini group-card-analysis '+(analysisCount?'has-docs':'')+'" data-group-analysis="'+safe(name)+'" title="Качи или виж анализ на декларацията">'+(analysisCount?'<span class="upload-file-ready" aria-hidden="true">✓</span>':'<img class="document-upload-icon" src="./assets/document-upload.svg" alt="" aria-hidden="true">')+'<span class="group-card-upload-label">Анализ</span></button>'+
+       '<button type="button" class="group-card-mini group-card-docs '+(docCount?'has-docs':'no-docs')+'" data-group-docs="'+safe(name)+'" title="Придружаващи PDF: '+docCount+'">'+(docCount?'<img class="document-view-icon" src="./assets/document-view.svg" alt="" aria-hidden="true">':'<img class="document-upload-icon" src="./assets/document-upload.svg" alt="" aria-hidden="true">')+'<span class="group-card-upload-label">PDF'+(docCount?' '+docCount:'')+'</span></button>'+
+       '<button type="button" class="group-card-mini group-card-analysis '+(analysisCount?'has-docs':'')+'" data-group-analysis="'+safe(name)+'" title="Качи или виж анализ на декларацията">'+(analysisCount?'<img class="document-view-icon" src="./assets/document-view.svg" alt="" aria-hidden="true">':'<img class="document-upload-icon" src="./assets/document-upload.svg" alt="" aria-hidden="true">')+'<span class="group-card-upload-label">Анализ</span></button>'+
 
        '<button type="button" class="group-card-mini group-card-archive" data-group-archive="'+safe(name)+'" title="Изтегли ZIP архива с папки по АРК">ZIP ↓</button>'+
        '</div>':'')+'</div>';
@@ -134,8 +134,8 @@ function rowHtml(r,number){
   return '<tr data-id="'+safe(r.id)+'" class="'+(usage(r)==="used"?"row-used ":usage(r)==="shared"?"row-shared ":"")+(selectedRowId===r.id?"row-selected ":"")+(selectedDeliveryIds.has(r.id)?"row-export-selected":"")+'">'+
     '<td class="row-number"><span class="row-number-wrap"><span class="row-index">'+number+'</span><label class="delivery-select-label" title="Избери доставка за митническия PDF"><input type="checkbox" class="delivery-select" data-export-select="'+safe(r.id)+'" aria-label="Избери АРК '+safe(r.ark)+' за украинска митница"'+(selectedDeliveryIds.has(r.id)?' checked':'')+'><span class="delivery-check-ui" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.3 4.3L19 7"/></svg></span></label></span></td><td>'+prettyDate(r.delivered_on)+'</td><td class="mono copyable-number ark-column" title="Маркирай и копирай АРК номера"><span class="ark-content"><span class="ark-copy-value">'+safe(r.ark)+'</span>'+
     '<button type="button" class="ark-doc-trigger '+(docCount?'has-docs':'')+'" data-ark-docs="'+safe(r.id)+'" title="'+(docCount?docCount+' PDF документа към АРК':'Качи PDF към АРК')+'" aria-label="'+(docCount?'Прегледай '+docCount+' PDF документа':'Качи PDF документ')+' към АРК '+safe(r.ark)+'">'+
-    (docCount?'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h7l4 4v13a1 1 0 0 1-1 1H8a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M15 3v5h4"/><path d="m9 15 2 2 4-4"/></svg><span class="ark-doc-count">'+docCount+'</span>':'<img class="document-upload-icon" src="./assets/document-upload.svg" alt="" aria-hidden="true">')+'</button></span></td>'+
-    '<td class="invoice-number copyable-number"><span class="invoice-cell-content"><span class="invoice-copy-value" title="Двоен клик: маркирай номер и дата на фактурата">'+safe(invoiceDisplay(r))+'</span>'+(r.invoice_no?'<button type="button" class="invoice-attach-trigger '+(invoiceDocCount?'has-docs':'')+'" data-invoice-docs="'+safe(r.id)+'" aria-label="'+(invoiceDocCount?'Преглед на '+invoiceDocCount+' PDF документа':'Прикачи PDF документ')+' към фактура '+safe(r.invoice_no)+'" title="'+(invoiceDocCount?invoiceDocCount+' прикачени PDF файла':'Прикачи PDF към фактура')+'">'+(invoiceDocCount?'<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l4 4v14H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M14 3v5h5"/><path d="m9 15 2 2 4-4"/></svg><span class="invoice-document-count">'+invoiceDocCount+'</span>':'<img class="document-upload-icon" src="./assets/document-upload.svg" alt="" aria-hidden="true">')+'</button>':'')+'</span></td><td><span class="decl-reference"><span class="decl-label">'+safe(r.declaration_no)+'</span><span class="decl-date-inline">'+(declarationDateOf(r.declaration_no)?prettyDate(declarationDateOf(r.declaration_no)):"Без дата")+'</span></span></td>'+
+    (docCount?'<img class="document-view-icon" src="./assets/document-view.svg" alt="" aria-hidden="true"><span class="ark-doc-count">'+docCount+'</span>':'<img class="document-upload-icon" src="./assets/document-upload.svg" alt="" aria-hidden="true">')+'</button></span></td>'+
+    '<td class="invoice-number copyable-number"><span class="invoice-cell-content"><span class="invoice-copy-value" title="Двоен клик: маркирай номер и дата на фактурата">'+safe(invoiceDisplay(r))+'</span>'+(r.invoice_no?'<button type="button" class="invoice-attach-trigger '+(invoiceDocCount?'has-docs':'')+'" data-invoice-docs="'+safe(r.id)+'" aria-label="'+(invoiceDocCount?'Преглед на '+invoiceDocCount+' PDF документа':'Прикачи PDF документ')+' към фактура '+safe(r.invoice_no)+'" title="'+(invoiceDocCount?invoiceDocCount+' прикачени PDF файла':'Прикачи PDF към фактура')+'">'+(invoiceDocCount?'<img class="document-view-icon" src="./assets/document-view.svg" alt="" aria-hidden="true"><span class="invoice-document-count">'+invoiceDocCount+'</span>':'<img class="document-upload-icon" src="./assets/document-upload.svg" alt="" aria-hidden="true">')+'</button>':'')+'</span></td><td><span class="decl-reference"><span class="decl-label">'+safe(r.declaration_no)+'</span><span class="decl-date-inline">'+(declarationDateOf(r.declaration_no)?prettyDate(declarationDateOf(r.declaration_no)):"Без дата")+'</span></span></td>'+
     '<td>'+field("tractor","Влекач")+'</td><td>'+field("tanker","Цистерна")+'</td>'+
     '<td class="number">'+(r.quantity_liters==null?"—":Number(r.quantity_liters).toLocaleString("bg-BG",{maximumFractionDigits:3}))+'</td>'+
     '<td>'+safe(r.destination||"—")+'</td><td>'+field("notes","Бележка","notes")+'</td>'+
@@ -388,12 +388,12 @@ $("group-delete-declaration").addEventListener("click",()=>{
 $("group-list").addEventListener("click",event=>{
   const btn=event.target.closest("[data-declaration]");if(!btn)return;
   const name=btn.dataset.declaration;
-  if(name&&event.target.closest("[data-group-analysis]")){openDocs({type:"analysis",name});return;}
+  if(name&&event.target.closest("[data-group-analysis]")){openDocs({type:"analysis",name},{previewIfSingle:true});return;}
   if(name&&event.target.closest("[data-group-archive]")){downloadDeclarationArchive(name);return;}
   // Clicking the PDF badge opens this declaration's documents without changing the active filter.
   if(name&&event.target.closest(".group-card-docs")){
     event.preventDefault();
-    openDocs({type:"group",name});
+    openDocs({type:"group",name},{previewIfSingle:true});
     return;
   }
   if(event.target.closest("button")&&!event.target.closest("[data-group-select]"))return;
@@ -572,13 +572,13 @@ $("records-body").addEventListener("click",event=>{
       if(!record.is_locked)edit(record);
       return;
     }
-    openDocs({type:"invoice",invoiceNo:String(record.invoice_no).trim(),invoiceDate:record.invoice_date});
+    openDocs({type:"invoice",invoiceNo:String(record.invoice_no).trim(),invoiceDate:record.invoice_date},{previewIfSingle:true});
     return;
   }
   const arkTrigger=event.target.closest("[data-ark-docs]");
   if(arkTrigger){
     event.stopPropagation();
-    openDocs({type:"row",id:arkTrigger.dataset.arkDocs});
+    openDocs({type:"row",id:arkTrigger.dataset.arkDocs},{previewIfSingle:true});
     return;
   }
   const trigger=event.target.closest("[data-row-menu]");
@@ -656,7 +656,7 @@ function resetDocPreview(){
   $("docs-preview-name").textContent="";
   $("docs-preview").hidden=true;
 }
-async function openDocs(target){
+async function openDocs(target,{previewIfSingle=false}={}){
   docsTarget=target;
   resetDocPreview();
   $("docs-file").value="";
@@ -668,6 +668,10 @@ async function openDocs(target){
     "PDF към декларация "+target.name;
   $("docs-dialog").showModal();
   renderDocs();
+  if(previewIfSingle){
+    const previewButtons=$("docs-list").querySelectorAll(".docs-entry-controls button:first-child");
+    if(previewButtons.length===1)previewButtons[0].click();
+  }
 }
 async function previewDeliveryPdf(doc,button){
   if(pdfDocumentBusy)return;
