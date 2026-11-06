@@ -329,3 +329,12 @@ test("Full Analysis label is never ellipsized and document buttons have sufficie
  assert.match(final,/text-overflow:clip/);
  assert.match(final,/white-space:nowrap/);
 });
+
+test("Customs checkbox selection is not reset when invoices or declarations differ",()=>{
+ const selector=js.slice(js.indexOf('const selected=event.target.closest("input[data-export-select]")'),js.indexOf('const input=event.target.closest("input[data-field]")'));
+ assert.match(selector,/selectedDeliveryIds.add\(row.id\)/);
+ assert.doesNotMatch(selector,/selectedDeliveryIds.delete\(id\)/);
+ const group=js.slice(js.indexOf('$("group-list").addEventListener("click"'),js.indexOf('$("group-list").addEventListener("contextmenu"'));
+ assert.doesNotMatch(group,/selectedDeliveryIds.clear\(\)/);
+ assert.match(js,/customsPdfFileName\(bundle.declarationNos\)/);
+});
