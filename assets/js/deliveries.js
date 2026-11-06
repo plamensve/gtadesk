@@ -1,215 +1,236 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.58.0";
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "../../config.js";
-import { escapeHtml as escape } from "./dom.js";
+import { escapeHtml } from "./dom.js";
 
 const $ = id => document.getElementById(id);
 const client = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-let records = [], editId = null, activeDeclaration = "", currentPage = 0;
-const PAGE_SIZE = 50;
-const fields = ["delivered_on","document_date","ark","invoice_no","declaration_no","tractor","tanker","quantity_liters","counterparty","destination","notes"];
-const prettyDate = date => date ? date.slice(8,10) + "." + date.slice(5,7) + "." + date.slice(0,4) : "—";
-const safe = value => escape(String(value ?? ""));
-const status = (message, bad = false) => {
-  $("status").textContent = message;
-  $("status").classList.toggle("bad", bad);
-};
+const safe = value => escapeHtml(String(value ?? ""));
+const prettyDate = date => date ? date.slice(8,10)+"."+date.slice(5,7)+"."+date.slice(0,4) : "—";
+const PAGE_SIZE = 40, GROUP_PAGE_SIZE = 8;
+let records=[], activeDeclaration="", currentPage=0, groupPage=0, editId=null, selectedRowId=null, busy=false;
+let menuTarget=null;
+const createFields=["delivered_on","ark","declaration_no"];
+const csvFields=["delivered_on","document_date","ark","invoice_no","declaration_no","tractor","tanker","quantity_liters","counterparty","destination","notes","is_used"];
+const status=(message,bad=false)=>{$("status").textContent=message;$("status").classList.toggle("bad",bad);};
+const normalize=value=>String(value??"").trim().toLocaleLowerCase("bg");
 
-async function guard() {
-  const { data: { user }, error } = await client.auth.getUser();
-  if (error || !user) throw Error("Необходим е вход в GTA Desk.");
-  const { data, error: accessError } = await client.from("gtadesk_access").select("user_id").eq("user_id", user.id).maybeSingle();
-  if (accessError || !data) throw Error("Нямате разрешен достъп.");
-  $("account-email").textContent = user.email || "Одобрен потребител";
-  $("guard").hidden = true;
-  $("app").hidden = false;
-  document.querySelector(".gta-unified-sidebar").hidden = false;
+async function guard(){
+  const {data:{user},error}=await client.auth.getUser();
+  if(error||!user)throw Error("Необходим е вход в GTA Desk.");
+  const {data,error:accessError}=await client.from("gtadesk_access").select("user_id").eq("user_id",user.id).maybeSingle();
+  if(accessError||!data)throw Error("Нямате разрешен достъп.");
+  $("account-email").textContent=user.email||"Одобрен потребител";
+  $("guard").hidden=true;$("app").hidden=false;
+  document.querySelector(".gta-unified-sidebar").hidden=false;
 }
-
-function formReset() {
-  editId = null;
-  $("delivery-form").reset();
-  $("form-title").textContent = "Нова доставка";
-  $("save").textContent = "Запиши доставка";
-  $("cancel").hidden = true;
-  $("delivery-form").elements.declaration_no.value = activeDeclaration || "";
-  $("form-status").textContent = "";
+function formReset(){
+  editId=null;$("delivery-form").reset();
+  $("form-title").textContent="Нова доставка";$("save").textContent="Запиши доставка";
+  $("cancel").hidden=true;$("delivery-form").elements.declaration_no.value=activeDeclaration||"";
+  $("form-status").textContent="";
 }
-
-function edit(record) {
-  editId = record.id;
-  for (const key of fields) $("delivery-form").elements[key].value = record[key] ?? "";
-  $("form-title").textContent = "Редакция на доставка";
-  $("save").textContent = "Запази промените";
-  $("cancel").hidden = false;
-  $("form-panel").scrollIntoView({ behavior: "smooth", block: "start" });
+function edit(record){
+  editId=record.id;
+  for(const key of createFields)$("delivery-form").elements[key].value=record[key]??"";
+  $("form-title").textContent="Редакция на доставка";
+  $("save").textContent="Запази промените";$("cancel").hidden=false;
+  $("form-panel").scrollIntoView({behavior:"smooth",block:"start"});
 }
-
-function normalized(value) {
-  return String(value || "").trim().toLocaleLowerCase("bg");
+function groups(){
+  const map=new Map();
+  for(const r of records){
+    if(!map.has(r.declaration_no))map.set(r.declaration_no,{count:0,liters:0,used:0});
+    const g=map.get(r.declaration_no);g.count++;g.liters+=Number(r.quantity_liters||0);if(r.is_used)g.used++;
+  }
+  return [...map].sort((a,b)=>a[0].localeCompare(b[0],"bg",{numeric:true}));
 }
-
-function visibleRows() {
-  const q = normalized($("search").value);
-  const from = $("date-from").value;
-  const to = $("date-to").value;
-  return records.filter(r => {
-    if (activeDeclaration && r.declaration_no !== activeDeclaration) return false;
-    if (from && (!r.delivered_on || r.delivered_on < from)) return false;
-    if (to && (!r.delivered_on || r.delivered_on > to)) return false;
-    if (!q) return true;
-    return [r.ark,r.invoice_no,r.declaration_no,r.tractor,r.tanker,r.counterparty,r.destination,r.notes,r.source_sheet]
-      .some(v => normalized(v).includes(q));
+function visibleRows(){
+  const q=normalize($("search").value),from=$("date-from").value,to=$("date-to").value;
+  return records.filter(r=>{
+    if(activeDeclaration&&r.declaration_no!==activeDeclaration)return false;
+    if(from&&(!r.delivered_on||r.delivered_on<from))return false;
+    if(to&&(!r.delivered_on||r.delivered_on>to))return false;
+    return !q||[r.ark,r.invoice_no,r.declaration_no,r.tractor,r.tanker,r.counterparty,r.destination,r.notes,r.source_sheet].some(v=>normalize(v).includes(q));
   });
 }
-
-function render() {
-  const grouped = new Map();
-  for (const record of records) {
-    const key = record.declaration_no;
-    if (!grouped.has(key)) grouped.set(key, { count:0, liters:0 });
-    const value = grouped.get(key);
-    value.count++;
-    value.liters += Number(record.quantity_liters || 0);
-  }
-  const groups = [...grouped].sort((a,b) => a[0].localeCompare(b[0], "bg", { numeric:true }));
-  $("declaration-options").innerHTML = groups.map(([name]) => '<option value="' + safe(name) + '"></option>').join("");
-  $("group-list").innerHTML =
-    '<button type="button" class="group-card ' + (!activeDeclaration ? "selected" : "") + '" data-declaration=""><b>Всички</b><span>' + records.length + ' доставки</span></button>' +
-    groups.map(([name, group]) => '<button type="button" class="group-card ' + (activeDeclaration === name ? "selected" : "") +
-      '" data-declaration="' + safe(name) + '"><b>Декларация ' + safe(name) + '</b><span>' + group.count +
-      ' доставки · ' + Math.round(group.liters).toLocaleString("bg-BG") + ' л</span></button>').join("");
-  $("metrics").textContent = records.length + " доставки · " + groups.length + " декларации";
-  $("active-group").textContent = activeDeclaration ? "Декларация " + activeDeclaration : "Всички декларации";
-  const rows = visibleRows();
-  const pageCount = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
-  currentPage = Math.min(currentPage, pageCount - 1);
-  const shown = rows.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
-  $("records-body").innerHTML = shown.map(record => '<tr>' +
-    '<td>' + prettyDate(record.delivered_on) + '</td>' +
-    '<td class="mono">' + safe(record.ark) + '</td>' +
-    '<td>' + safe(record.invoice_no || "—") + '</td>' +
-    '<td><span class="decl-label">' + safe(record.declaration_no) + '</span></td>' +
-    '<td>' + safe(record.tractor || "—") + '</td>' +
-    '<td>' + safe(record.tanker || "—") + '</td>' +
-    '<td class="number">' + (record.quantity_liters == null ? "—" : Number(record.quantity_liters).toLocaleString("bg-BG",{ maximumFractionDigits:3 })) + '</td>' +
-    '<td>' + safe(record.destination || "—") + '</td>' +
-    '<td><div class="row-buttons"><button type="button" data-edit="' + record.id + '">Редакция</button><button type="button" data-move="' + record.id + '">Отдели</button><button type="button" class="danger" data-delete="' + record.id + '">Изтрий</button></div></td>' +
-    '</tr>').join("") || '<tr><td colspan="9" class="empty">Няма намерени доставки.</td></tr>';
-  $("pagination").textContent = rows.length + " записа · страница " + (currentPage+1) + " от " + pageCount;
-  $("previous").disabled = currentPage === 0;
-  $("next").disabled = currentPage >= pageCount-1;
-  $("export").disabled = rows.length === 0;
+function renderGroups(){
+  const all=groups(),filter=$("group-filter").value,q=normalize($("group-search").value);
+  $("declaration-options").innerHTML=all.map(([name])=>'<option value="'+safe(name)+'"></option>').join("");
+  const filtered=all.filter(([name,g])=>(!q||normalize(name).includes(q))&&(filter==="all"||(filter==="used"?g.used===g.count:g.used<g.count)));
+  const options=[["",{count:records.length,liters:0,used:0}],...filtered];
+  const pageCount=Math.max(1,Math.ceil(options.length/GROUP_PAGE_SIZE));
+  groupPage=Math.min(groupPage,pageCount-1);
+  const slice=options.slice(groupPage*GROUP_PAGE_SIZE,(groupPage+1)*GROUP_PAGE_SIZE);
+  $("group-list").innerHTML=slice.map(([name,g])=>{
+    const used=!!name&&g.used===g.count;
+    return '<button type="button" class="group-card '+(used?"used ":"")+(activeDeclaration===name?"selected":"")+
+      '" data-declaration="'+safe(name)+'" aria-pressed="'+(activeDeclaration===name)+'"><b>'+
+      (name?"Декларация "+safe(name):"Всички декларации")+'</b><span>'+g.count+' доставки'+
+      (name?' · '+Math.round(g.liters).toLocaleString("bg-BG")+' л':"")+'</span>'+
+      (used?'<span class="used-label">✓ Използвана</span>':g.used?'<span class="used-label">'+g.used+' използвани реда</span>':"")+'</button>';
+  }).join("");
+  $("group-page-info").textContent="Страница "+(groupPage+1)+" от "+pageCount+" · "+all.length+" декларации";
+  $("group-previous").disabled=groupPage===0;$("group-next").disabled=groupPage>=pageCount-1;
+  $("metrics").textContent=records.length+" доставки · "+all.length+" декларации";
+  $("active-group").textContent=activeDeclaration?"Декларация "+activeDeclaration:"Всички декларации";
 }
-
-async function load() {
-  status("Зареждане на доставките...");
-  const list = [];
-  for (let offset = 0; ; offset += 1000) {
-    const { data, error } = await client.from("gta_deliveries").select("*")
-      .order("created_at", { ascending: false }).range(offset, offset + 999);
-    if (error) throw error;
+function rowHtml(r){
+  const field=(key,label,cls="")=>'<input class="inline-field '+cls+'" data-field="'+key+'" aria-label="'+label+'" value="'+safe(r[key]??"")+'" maxlength="'+(key==="notes"?4000:250)+'">';
+  return '<tr data-id="'+safe(r.id)+'" class="'+(r.is_used?"row-used ":"")+(selectedRowId===r.id?"row-selected":"")+'">'+
+    '<td>'+prettyDate(r.delivered_on)+'</td><td class="mono">'+safe(r.ark)+'</td>'+
+    '<td>'+safe(r.invoice_no||"—")+'</td><td><span class="decl-label">'+safe(r.declaration_no)+'</span></td>'+
+    '<td>'+field("tractor","Влекач")+'</td><td>'+field("tanker","Цистерна")+'</td>'+
+    '<td class="number">'+(r.quantity_liters==null?"—":Number(r.quantity_liters).toLocaleString("bg-BG",{maximumFractionDigits:3}))+'</td>'+
+    '<td>'+safe(r.destination||"—")+'</td><td>'+field("notes","Бележка","notes")+'</td>'+
+    '<td>'+(r.is_used?'<span class="row-used-label">✓ Използван</span>':'<span class="row-pending-label">Неизползван</span>')+'</td>'+
+    '<td><div class="row-buttons"><button type="button" data-edit="'+r.id+'">Редакция</button><button type="button" data-move="'+r.id+'">Отдели</button><button type="button" class="danger" data-delete="'+r.id+'">Изтрий</button></div></td></tr>';
+}
+function renderRows(){
+  const rows=visibleRows(),pageCount=Math.max(1,Math.ceil(rows.length/PAGE_SIZE));
+  currentPage=Math.min(currentPage,pageCount-1);
+  $("records-body").innerHTML=rows.slice(currentPage*PAGE_SIZE,(currentPage+1)*PAGE_SIZE).map(rowHtml).join("")||
+    '<tr><td colspan="11" class="empty">Няма намерени доставки.</td></tr>';
+  $("pagination").textContent=rows.length+" записа · страница "+(currentPage+1)+" от "+pageCount;
+  $("previous").disabled=currentPage===0;$("next").disabled=currentPage>=pageCount-1;
+  $("export").disabled=!rows.length;
+}
+function render(){renderGroups();renderRows();}
+async function load(){
+  status("Зареждане...");
+  const list=[];
+  for(let offset=0;;offset+=1000){
+    const {data,error}=await client.from("gta_deliveries").select("*").order("created_at",{ascending:false}).range(offset,offset+999);
+    if(error)throw error;
     list.push(...data);
-    if (data.length < 1000) break;
+    if(data.length<1000)break;
   }
-  records = list;
-  render();
-  status("Данните са актуални.");
+  records=list;render();status("Данните са актуални.");
 }
-
-$("delivery-form").addEventListener("submit", async event => {
-  event.preventDefault();
-  const form = event.currentTarget;
-  if (!form.reportValidity()) return;
-  const payload = Object.fromEntries(fields.map(key => [key, String(form.elements[key].value).trim()]));
-  for (const key of ["delivered_on","document_date"]) payload[key] ||= null;
-  payload.quantity_liters = payload.quantity_liters ? Number(payload.quantity_liters) : null;
-  if (payload.quantity_liters !== null && (!Number.isFinite(payload.quantity_liters) || payload.quantity_liters < 0)) {
-    $("form-status").textContent = "Невалидно количество."; return;
-  }
-  $("save").disabled = true;
-  $("form-status").textContent = "Записване...";
-  try {
-    const query = editId
-      ? client.from("gta_deliveries").update(payload).eq("id", editId).select("id")
-      : client.from("gta_deliveries").insert(payload).select("id");
-    const { data, error } = await query.single();
-    if (error) throw error;
-    if (!data) throw Error("Записът не беше потвърден.");
-    formReset();
-    await load();
-    status("Доставката е записана успешно.");
-  } catch (error) {
-    $("form-status").textContent = "Грешка при запис: " + error.message;
-  } finally { $("save").disabled = false; }
-});
-
-$("cancel").addEventListener("click", formReset);
-$("new-delivery").addEventListener("click", () => {
-  formReset(); $("form-panel").scrollIntoView({ behavior:"smooth" });
-});
-$("reload").addEventListener("click", () => load().catch(error => status(error.message, true)));
-$("group-list").addEventListener("click", event => {
-  const btn = event.target.closest("[data-declaration]");
-  if (!btn) return;
-  activeDeclaration = btn.dataset.declaration;
-  currentPage = 0;
-  render();
-  formReset();
-});
-for (const id of ["search","date-from","date-to"]) {
-  $(id).addEventListener("input", () => { currentPage=0; render(); });
+async function updateRow(id,patch){
+  if(busy)return false;
+  busy=true;
+  try{
+    const {data,error}=await client.from("gta_deliveries").update(patch).eq("id",id).select("id").single();
+    if(error)throw error;
+    if(!data)throw Error("Записът не беше потвърден.");
+    const record=records.find(r=>r.id===id);
+    if(record)Object.assign(record,patch);
+    render();status("Промените са запазени.");return true;
+  }catch(error){status("Грешка при запис: "+error.message,true);return false;}
+  finally{busy=false;}
 }
-$("clear-filters").addEventListener("click", () => {
-  $("search").value = ""; $("date-from").value = ""; $("date-to").value = "";
-  activeDeclaration = ""; currentPage=0; render();
-});
-$("previous").addEventListener("click", () => { currentPage--;render(); });
-$("next").addEventListener("click", () => { currentPage++;render(); });
-$("records-body").addEventListener("click", async event => {
-  const button = event.target.closest("button[data-edit],button[data-move],button[data-delete]");
-  if (!button) return;
-  const id = button.dataset.edit || button.dataset.move || button.dataset.delete;
-  const record = records.find(r => r.id === id);
-  if (!record) return;
-  if (button.dataset.edit) { edit(record); return; }
-  if (button.dataset.move) {
-    edit(record);
-    $("delivery-form").elements.declaration_no.focus();
-    $("form-status").textContent = "Промени номера на декларацията и натисни „Запази промените“.";
-    return;
-  }
-  if (!window.confirm("Да се изтрие ли доставката с АРК " + record.ark + "?")) return;
-  button.disabled = true;
-  try {
-    const { data, error } = await client.from("gta_deliveries").delete().eq("id", id).select("id").single();
-    if (error) throw error;
-    if (!data) throw Error("Неуспешно изтриване.");
-    if (editId === id) formReset();
-    await load();
-    status("Доставката е изтрита.");
-  } catch (error) { status("Неуспешно изтриване: " + error.message, true); }
-  finally { button.disabled = false; }
-});
-
-function csvValue(value) {
-  const str = String(value ?? "");
-  return '"' + str.replaceAll('"','""') + '"';
+async function updateGroup(name,used){
+  if(busy||!name)return;
+  busy=true;
+  try{
+    // One atomic update for the entire declaration; no per-row network loop.
+    const {data,error}=await client.from("gta_deliveries").update({is_used:used}).eq("declaration_no",name).select("id");
+    if(error)throw error;
+    const expected=records.filter(r=>r.declaration_no===name).length;
+    if(!data||data.length!==expected)throw Error("Не всички редове са актуализирани. Обновете регистъра.");
+    for(const r of records)if(r.declaration_no===name)r.is_used=used;
+    render();status(used?"Декларацията е маркирана като използвана.":"Маркировката е премахната.");
+  }catch(error){status("Грешка: "+error.message,true);await load().catch(()=>{});}
+  finally{busy=false;}
 }
-$("export").addEventListener("click", () => {
-  const headers = ["Дата на доставка","Дата на документ","АРК","Фактура №","Декларация №","Влекач","Цистерна","Литри","Контрагент","Населено място","Бележки"];
-  const data = visibleRows().map(r => fields.map(key => csvValue(r[key])).join(";"));
-  const text = "\uFEFF" + headers.map(csvValue).join(";") + "\r\n" + data.join("\r\n");
-  const url = URL.createObjectURL(new Blob([text],{type:"text/csv;charset=utf-8"}));
-  const anchor = document.createElement("a");
-  anchor.href=url; anchor.download = activeDeclaration ? "декларация-" + activeDeclaration.replace(/[^a-zA-Z0-9_-]/g,"_") + ".csv" : "доставки-декларации.csv";
-  document.body.append(anchor); anchor.click(); anchor.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+function closeMenus(){for(const id of ["group-menu","row-menu"])$(id).hidden=true;menuTarget=null;}
+function openMenu(id,x,y){closeMenus();const menu=$(id);menu.hidden=false;menu.style.left=Math.max(8,Math.min(x,window.innerWidth-menu.offsetWidth-8))+"px";menu.style.top=Math.max(8,Math.min(y,window.innerHeight-menu.offsetHeight-8))+"px";}
+$("delivery-form").addEventListener("submit",async event=>{
+  event.preventDefault();const form=event.currentTarget;
+  if(!form.reportValidity()||busy)return;
+  const payload=Object.fromEntries(createFields.map(key=>[key,String(form.elements[key].value).trim()]));
+  if(!payload.delivered_on||!payload.ark||!payload.declaration_no)return;
+  busy=true;$("save").disabled=true;$("form-status").textContent="Записване...";
+  try{
+    const query=editId?client.from("gta_deliveries").update(payload).eq("id",editId).select("id"):
+      client.from("gta_deliveries").insert(payload).select("id");
+    const {data,error}=await query.single();
+    if(error)throw error;if(!data)throw Error("Записът не беше потвърден.");
+    formReset();await load();status("Доставката е записана.");
+  }catch(error){$("form-status").textContent="Грешка: "+error.message;}
+  finally{busy=false;$("save").disabled=false;}
 });
-$("logout").addEventListener("click", async () => { await client.auth.signOut(); location.replace("./"); });
-client.auth.onAuthStateChange(event => { if (event === "SIGNED_OUT") location.replace("./"); });
-try { await guard(); await load(); }
-catch (error) {
-  $("guard").textContent = error.message;
-  if (!$("app").hidden) status(error.message,true);
-  else setTimeout(() => location.replace("./"), 2500);
-}
+$("cancel").addEventListener("click",formReset);
+$("new-delivery").addEventListener("click",()=>{formReset();$("form-panel").scrollIntoView({behavior:"smooth"});});
+$("reload").addEventListener("click",()=>load().catch(error=>status(error.message,true)));
+$("group-list").addEventListener("click",event=>{
+  const btn=event.target.closest("[data-declaration]");if(!btn)return;
+  activeDeclaration=btn.dataset.declaration;currentPage=0;render();formReset();
+});
+$("group-list").addEventListener("contextmenu",event=>{
+  const btn=event.target.closest("[data-declaration]");if(!btn||!btn.dataset.declaration)return;
+  event.preventDefault();const name=btn.dataset.declaration;
+  const members=records.filter(r=>r.declaration_no===name);
+  const used=members.every(r=>r.is_used);
+  menuTarget={type:"group",name,used};
+  openMenu("group-menu",event.clientX,event.clientY);
+  menuTarget={type:"group",name,used};
+  $("group-toggle-used").textContent=used?"Премахни маркировката":"✓ Маркирай като използвана";
+});
+$("group-toggle-used").addEventListener("click",async()=>{
+  const target=menuTarget;closeMenus();
+  if(target?.type==="group")await updateGroup(target.name,!target.used);
+});
+$("row-toggle-used").addEventListener("click",async()=>{
+  const target=menuTarget;closeMenus();
+  if(target?.type==="row")await updateRow(target.id,{is_used:!target.used});
+});
+$("records-body").addEventListener("contextmenu",event=>{
+  if(event.target.closest("input"))return;
+  const tr=event.target.closest("tr[data-id]");if(!tr)return;
+  event.preventDefault();selectedRowId=tr.dataset.id;const record=records.find(r=>r.id===selectedRowId);
+  if(!record)return;
+  renderRows();openMenu("row-menu",event.clientX,event.clientY);
+  menuTarget={type:"row",id:record.id,used:record.is_used};
+  $("row-toggle-used").textContent=record.is_used?"Премахни маркировката":"✓ Маркирай като използван";
+});
+document.addEventListener("click",event=>{if(!event.target.closest(".context-menu"))closeMenus();});
+document.addEventListener("keydown",event=>{if(event.key==="Escape")closeMenus();});
+window.addEventListener("scroll",closeMenus,true);
+for(const id of ["group-search","group-filter"])$(id).addEventListener("input",()=>{groupPage=0;renderGroups();});
+$("group-previous").addEventListener("click",()=>{groupPage--;renderGroups();});
+$("group-next").addEventListener("click",()=>{groupPage++;renderGroups();});
+for(const id of ["search","date-from","date-to"])$(id).addEventListener("input",()=>{currentPage=0;renderRows();});
+$("clear-filters").addEventListener("click",()=>{$("search").value="";$("date-from").value="";$("date-to").value="";activeDeclaration="";currentPage=0;render();});
+$("previous").addEventListener("click",()=>{currentPage--;renderRows();});
+$("next").addEventListener("click",()=>{currentPage++;renderRows();});
+$("records-body").addEventListener("change",async event=>{
+  const input=event.target.closest("input[data-field]");if(!input)return;
+  const tr=input.closest("tr[data-id]"),record=records.find(r=>r.id===tr.dataset.id);
+  if(!record)return;
+  const field=input.dataset.field,value=input.value.trim();
+  if(value===String(record[field]??""))return;
+  const ok=await updateRow(record.id,{[field]:value});
+  if(!ok)input.value=record[field]??"";
+});
+$("records-body").addEventListener("keydown",event=>{
+  if(event.key==="Enter"&&event.target.matches("input[data-field]")){event.preventDefault();event.target.blur();}
+});
+$("records-body").addEventListener("click",async event=>{
+  const tr=event.target.closest("tr[data-id]");if(!tr)return;
+  const button=event.target.closest("button[data-edit],button[data-move],button[data-delete]");
+  if(!button){if(!event.target.closest("input")){selectedRowId=tr.dataset.id;renderRows();}return;}
+  const record=records.find(r=>r.id===tr.dataset.id);if(!record)return;
+  if(button.dataset.edit){edit(record);return;}
+  if(button.dataset.move){edit(record);$("delivery-form").elements.declaration_no.focus();$("form-status").textContent="Въведи нов номер на декларацията.";return;}
+  if(!window.confirm("Да се изтрие ли доставката с АРК "+record.ark+"?")||busy)return;
+  busy=true;button.disabled=true;
+  try{
+    const {data,error}=await client.from("gta_deliveries").delete().eq("id",record.id).select("id").single();
+    if(error)throw error;if(!data)throw Error("Неуспешно изтриване.");
+    records=records.filter(r=>r.id!==record.id);if(editId===record.id)formReset();render();status("Доставката е изтрита.");
+  }catch(error){status("Грешка: "+error.message,true);button.disabled=false;}
+  finally{busy=false;}
+});
+const csvValue=value=>'"'+String(value??"").replaceAll('"','""')+'"';
+$("export").addEventListener("click",()=>{
+  const headers=["Дата доставка","Дата документ","АРК","Фактура №","Декларация №","Влекач","Цистерна","Литри","Контрагент","Място","Бележки","Използван"];
+  const rows=visibleRows().map(r=>csvFields.map(k=>csvValue(k==="is_used"?(r.is_used?"Да":"Не"):r[k])).join(";"));
+  const text="\uFEFF"+headers.map(csvValue).join(";")+"\r\n"+rows.join("\r\n");
+  const url=URL.createObjectURL(new Blob([text],{type:"text/csv;charset=utf-8"}));
+  const a=document.createElement("a");a.href=url;a.download=activeDeclaration?"декларация-"+activeDeclaration.replace(/[^a-zA-Z0-9_-]/g,"_")+".csv":"доставки-декларации.csv";
+  document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+});
+$("logout").addEventListener("click",async()=>{await client.auth.signOut();location.replace("./");});
+client.auth.onAuthStateChange(event=>{if(event==="SIGNED_OUT")location.replace("./");});
+try{await guard();await load();}catch(error){$("guard").textContent=error.message;if(!$("app").hidden)status(error.message,true);}

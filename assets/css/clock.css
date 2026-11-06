@@ -6,3 +6,9 @@
 .gta-clock-header,.gta-clock-toolbar{margin-left:auto;flex-shrink:0}
 @media(max-width:900px){.gta-clock-header,.gta-clock-toolbar{margin-left:0}}
 @media(max-width:640px){.gta-clock{gap:7px;padding:8px 10px;font-size:11px}.gta-clock-time{font-size:15px}.gta-clock-zone{padding-left:7px}}
+/* Stable geometry for proportional numerals: seconds never resize the container. */
+.gta-clock{flex-wrap:nowrap;min-width:235px;justify-content:space-between;gap:8px}
+.gta-clock-date{display:inline-block;min-width:72px;text-align:center;font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+.gta-clock-time{display:inline-block;min-width:86px;text-align:center;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+.gta-clock-zone{flex:none}
+@media(max-width:640px){.gta-clock{min-width:215px}.gta-clock-time{min-width:78px}}

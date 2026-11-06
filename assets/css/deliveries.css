@@ -55,3 +55,29 @@ td{color:#234c62}
 #guard{font-size:16px}
 @media(max-width:1060px){.filter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){body{padding-left:74px}.wrap{padding:22px 14px 70px}.panel{padding:16px}.filter-grid,.form-grid{grid-template-columns:minmax(0,1fr)}.field.wide{grid-column:auto}.group-card{min-width:138px}}
+
+/* Compact, paginated declaration groups and inline row editing. */
+.group-controls{display:flex;align-items:end;gap:12px;flex-wrap:wrap;margin-top:16px}
+.group-controls .field{min-width:160px}.group-controls .field span{font-size:12px;font-weight:750;color:#56748b}
+.group-controls select{padding:11px 12px;border:1px solid #b7d4e2;border-radius:10px;background:#fbfeff;color:#123c51}
+.group-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:10px}
+.group-card{width:100%;max-width:none;min-width:0;position:relative;min-height:69px}
+.group-card.used{background:#f2f5f7;border-color:#ccd6dc;color:#758594}
+.group-card.used b{text-decoration:line-through;text-decoration-color:#97a7b1}
+.group-card .used-label{display:inline-block;width:max-content;background:#dce8e5;color:#386d62;padding:3px 7px;border-radius:6px;font-size:10px;font-weight:800;text-decoration:none}
+.group-card.selected{box-shadow:inset 0 0 0 1px #00a9b2}
+.group-pagination{display:flex;gap:12px;align-items:center;margin-top:15px}
+.context-menu{position:fixed;z-index:500;background:#fff;border:1px solid #b7d4e2;border-radius:11px;box-shadow:0 15px 45px #0d344633;padding:5px;min-width:195px}
+.context-menu button{display:block;border:0;background:transparent;width:100%;padding:12px;text-align:left;border-radius:7px;color:#16455d;font-weight:750;font-size:12px}
+.context-menu button:hover{background:#e8f8fb}
+tr.row-used td{background:#eaf7ef!important;border-bottom-color:#cce6d6}
+tr.row-used .mono{color:#28724d}
+tr.row-selected td{box-shadow:inset 0 1px #0da4b0,inset 0 -1px #0da4b0}
+tr[data-id]{cursor:default}
+.row-used-label{background:#d2eddb;color:#276945;padding:5px 8px;border-radius:7px;font-weight:800;white-space:nowrap}
+.row-pending-label{background:#edf3f6;color:#6e8593;padding:5px 8px;border-radius:7px;white-space:nowrap}
+.inline-field{width:120px;min-width:95px;padding:8px 9px;border:1px solid #d2e3eb;border-radius:8px;background:#fff;color:#163d54;font-size:12px}
+.inline-field.notes{width:190px}
+.inline-field:focus{outline:2px solid #0b9fad}
+.row-buttons{white-space:nowrap}
+@media(max-width:700px){.group-list{grid-template-columns:repeat(auto-fill,minmax(145px,1fr))}.group-controls .field{flex:1}.compact-form{grid-template-columns:1fr}}
