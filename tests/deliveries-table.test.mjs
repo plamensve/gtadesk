@@ -180,3 +180,14 @@ test("Separate declaration analysis uses a document_kind discriminator",()=>{
  assert.match(js,/createDeclarationZip/);
  assert.match(html,/jszip@3\.10\.1/);
 });
+
+test("Declaration cards fill their grid columns and keep the previous low profile",()=>{
+  const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
+  const block=css.slice(css.indexOf("/* Declarational workspace: fixed card geometry"),css.indexOf("/* Invoice: remove unused gap"));
+  assert.match(block,/body\.gta-deliveries-page \.group-list \.group-card\{[\s\S]*?width:100%;min-width:0;max-width:none/);
+  assert.match(block,/height:112px;min-height:112px;max-height:112px/);
+  assert.match(block,/group-card\[data-declaration=""\]/);
+  assert.match(block,/grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+  assert.match(block,/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+  assert.doesNotMatch(block,/width:calc\(\(100% - 30px\)\/4\)/);
+});
