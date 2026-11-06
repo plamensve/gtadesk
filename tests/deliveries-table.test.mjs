@@ -131,3 +131,18 @@ test("Customs export controls and pinned pdf-lib are present",()=>{
   assert.match(js,/prepareCustomsBundle/);
   assert.match(js,/mergeCustomsPdfs/);
 });
+
+test("Delivery date uses a compact, fixed-width table column",()=>{
+  const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
+  assert.match(css,/#records-table th:nth-child\(2\),#records-table td:nth-child\(2\)\s*\{[\s\S]*?width:104px/);
+});
+test("PDF document manager has preview, download and delete actions",()=>{
+  assert.match(html,/id="docs-preview"/);
+  assert.match(html,/id="docs-preview-frame"/);
+  assert.match(html,/id="docs-preview-close"/);
+  assert.match(js,/previewDeliveryPdf/);
+  assert.match(js,/removeDeliveryPdf/);
+  assert.match(js,/window\.confirm/);
+  assert.match(js,/resetDocPreview/);
+  assert.match(js,/await loadDocs\(\);render\(\);renderDocs\(\)/);
+});

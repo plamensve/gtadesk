@@ -310,3 +310,32 @@ body.gta-deliveries-page .scroll{scrollbar-gutter:auto;scrollbar-width:thin;scro
 .customs-export-controls #customs-export{white-space:normal;text-align:center;min-height:40px}
 .customs-export-progress{min-height:16px;margin-top:8px}
 @media(max-width:850px){.customs-export-controls{width:100%;margin-left:0;justify-content:flex-end}}
+
+/* Compact delivery date: keep only the width needed for DD.MM.YYYY. */
+#records-table th:nth-child(2),#records-table td:nth-child(2){
+  width:104px;min-width:104px;max-width:104px;
+  padding-inline:5px;white-space:nowrap;font-variant-numeric:tabular-nums;
+}
+#records-table td:nth-child(2){font-size:11px}
+
+/* Document management, private inline preview and safe actions. */
+body.gta-deliveries-page .docs-dialog{width:min(850px,calc(100vw - 30px));max-height:90dvh;overflow-y:auto;box-sizing:border-box}
+body.gta-deliveries-page .docs-upload-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px}
+body.gta-deliveries-page .docs-upload-controls #docs-file{flex:1 1 230px;min-width:0;margin:0}
+body.gta-deliveries-page .docs-list{display:grid;gap:8px;margin-top:14px}
+body.gta-deliveries-page .docs-entry{border:1px solid #daeaf1;border-radius:10px;padding:11px 12px;gap:14px}
+body.gta-deliveries-page .docs-filename{min-width:0;flex:1;overflow-wrap:anywhere;font-size:13px;font-weight:650;color:#153e54}
+body.gta-deliveries-page .docs-entry-controls{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;flex-shrink:0}
+body.gta-deliveries-page .docs-entry-controls .btn{padding:7px 10px;min-height:35px}
+body.gta-deliveries-page .docs-remove{color:#ad3045;border-color:#e7bdc6}
+body.gta-deliveries-page .docs-remove:hover{background:#fff0f2;border-color:#cc8998}
+body.gta-deliveries-page .docs-preview{margin-top:18px;border:1px solid #c6e3eb;border-radius:12px;overflow:hidden;background:#f2f8fa}
+body.gta-deliveries-page .docs-preview[hidden]{display:none}
+body.gta-deliveries-page .docs-preview-header{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px}
+body.gta-deliveries-page .docs-preview-header strong{overflow-wrap:anywhere;min-width:0}
+body.gta-deliveries-page #docs-preview-frame{display:block;width:100%;height:min(58vh,620px);min-height:300px;border:0;background:#fff}
+@media(max-width:580px){
+  body.gta-deliveries-page .docs-entry{flex-direction:column;align-items:stretch}
+  body.gta-deliveries-page .docs-entry-controls{justify-content:flex-start}
+  body.gta-deliveries-page .docs-dialog{padding:16px}
+}
