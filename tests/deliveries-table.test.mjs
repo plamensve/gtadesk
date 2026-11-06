@@ -146,3 +146,12 @@ test("PDF document manager has preview, download and delete actions",()=>{
   assert.match(js,/resetDocPreview/);
   assert.match(js,/await loadDocs\(\);render\(\);renderDocs\(\)/);
 });
+
+test("Invoice field includes invoice date and paperclip upload action",()=>{
+ assert.match(html,/name="invoice_date" type="date"/);
+ const source=js.slice(js.indexOf("function rowHtml("),js.indexOf("function renderRows("));
+ assert.match(source,/invoiceDisplay\(r\)/);
+ assert.match(source,/data-invoice-docs/);
+ assert.match(source,/invoice-attach-trigger/);
+ assert.match(js,/gta_invoice_documents/);
+});
