@@ -9,7 +9,7 @@ const prettyDate = date => date ? date.slice(8,10)+"."+date.slice(5,7)+"."+date.
 const PAGE_SIZE = 40, GROUP_PAGE_SIZE = 8;
 let records=[], activeDeclaration="", currentPage=0, groupPage=0, editId=null, selectedRowId=null, busy=false;
 let menuTarget=null;
-const createFields=["delivered_on","ark","declaration_no"];
+const createFields=["delivered_on","ark","declaration_no","invoice_no"];
 const csvFields=["delivered_on","document_date","ark","invoice_no","declaration_no","tractor","tanker","quantity_liters","counterparty","destination","notes","is_used"];
 const status=(message,bad=false)=>{$("status").textContent=message;$("status").classList.toggle("bad",bad);};
 const normalize=value=>String(value??"").trim().toLocaleLowerCase("bg");
