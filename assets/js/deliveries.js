@@ -158,7 +158,7 @@ $("delivery-form").addEventListener("submit",async event=>{
   busy=true;$("save").disabled=true;$("form-status").textContent="Записване...";
   try{
     const query=editId?client.from("gta_deliveries").update(payload).eq("id",editId).select("id"):
-      client.from("gta_deliveries").insert(payload).select("id");
+      client.from("gta_deliveries").insert({...payload,notes:""}).select("id");
     const {data,error}=await query.single();
     if(error)throw error;if(!data)throw Error("Записът не беше потвърден.");
     formReset();await load();status("Доставката е записана.");
