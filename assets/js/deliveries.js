@@ -17,7 +17,7 @@ let menuTarget=null,documents=[],invoiceDocuments=[],docsTarget=null,declaration
 let pdfPreviewObjectUrl=null,pdfPreviewRequest=0,pdfDocumentBusy=false,activePreviewDocumentId=null;
 const selectedDeliveryIds=new Set();
 const createFields=["delivered_on","ark","declaration_no","counterparty","quantity_liters","invoice_no","invoice_date"];
-const csvFields=["delivered_on","document_date","ark","invoice_no","invoice_date","declaration_no","tractor","tanker","quantity_liters","counterparty","destination","notes","usage_status"];
+const csvFields=["delivered_on","document_date","ark","invoice_no","invoice_date","declaration_no","declaration_date","tractor","tanker","quantity_liters","counterparty","destination","notes","usage_status"];
 const status=(message,bad=false)=>{$("status").textContent=message;$("status").classList.toggle("bad",bad);};
 const normalize=value=>String(value??"").trim().toLocaleLowerCase("bg");
 
@@ -552,15 +552,16 @@ $("records-body").addEventListener("click",event=>{
 });
 $("export").addEventListener("click",()=>{
   if(!window.XLSX){status("Библиотеката за Excel не е заредена. Проверете връзката и опитайте отново.",true);return;}
-  const headers=["Дата доставка","Дата документ","АРК","Фактура №","Дата фактура","Декларация №","Влекач","Цистерна","Литри","Контрагент","Място","Бележки","Статус"];
+  const headers=["Дата доставка","Дата документ","АРК","Фактура №","Дата фактура","Декларация №","Дата декларация","Влекач","Цистерна","Литри","Контрагент","Място","Бележки","Статус"];
   const data=visibleRows().map(r=>csvFields.map(k=>{
     if(k==="usage_status")return usageLabel(usage(r));
     if(k==="quantity_liters")return r[k]==null?"":Number(r[k]);
     if(k==="notes")return visibleNote(r);
+    if(k==="declaration_date")return declarationDateOf(r.declaration_no);
     return String(r[k]??"");
   }));
   const worksheet=XLSX.utils.aoa_to_sheet([headers,...data]);
-  worksheet["!cols"]=[{wch:16},{wch:16},{wch:25},{wch:19},{wch:16},{wch:18},{wch:17},{wch:17},{wch:16},{wch:24},{wch:22},{wch:35},{wch:17}];
+  worksheet["!cols"]=[{wch:16},{wch:16},{wch:25},{wch:19},{wch:16},{wch:18},{wch:16},{wch:17},{wch:17},{wch:16},{wch:24},{wch:22},{wch:35},{wch:17}];
   worksheet["!autofilter"]={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:data.length,c:headers.length-1}})};
   // ARK and invoice identifiers must remain exact text, including leading zeros.
   for(let row=1;row<=data.length;row++){
@@ -568,7 +569,7 @@ $("export").addEventListener("click",()=>{
       const cell=worksheet[XLSX.utils.encode_cell({r:row,c:col})];
       if(cell){cell.t="s";cell.v=String(cell.v);}
     }
-    const liters=worksheet[XLSX.utils.encode_cell({r:row,c:8})];
+    const liters=worksheet[XLSX.utils.encode_cell({r:row,c:9})];
     if(liters&&liters.t==="n")liters.z="#,##0.###";
   }
   const workbook=XLSX.utils.book_new();
@@ -581,7 +582,7 @@ $("export").addEventListener("click",()=>{
 const bucket="gta-delivery-pdfs";
 async function loadDocs(){
  const [deliveryResult,invoiceResult]=await Promise.all([
-  client.from("gta_delivery_documents").select("id,delivery_id,declaration_no,storage_path,filename,created_at"),
+  client.from("gta_delivery_documents").select("id,delivery_id,declaration_no,document_kind,storage_path,filename,created_at"),
   client.from("gta_invoice_documents").select("id,invoice_no,invoice_date,storage_path,filename,created_at")
  ]);
  if(deliveryResult.error)throw deliveryResult.error;
@@ -607,6 +608,7 @@ async function openDocs(target){
   $("docs-title").textContent=target.type==="row"?
     "PDF към АРК "+(records.find(r=>r.id===target.id)?.ark||""):
     target.type==="invoice"?"Фактура "+target.invoiceNo+" / "+prettyDate(target.invoiceDate):
+    target.type==="analysis"?"Анализ към декларация "+target.name:
     "PDF към декларация "+target.name;
   $("docs-dialog").showModal();
   renderDocs();
@@ -637,7 +639,9 @@ function renderDocs(){
   if(!target)return;
   const items=target.type==="invoice"
     ?documentsForInvoice(invoiceDocuments,{invoice_no:target.invoiceNo,invoice_date:target.invoiceDate})
-    :documents.filter(d=>target.type==="row"?d.delivery_id===target.id:d.declaration_no===target.name);
+    :documents.filter(d=>target.type==="row"
+      ?d.delivery_id===target.id
+      :d.declaration_no===target.name&&(target.type==="analysis"?d.document_kind==="analysis":d.document_kind!=="analysis"));
   if(!items.length){
     list.textContent="Няма качени PDF документи.";
     return;
@@ -702,7 +706,7 @@ $("docs-upload").onclick=async()=>{
  try{const {error}=await client.storage.from(bucket).upload(path,file,{contentType:"application/pdf"});if(error)throw error;
  const entry=t.type==="invoice"
   ?{invoice_no:t.invoiceNo,invoice_date:t.invoiceDate,storage_path:path,filename:file.name}
-  :{delivery_id:t.type==="row"?t.id:null,declaration_no:t.type==="group"?t.name:null,storage_path:path,filename:file.name};
+  :{delivery_id:t.type==="row"?t.id:null,declaration_no:(t.type==="group"||t.type==="analysis")?t.name:null,document_kind:t.type==="analysis"?"analysis":"supporting",storage_path:path,filename:file.name};
  const {error:dbError}=await client.from(t.type==="invoice"?"gta_invoice_documents":"gta_delivery_documents").insert(entry);
  if(dbError){await client.storage.from(bucket).remove([path]);throw dbError;}
  await loadDocs();render();renderDocs();$("docs-file").value="";$("docs-message").textContent="Успешно качен PDF.";
