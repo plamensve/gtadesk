@@ -1,3 +1,4 @@
+import { formatDateDMY } from "./date-format.js";
 /** Canonical invoice reference: document sharing requires BOTH number and date. */
 export function invoiceKey(number,date){
  const normalized=String(number??"").trim();
@@ -11,5 +12,5 @@ export function documentsForInvoice(docs,record){
 export function invoiceDisplay(record){
  const no=String(record.invoice_no??"").trim();
  const day=String(record.invoice_date??"").slice(0,10);
- return no?(invoiceKey(no,day)?no+"/"+day.slice(8,10)+"."+day.slice(5,7)+"."+day.slice(0,4):no):"—";
+ return no?(invoiceKey(no,day)?no+"/"+formatDateDMY(day):no):"—";
 }
