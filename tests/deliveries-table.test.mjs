@@ -304,3 +304,16 @@ test("Delivery table uses column-based fluid widths without a horizontal scroll 
   assert.equal(percentages.reduce((a,b)=>a+b,0),100);
   percentages.forEach((p,i)=>assert.ok(block.includes("nth-child("+(i+1)+"){width:"+p+"%!important}")));
 });
+
+test("Document action buttons keep labels, icons and borders inside a consistent layout",()=>{
+ const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
+ const block=css.slice(css.lastIndexOf("/* Control geometry: fit upload/preview icons"));
+ assert.ok(block.length>1000);
+ assert.match(block,/grid-template-columns:minmax\(0,1fr\) 152px/);
+ assert.match(block,/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+ assert.match(block,/\.group-card-operations > \.group-card-mini\{[\s\S]*?overflow:hidden/);
+ assert.match(block,/\.group-card-upload-label\{[\s\S]*?text-overflow:ellipsis/);
+ assert.match(block,/\.document-view-icon\{[\s\S]*?flex:0 0 17px/);
+ assert.match(block,/\.ark-doc-trigger,[\s\S]*?height:32px/);
+ assert.match(block,/nth-child\(12\)\{width:4%!important\}/);
+});
