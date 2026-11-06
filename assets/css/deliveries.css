@@ -86,3 +86,10 @@ tr[data-id]{cursor:default}
 .group-list{display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;gap:10px;padding:2px 2px 12px;scrollbar-width:thin;scroll-snap-type:x proximity}
 .group-list .group-card{flex:0 0 185px;width:185px;min-width:185px;max-width:185px;scroll-snap-align:start}
 @media(max-width:700px){.group-list{display:flex;flex-wrap:nowrap}.group-list .group-card{flex-basis:165px;width:165px;min-width:165px;max-width:165px}}
+
+/* Paginated declaration cards: one row, no horizontal scrollbar or clipped cards. */
+.group-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));overflow:visible;gap:10px;padding:2px 0;scroll-snap-type:none}
+.group-list .group-card{width:100%;min-width:0;max-width:none;flex:auto;scroll-snap-align:none}
+@media(max-width:1100px){.group-list{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){.group-list{grid-template-columns:repeat(2,minmax(0,1fr))}.group-list .group-card{width:100%;min-width:0;max-width:none}}
+@media(max-width:480px){.group-list{grid-template-columns:minmax(0,1fr)}}

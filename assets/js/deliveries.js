@@ -6,7 +6,7 @@ const $ = id => document.getElementById(id);
 const client = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 const safe = value => escapeHtml(String(value ?? ""));
 const prettyDate = date => date ? date.slice(8,10)+"."+date.slice(5,7)+"."+date.slice(0,4) : "—";
-const PAGE_SIZE = 40, GROUP_PAGE_SIZE = 8;
+const PAGE_SIZE = 40, GROUP_PAGE_SIZE = 4;
 let records=[], activeDeclaration="", currentPage=0, groupPage=0, editId=null, selectedRowId=null, busy=false;
 let menuTarget=null;
 const createFields=["delivered_on","ark","declaration_no","invoice_no"];
