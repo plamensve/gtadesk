@@ -127,3 +127,12 @@ tr.row-shared td{background:#eaf2ff!important;border-bottom-color:#cbdaf5}
 /* Sequential row numbers across filtered pages. */
 #records-table th.row-number-heading,#records-body td.row-number{width:44px;min-width:44px;max-width:44px;text-align:center;padding-inline:5px;font-variant-numeric:tabular-nums;color:#698597}
 #records-body td.row-number{font-size:12px;font-weight:750}
+
+/* Invoice number matches the ARK typography. */
+#records-body td.invoice-number{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:15px;font-weight:750;letter-spacing:.15px;line-height:1.5;white-space:nowrap;color:#103b54}
+#records-body tr.row-used td.invoice-number{color:#28724d}
+/* Locked rows are visibly read-only; unlocking stays available from the actions menu. */
+#records-body tr:has(.row-lock-indicator) td{background-color:#f3f6f8!important}
+#records-body input:disabled{background:#f0f3f5;color:#60788a;cursor:not-allowed}
+.row-lock-indicator{display:inline-block;font-size:12px;margin-left:3px;vertical-align:middle}
+#row-actions-menu button:disabled{opacity:.45;cursor:not-allowed}

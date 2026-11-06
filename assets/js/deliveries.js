@@ -31,6 +31,7 @@ function formReset(){
   arkInput.setCustomValidity("");arkValidation.textContent="АРК: точно 21 символа";arkValidation.style.color="";
 }
 function edit(record){
+  if(record.is_locked){status("Редът е заключен. Отключи го от менюто ⋮, за да го редактираш.",true);return;}
   editId=record.id;
   for(const key of createFields)$("delivery-form").elements[key].value=record[key]??"";
   $("form-title").textContent="Редакция на доставка";
@@ -78,15 +79,15 @@ function renderGroups(){
   $("active-group").textContent=activeDeclaration?"Декларация "+activeDeclaration:"Всички декларации";
 }
 function rowHtml(r,number){
-  const field=(key,label,cls="")=>'<input class="inline-field '+cls+'" data-field="'+key+'" aria-label="'+label+'" value="'+safe(r[key]??"")+'" maxlength="'+(key==="notes"?4000:250)+'">';
+  const field=(key,label,cls="")=>'<input class="inline-field '+cls+'" data-field="'+key+'" aria-label="'+label+'" value="'+safe(r[key]??"")+'" maxlength="'+(key==="notes"?4000:250)+'" '+(r.is_locked?"disabled title=\"Редът е само за четене\"":"")+'>';
   return '<tr data-id="'+safe(r.id)+'" class="'+(usage(r)==="used"?"row-used ":usage(r)==="shared"?"row-shared ":"")+(selectedRowId===r.id?"row-selected":"")+'">'+
     '<td class="row-number">'+number+'</td><td>'+prettyDate(r.delivered_on)+'</td><td class="mono">'+safe(r.ark)+'</td>'+
-    '<td>'+safe(r.invoice_no||"—")+'</td><td><span class="decl-label">'+safe(r.declaration_no)+'</span></td>'+
+    '<td class="invoice-number">'+safe(r.invoice_no||"—")+'</td><td><span class="decl-label">'+safe(r.declaration_no)+'</span></td>'+
     '<td>'+field("tractor","Влекач")+'</td><td>'+field("tanker","Цистерна")+'</td>'+
     '<td class="number">'+(r.quantity_liters==null?"—":Number(r.quantity_liters).toLocaleString("bg-BG",{maximumFractionDigits:3}))+'</td>'+
     '<td>'+safe(r.destination||"—")+'</td><td>'+field("notes","Бележка","notes")+'</td>'+
     '<td data-status-cell="true" class="usage-status-cell">'+('<span class="usage-label usage-'+usage(r)+'">'+safe(usageLabel(usage(r)))+'</span>')+'</td>'+
-    '<td class="actions-cell"><button type="button" class="row-actions-trigger" data-row-menu="'+safe(r.id)+'" aria-label="Действия за АРК '+safe(r.ark)+'" aria-haspopup="menu" aria-expanded="false" title="Действия">⋮</button></td></tr>';
+    '<td class="actions-cell"><button type="button" class="row-actions-trigger" data-row-menu="'+safe(r.id)+'" aria-label="Действия за АРК '+safe(r.ark)+'" aria-haspopup="menu" aria-expanded="false" title="Действия">⋮</button>'+(r.is_locked?'<span class="row-lock-indicator" title="Само за четене">🔒</span>':"")+'</td></tr>';
 }
 function renderRows(){
   const rows=visibleRows(),pageCount=Math.max(1,Math.ceil(rows.length/PAGE_SIZE));
@@ -111,6 +112,10 @@ async function load(){
 }
 async function updateRow(id,patch){
   if(busy)return false;
+  const current=records.find(r=>r.id===id);
+  if(current?.is_locked && !(Object.keys(patch).length===1 && patch.is_locked===false)){
+    status("Редът е заключен. Първо го отключи от менюто ⋮.",true);return false;
+  }
   busy=true;
   try{
     const {data,error}=await client.from("gta_deliveries").update(patch).eq("id",id).select("id").single();
@@ -126,6 +131,7 @@ async function updateGroup(name,used){
   if(busy||!name)return;
   busy=true;
   try{
+    if(records.some(r=>r.declaration_no===name&&r.is_locked))throw Error("Декларацията съдържа заключени редове. Отключи ги преди промяна на общия статус.");
     // One atomic update for the entire declaration; no per-row network loop.
     const {data,error}=await client.from("gta_deliveries").update({is_used:used,usage_status:used?"used":"unused"}).eq("declaration_no",name).select("id");
     if(error)throw error;
@@ -154,6 +160,7 @@ $("delivery-form").addEventListener("submit",async event=>{
   validateArk();
   if(!form.reportValidity()||busy)return;
   const payload=Object.fromEntries(createFields.map(key=>[key,String(form.elements[key].value).trim()]));
+  if(editId&&records.find(r=>r.id===editId)?.is_locked){$("form-status").textContent="Редът е заключен.";return;}
   if(!payload.delivered_on||!payload.ark||!payload.declaration_no)return;
   busy=true;$("save").disabled=true;$("form-status").textContent="Записване...";
   try{
@@ -197,6 +204,11 @@ $("records-body").addEventListener("contextmenu",event=>{
   event.preventDefault();selectedRowId=tr.dataset.id;const record=records.find(r=>r.id===selectedRowId);
   if(!record)return;
   const statusCell=event.target.closest("[data-status-cell]");
+  if(!statusCell){
+    $("row-actions-menu").querySelector('[data-row-action="lock"]').textContent=record.is_locked?"🔓 Отключи реда":"🔒 Само за четене";
+    $("row-actions-menu").querySelector('[data-row-action="edit"]').disabled=!!record.is_locked;
+    $("row-actions-menu").querySelector('[data-row-action="delete"]').disabled=!!record.is_locked;
+  }
   renderRows();openMenu(statusCell?"row-menu":"row-actions-menu",event.clientX,event.clientY);
   menuTarget={type:"row",id:record.id};
 });
@@ -216,6 +228,7 @@ $("records-body").addEventListener("change",async event=>{
   if(!record)return;
   const field=input.dataset.field,value=input.value.trim();
   if(value===String(record[field]??""))return;
+  if(record.is_locked){input.value=record[field]??"";status("Редът е заключен.",true);return;}
   const ok=await updateRow(record.id,{[field]:value});
   if(!ok)input.value=record[field]??"";
 });
@@ -223,6 +236,7 @@ $("records-body").addEventListener("keydown",event=>{
   if(event.key==="Enter"&&event.target.matches("input[data-field]")){event.preventDefault();event.target.blur();}
 });
 async function deleteDelivery(record){
+  if(record.is_locked){status("Редът е заключен. Първо го отключи.",true);return;}
   if(busy||!window.confirm("Да се изтрие ли доставката с АРК "+record.ark+"?"))return;
   busy=true;
   try{
@@ -239,7 +253,8 @@ $("row-actions-menu").addEventListener("click",async event=>{
   const target=menuTarget;closeMenus();
   if(!action||target?.type!=="row")return;
   const record=records.find(r=>r.id===target.id);if(!record)return;
-  if(action==="edit")edit(record);
+  if(action==="lock")await updateRow(record.id,{is_locked:!record.is_locked});
+  else if(action==="edit")edit(record);
   else if(action==="delete")await deleteDelivery(record);
 });
 $("records-body").addEventListener("dblclick",event=>{
@@ -260,6 +275,10 @@ $("records-body").addEventListener("click",event=>{
     if(wasOpen)return;
     selectedRowId=id;
     const rect=trigger.getBoundingClientRect();
+    const lockButton=$("row-actions-menu").querySelector('[data-row-action="lock"]');
+    lockButton.textContent=record.is_locked?"🔓 Отключи реда":"🔒 Само за четене";
+    $("row-actions-menu").querySelector('[data-row-action="edit"]').disabled=!!record.is_locked;
+    $("row-actions-menu").querySelector('[data-row-action="delete"]').disabled=!!record.is_locked;
     openMenu("row-actions-menu",rect.left,rect.bottom+4);
     menuTarget={type:"row",id};
     trigger.setAttribute("aria-expanded","true");
