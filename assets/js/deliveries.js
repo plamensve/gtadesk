@@ -336,14 +336,31 @@ $("records-body").addEventListener("click",event=>{
   const id=event.target.closest("tr[data-id]")?.dataset.id;
   if(id){selectedRowId=id;renderRows();}
 });
-const csvValue=value=>'"'+String(value??"").replaceAll('"','""')+'"';
 $("export").addEventListener("click",()=>{
+  if(!window.XLSX){status("Библиотеката за Excel не е заредена. Проверете връзката и опитайте отново.",true);return;}
   const headers=["Дата доставка","Дата документ","АРК","Фактура №","Декларация №","Влекач","Цистерна","Литри","Контрагент","Място","Бележки","Статус"];
-  const rows=visibleRows().map(r=>csvFields.map(k=>csvValue(k==="usage_status"?usageLabel(usage(r)):r[k])).join(";"));
-  const text="\uFEFF"+headers.map(csvValue).join(";")+"\r\n"+rows.join("\r\n");
-  const url=URL.createObjectURL(new Blob([text],{type:"text/csv;charset=utf-8"}));
-  const a=document.createElement("a");a.href=url;a.download=activeDeclaration?"декларация-"+activeDeclaration.replace(/[^a-zA-Z0-9_-]/g,"_")+".csv":"доставки-декларации.csv";
-  document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  const data=visibleRows().map(r=>csvFields.map(k=>{
+    if(k==="usage_status")return usageLabel(usage(r));
+    if(k==="quantity_liters")return r[k]==null?"":Number(r[k]);
+    return String(r[k]??"");
+  }));
+  const worksheet=XLSX.utils.aoa_to_sheet([headers,...data]);
+  worksheet["!cols"]=[{wch:16},{wch:16},{wch:25},{wch:19},{wch:18},{wch:17},{wch:17},{wch:16},{wch:24},{wch:22},{wch:35},{wch:17}];
+  worksheet["!autofilter"]={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:data.length,c:headers.length-1}})};
+  // ARK and invoice identifiers must remain exact text, including leading zeros.
+  for(let row=1;row<=data.length;row++){
+    for(const col of [2,3,4]){
+      const cell=worksheet[XLSX.utils.encode_cell({r:row,c:col})];
+      if(cell){cell.t="s";cell.v=String(cell.v);}
+    }
+    const liters=worksheet[XLSX.utils.encode_cell({r:row,c:7})];
+    if(liters&&liters.t==="n")liters.z="#,##0.###";
+  }
+  const workbook=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook,worksheet,"Доставки");
+  const name=activeDeclaration?"декларация-"+activeDeclaration.replace(/[^a-zA-Z0-9_-]/g,"_")+".xlsx":"доставки-декларации.xlsx";
+  XLSX.writeFile(workbook,name,{compression:true});
+  status("Excel файлът е генериран.");
 });
 $("logout").addEventListener("click",async()=>{await client.auth.signOut();location.replace("./");});
 client.auth.onAuthStateChange(event=>{if(event==="SIGNED_OUT")location.replace("./");});
