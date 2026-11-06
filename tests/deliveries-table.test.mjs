@@ -27,8 +27,10 @@ test("Inline editor markup stays valid and PDF indicators stay in action cells",
   const record={id:"delivery-1",ark:"26BG000000000982636S9",invoice_no:"7001301629",declaration_no:"165",quantity_liters:31986,tractor:"CE8708EH",tanker:"CE7996XT",notes:"",is_locked:false};
   const row=renderer(record,1);
   const inputs=[...row.matchAll(/<input\b[^>]*>/g)].map(m=>m[0]);
-  assert.equal(inputs.length,3,"Three inline edit fields expected");
-  for(const input of inputs){
+  assert.equal(inputs.length,4,"Three inline editors and one selection checkbox expected");
+  const editors=inputs.filter(input=>input.includes('class="inline-field'));
+  assert.equal(editors.length,3);
+  for(const input of editors){
     assert.doesNotMatch(input,/<span/i,"Markup must not be embedded inside input attributes");
     assert.doesNotMatch(input,/doc-indicator|📎/);
   }
@@ -45,8 +47,12 @@ test("Locked delivery fields remain disabled",()=>{
   });
   const row=renderer({id:"delivery-2",ark:"26BG000000000982636S9",declaration_no:"123",is_locked:true},2);
   const inputs=[...row.matchAll(/<input\b[^>]*>/g)].map(m=>m[0]);
-  assert.equal(inputs.length,3);
-  assert.ok(inputs.every(tag=>tag.includes(" disabled ")),"All edit fields must be disabled for locked deliveries");
+  const editors=inputs.filter(input=>input.includes('class="inline-field'));
+  const selection=inputs.filter(input=>input.includes('class="delivery-select'));
+  assert.equal(editors.length,3);
+  assert.equal(selection.length,1);
+  assert.ok(editors.every(tag=>tag.includes(" disabled ")),"All editing fields must be disabled for locked deliveries");
+  assert.ok(!selection[0].includes(" disabled "), "Locked deliveries remain selectable for PDF export");
 });
 
 test("Sofia clock is in the delivery header, not the sidebar",()=>{
