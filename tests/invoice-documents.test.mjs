@@ -8,6 +8,6 @@ test("Invoice number and date form the unique sharing key",()=>{
  assert.equal(documentsForInvoice(docs,{invoice_no:"70000012312",invoice_date:"2026-10-11"}).length,1);
  assert.equal(documentsForInvoice(docs,{invoice_no:"70000012312",invoice_date:null}).length,0);
  assert.equal(invoiceKey(" 70000012312 ","2026-10-11"),invoiceKey("70000012312","2026-10-11"));
- assert.equal(invoiceDisplay({invoice_no:"70000012312",invoice_date:"2026-10-11"}),"70000012312/11/10/2026");
+ assert.equal(invoiceDisplay({invoice_no:"70000012312",invoice_date:"2026-10-11"}),"70000012312/11.10.2026");
  assert.equal(invoiceDisplay({invoice_no:"70000012312"}),"70000012312");
 });
