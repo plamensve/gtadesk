@@ -201,6 +201,21 @@ $("row-menu").addEventListener("click",async event=>{
   const target=menuTarget;closeMenus();
   if(target?.type==="row")await updateRow(target.id,{usage_status:button.dataset.usage,is_used:button.dataset.usage==="used"});
 });
+$("records-body").addEventListener("click",event=>{
+  const cell=event.target.closest("[data-status-cell]");
+  if(!cell)return;
+  event.stopPropagation();
+  const tr=cell.closest("tr[data-id]");
+  const record=records.find(r=>r.id===tr?.dataset.id);
+  if(!record)return;
+  const rect=cell.getBoundingClientRect();
+  const wasOpen=!$("row-menu").hidden&&menuTarget?.id===record.id;
+  closeMenus();
+  if(wasOpen)return;
+  selectedRowId=record.id;
+  openMenu("row-menu",rect.left,rect.bottom+4);
+  menuTarget={type:"row",id:record.id};
+});
 $("records-body").addEventListener("contextmenu",event=>{
   if(event.target.closest("input"))return;
   const tr=event.target.closest("tr[data-id]");if(!tr)return;

@@ -157,3 +157,11 @@ body.gta-deliveries-page .panel{width:100%;max-width:none}
 
 /* ARK and invoice values must remain selectable for native Ctrl+C copying. */
 #records-body td.copyable-number,#records-body td.copyable-number *{-webkit-user-select:text;user-select:text;cursor:text}
+
+/* High-contrast status labels and left-click affordance. */
+#records-body .usage-status-cell{cursor:pointer}
+#records-body .usage-label{font-weight:800;font-size:12px;border-radius:7px;border:1px solid transparent}
+#records-body .usage-unused{background:#dbe7ef;color:#234f69;border-color:#a6c4d7}
+#records-body .usage-used{background:#19a466;color:#fff;border-color:#118a54}
+#records-body .usage-shared{background:#276fe5;color:#fff;border-color:#1857bf}
+#records-body .usage-status-cell:hover .usage-label{outline:2px solid #14a8b7;outline-offset:2px}
