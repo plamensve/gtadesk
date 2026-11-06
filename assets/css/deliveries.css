@@ -600,7 +600,8 @@ body.gta-deliveries-page input.date-display-input{
   flex:1;min-width:0;width:100%;height:100%;
   border:0!important;outline:0!important;box-shadow:none!important;
   padding:10px 8px 10px 12px!important;background:transparent!important;
-  font:500 13px/1.2 inherit;font-variant-numeric:tabular-nums;
+  font-family:inherit;font-size:13px;font-weight:500;line-height:1.2;
+  font-variant-numeric:tabular-nums;
   color:#153b51;letter-spacing:.01em;
 }
 body.gta-deliveries-page input.date-display-input::placeholder{color:#648195;opacity:1}
