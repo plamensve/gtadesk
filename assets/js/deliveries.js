@@ -28,6 +28,7 @@ function formReset(){
   $("form-title").textContent="Нова доставка";$("save").textContent="Запиши доставка";
   $("cancel").hidden=true;$("delivery-form").elements.declaration_no.value=activeDeclaration||"";
   $("form-status").textContent="";
+  arkInput.setCustomValidity("");arkValidation.textContent="АРК: точно 21 символа";arkValidation.style.color="";
 }
 function edit(record){
   editId=record.id;
@@ -137,8 +138,20 @@ async function updateGroup(name,used){
 }
 function closeMenus(){for(const id of ["group-menu","row-menu","row-actions-menu"])$(id).hidden=true;menuTarget=null;}
 function openMenu(id,x,y){closeMenus();const menu=$(id);menu.hidden=false;menu.style.left=Math.max(8,Math.min(x,window.innerWidth-menu.offsetWidth-8))+"px";menu.style.top=Math.max(8,Math.min(y,window.innerHeight-menu.offsetHeight-8))+"px";}
+const arkInput=$("field-ark");
+const arkValidation=$("ark-validation");
+function validateArk(){
+  const length=Array.from(arkInput.value).length;
+  const valid=length===21;
+  arkInput.setCustomValidity(valid?"":"АРК номерът трябва да съдържа точно 21 символа (въведени: "+length+").");
+  arkValidation.textContent=valid?"АРК номерът е с правилна дължина (21 символа).":"АРК: "+length+"/21 символа — необходима е точна дължина.";
+  arkValidation.style.color=valid?"#166f62":"#b52f46";
+  return valid;
+}
+arkInput.addEventListener("input",validateArk);
 $("delivery-form").addEventListener("submit",async event=>{
   event.preventDefault();const form=event.currentTarget;
+  validateArk();
   if(!form.reportValidity()||busy)return;
   const payload=Object.fromEntries(createFields.map(key=>[key,String(form.elements[key].value).trim()]));
   if(!payload.delivered_on||!payload.ark||!payload.declaration_no)return;
