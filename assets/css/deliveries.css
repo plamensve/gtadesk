@@ -180,3 +180,10 @@ body.gta-deliveries-page .summary-remaining strong{color:#087967}
 @media(max-width:560px){body.gta-deliveries-page .header-summary{grid-template-columns:1fr}}
 
 .docs-dialog{border:1px solid #b6dbe9;border-radius:18px;padding:24px;width:min(580px,95vw);color:#103249}.docs-dialog::backdrop{background:#102d4088}.docs-title,.docs-entry{display:flex;justify-content:space-between;align-items:center;gap:12px}.docs-entry{padding:10px;border-bottom:1px solid #d1e7ed;overflow-wrap:anywhere}#docs-file{display:block;margin:16px 0}#docs-list{margin-top:15px}.doc-indicator{font-weight:700;color:#07836e!important}
+
+/* Sidebar clock: compact and aligned above the account section. */
+.gta-sidebar-clock-wrap{margin-top:auto;padding:12px 14px 8px;min-width:0}
+.gta-clock-sidebar{display:flex;width:100%;min-width:0;max-width:100%;padding:10px 8px;gap:5px;justify-content:center;flex-wrap:wrap;white-space:normal}
+.gta-clock-sidebar .gta-clock-date{min-width:0;font-size:11px}
+.gta-clock-sidebar .gta-clock-time{min-width:0;font-size:14px}
+.gta-clock-sidebar .gta-clock-zone{font-size:10px;padding-left:6px}
