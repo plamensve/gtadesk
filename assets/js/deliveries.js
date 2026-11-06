@@ -5,20 +5,23 @@ import { fetchDeliveryPdf, removeDeliveryPdf } from "./delivery-documents.js";
 import { invoiceKey, invoiceDisplay, documentsForInvoice } from "./invoice-documents.js";
 import { prepareCustomsBundle, mergeCustomsPdfs, customsPdfFileName } from "./delivery-pdf.js";
 import { sortDeliveryRows, planDeclarationArchive, createDeclarationZip, declarationZipFileName } from "./declaration-archive.js";
+import { previewDeclarationDeletion,deleteDeclarationMetadata,cleanupDeletedPdfFiles } from "./declaration-delete.js";
+import { formatDateDMY,installDayMonthYearInputs } from "./date-format.js";
 
 const $ = id => document.getElementById(id);
 const client = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 const safe = value => escapeHtml(String(value ?? ""));
-const prettyDate = date => date ? date.slice(8,10)+"."+date.slice(5,7)+"."+date.slice(0,4) : "—";
+const prettyDate = date => formatDateDMY(date)||"—";
 const declarationDateOf=no=>declarationDetails.get(no)||"";
 const PAGE_SIZE = 40, GROUP_PAGE_SIZE = 4;
 let records=[], activeDeclaration="", currentPage=0, groupPage=0, editId=null, selectedRowId=null, busy=false;
-let menuTarget=null,documents=[],invoiceDocuments=[],docsTarget=null,declarationDetails=new Map(),archiveBusy=false;
+let menuTarget=null,documents=[],invoiceDocuments=[],docsTarget=null,declarationDetails=new Map(),archiveBusy=false,deleteDeclarationTarget=null,cleanupTask=null;
 let pdfPreviewObjectUrl=null,pdfPreviewRequest=0,pdfDocumentBusy=false,activePreviewDocumentId=null;
 const selectedDeliveryIds=new Set();
 const createFields=["delivered_on","ark","declaration_no","counterparty","quantity_liters","invoice_no","invoice_date"];
 const csvFields=["delivered_on","document_date","ark","invoice_no","invoice_date","declaration_no","declaration_date","tractor","tanker","quantity_liters","counterparty","destination","notes","usage_status"];
 const status=(message,bad=false)=>{$("status").textContent=message;$("status").classList.toggle("bad",bad);};
+const syncDateDisplays=installDayMonthYearInputs(document);
 const normalize=value=>String(value??"").trim().toLocaleLowerCase("bg");
 
 async function guard(){
@@ -36,6 +39,7 @@ function formReset(){
   $("cancel").hidden=true;$("delivery-form").elements.declaration_no.value=activeDeclaration||"";
   $("delivery-form").elements.declaration_date.value=declarationDateOf(activeDeclaration);
   $("form-status").textContent="";
+  syncDateDisplays();
   arkInput.setCustomValidity("");arkValidation.textContent="";arkValidation.hidden=true;arkValidation.style.color="";arkValidIcon.hidden=true;
 }
 function edit(record){
@@ -43,6 +47,7 @@ function edit(record){
   editId=record.id;
   for(const key of createFields)$("delivery-form").elements[key].value=record[key]??"";
   $("delivery-form").elements.declaration_date.value=declarationDateOf(record.declaration_no);
+  syncDateDisplays();
   $("form-title").textContent="Редакция на доставка";
   $("save").textContent="Запази промените";$("cancel").hidden=false;
   $("form-panel").scrollIntoView({behavior:"smooth",block:"start"});
@@ -120,19 +125,22 @@ function renderGroups(){
   $("group-previous").disabled=groupPage===0;$("group-next").disabled=groupPage>=pageCount-1;
   renderHeaderSummary();
   $("active-group").textContent=activeDeclaration?"Декларация "+activeDeclaration:"Всички декларации";
+  $("delete-active-declaration").hidden=!activeDeclaration;
 }
 function rowHtml(r,number){
   const docCount=documents.filter(d=>d.delivery_id===r.id).length;
   const invoiceDocCount=documentsForInvoice(invoiceDocuments,r).length;
   const field=(key,label,cls="")=>'<input class="inline-field '+cls+'" data-field="'+key+'" aria-label="'+label+'" value="'+safe(key==="notes"?visibleNote(r):(r[key]??""))+'" maxlength="'+(key==="notes"?4000:250)+'" autocomplete="off"'+(r.is_locked?' disabled title="Редът е само за четене"':'')+'>';
   return '<tr data-id="'+safe(r.id)+'" class="'+(usage(r)==="used"?"row-used ":usage(r)==="shared"?"row-shared ":"")+(selectedRowId===r.id?"row-selected ":"")+(selectedDeliveryIds.has(r.id)?"row-export-selected":"")+'">'+
-    '<td class="row-number"><span class="row-number-wrap"><span class="row-index">'+number+'</span><label class="delivery-select-label" title="Избери доставка за митническия PDF"><input type="checkbox" class="delivery-select" data-export-select="'+safe(r.id)+'" aria-label="Избери АРК '+safe(r.ark)+' за украинска митница"'+(selectedDeliveryIds.has(r.id)?' checked':'')+'><span class="delivery-check-ui" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.3 4.3L19 7"/></svg></span></label></span></td><td>'+prettyDate(r.delivered_on)+'</td><td class="mono copyable-number" title="Маркирай и копирай АРК номера">'+safe(r.ark)+'</td>'+
+    '<td class="row-number"><span class="row-number-wrap"><span class="row-index">'+number+'</span><label class="delivery-select-label" title="Избери доставка за митническия PDF"><input type="checkbox" class="delivery-select" data-export-select="'+safe(r.id)+'" aria-label="Избери АРК '+safe(r.ark)+' за украинска митница"'+(selectedDeliveryIds.has(r.id)?' checked':'')+'><span class="delivery-check-ui" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.3 4.3L19 7"/></svg></span></label></span></td><td>'+prettyDate(r.delivered_on)+'</td><td class="mono copyable-number ark-column" title="Маркирай и копирай АРК номера"><span class="ark-content"><span class="ark-copy-value">'+safe(r.ark)+'</span>'+
+    '<button type="button" class="ark-doc-trigger '+(docCount?'has-docs':'')+'" data-ark-docs="'+safe(r.id)+'" title="'+(docCount?docCount+' PDF документа към АРК':'Качи PDF към АРК')+'" aria-label="'+(docCount?'Прегледай '+docCount+' PDF документа':'Качи PDF документ')+' към АРК '+safe(r.ark)+'">'+
+    (docCount?'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h7l4 4v13a1 1 0 0 1-1 1H8a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M15 3v5h4"/><path d="m9 15 2 2 4-4"/></svg><span class="ark-doc-count">'+docCount+'</span>':'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h7l4 4v13a1 1 0 0 1-1 1H8a2 2 0 0 1 2-2V5a2 2 0 0 1 2-2Z"/><path d="M15 3v5h4"/><path d="M10 14v4M8 16h4"/></svg>')+'</button></span></td>'+
     '<td class="invoice-number copyable-number"><span class="invoice-cell-content"><span class="invoice-copy-value" title="Двоен клик: маркирай номер и дата на фактурата">'+safe(invoiceDisplay(r))+'</span>'+(r.invoice_no?'<button type="button" class="invoice-attach-trigger '+(invoiceDocCount?'has-docs':'')+'" data-invoice-docs="'+safe(r.id)+'" aria-label="'+(invoiceDocCount?'Преглед на '+invoiceDocCount+' PDF документа':'Прикачи PDF документ')+' към фактура '+safe(r.invoice_no)+'" title="'+(invoiceDocCount?invoiceDocCount+' прикачени PDF файла':'Прикачи PDF към фактура')+'">'+(invoiceDocCount?'<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l4 4v14H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M14 3v5h5"/><path d="m9 15 2 2 4-4"/></svg><span class="invoice-document-count">'+invoiceDocCount+'</span>':'<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.4 11.6-8.7 8.7a6 6 0 0 1-8.5-8.5l9.5-9.5a4 4 0 0 1 5.7 5.7l-9.5 9.5a2 2 0 0 1-2.8-2.8l8.8-8.8"/></svg>')+'</button>':'')+'</span></td><td><span class="decl-reference"><span class="decl-label">'+safe(r.declaration_no)+'</span><span class="decl-date-inline">'+(declarationDateOf(r.declaration_no)?prettyDate(declarationDateOf(r.declaration_no)):"Без дата")+'</span></span></td>'+
     '<td>'+field("tractor","Влекач")+'</td><td>'+field("tanker","Цистерна")+'</td>'+
     '<td class="number">'+(r.quantity_liters==null?"—":Number(r.quantity_liters).toLocaleString("bg-BG",{maximumFractionDigits:3}))+'</td>'+
     '<td>'+safe(r.destination||"—")+'</td><td>'+field("notes","Бележка","notes")+'</td>'+
     '<td data-status-cell="true" class="usage-status-cell">'+('<span class="usage-label usage-'+usage(r)+'">'+safe(usageLabel(usage(r)))+'</span>')+'</td>'+
-    '<td class="actions-cell"><button type="button" class="row-actions-trigger" data-row-menu="'+safe(r.id)+'" aria-label="Действия за АРК '+safe(r.ark)+' · '+docCount+' PDF документа" aria-haspopup="menu" aria-expanded="false" title="Действия · '+docCount+' PDF"><span aria-hidden="true">⋮</span><span class="row-doc-dot '+(docCount?'has-docs':'no-docs')+'" aria-hidden="true"></span></button>'+(r.is_locked?'<span class="row-lock-indicator" title="Само за четене">🔒</span>':"")+'</td></tr>';
+    '<td class="actions-cell"><button type="button" class="row-actions-trigger" data-row-menu="'+safe(r.id)+'" aria-label="Действия за АРК '+safe(r.ark)+' · '+docCount+' PDF документа" aria-haspopup="menu" aria-expanded="false" title="Действия · '+docCount+' PDF"><span aria-hidden="true">⋮</span></button>'+(r.is_locked?'<span class="row-lock-indicator" title="Само за четене">🔒</span>':"")+'</td></tr>';
 }
 function updateCustomsSelectionUI(){
   const selected=records.filter(r=>selectedDeliveryIds.has(r.id));
@@ -381,7 +389,7 @@ for(const id of ["group-search","group-filter"])$(id).addEventListener("input",(
 $("group-previous").addEventListener("click",()=>{groupPage--;renderGroups();});
 $("group-next").addEventListener("click",()=>{groupPage++;renderGroups();});
 for(const id of ["search","date-from","date-to"])$(id).addEventListener("input",()=>{currentPage=0;renderRows();});
-$("clear-filters").addEventListener("click",()=>{$("search").value="";$("date-from").value="";$("date-to").value="";activeDeclaration="";currentPage=0;render();});
+$("clear-filters").addEventListener("click",()=>{$("search").value="";$("date-from").value="";$("date-to").value="";syncDateDisplays();activeDeclaration="";currentPage=0;render();});
 $("previous").addEventListener("click",()=>{currentPage--;renderRows();});
 $("next").addEventListener("click",()=>{currentPage++;renderRows();});
 $("customs-clear-selection").addEventListener("click",clearCustomsSelection);
@@ -474,7 +482,7 @@ $("records-body").addEventListener("dblclick",event=>{
     const selection=window.getSelection();
     if(selection){
       const range=document.createRange();
-      range.selectNodeContents(numberCell.querySelector(".invoice-copy-value")||numberCell);
+      range.selectNodeContents(numberCell.querySelector(".invoice-copy-value")||numberCell.querySelector(".ark-copy-value")||numberCell);
       selection.removeAllRanges();
       selection.addRange(range);
     }
@@ -497,6 +505,12 @@ $("records-body").addEventListener("click",event=>{
       return;
     }
     openDocs({type:"invoice",invoiceNo:String(record.invoice_no).trim(),invoiceDate:record.invoice_date});
+    return;
+  }
+  const arkTrigger=event.target.closest("[data-ark-docs]");
+  if(arkTrigger){
+    event.stopPropagation();
+    openDocs({type:"row",id:arkTrigger.dataset.arkDocs});
     return;
   }
   const trigger=event.target.closest("[data-row-menu]");
