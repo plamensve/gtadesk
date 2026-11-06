@@ -93,3 +93,9 @@ tr[data-id]{cursor:default}
 @media(max-width:1100px){.group-list{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:760px){.group-list{grid-template-columns:repeat(2,minmax(0,1fr))}.group-list .group-card{width:100%;min-width:0;max-width:none}}
 @media(max-width:480px){.group-list{grid-template-columns:minmax(0,1fr)}}
+
+tr.row-shared td{background:#eaf2ff!important;border-bottom-color:#cbdaf5}
+.usage-status-cell{cursor:context-menu;white-space:nowrap}
+.usage-label{display:inline-flex;padding:6px 9px;border-radius:7px;font-weight:800;font-size:11px}
+.usage-unused{background:#edf3f6;color:#6e8593}.usage-used{background:#d2eddb;color:#276945}.usage-shared{background:#dce8ff;color:#285da1}
+.usage-status-cell:hover .usage-label{outline:1px solid #80b5ca}

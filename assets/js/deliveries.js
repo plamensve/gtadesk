@@ -10,7 +10,7 @@ const PAGE_SIZE = 40, GROUP_PAGE_SIZE = 4;
 let records=[], activeDeclaration="", currentPage=0, groupPage=0, editId=null, selectedRowId=null, busy=false;
 let menuTarget=null;
 const createFields=["delivered_on","ark","declaration_no","invoice_no"];
-const csvFields=["delivered_on","document_date","ark","invoice_no","declaration_no","tractor","tanker","quantity_liters","counterparty","destination","notes","is_used"];
+const csvFields=["delivered_on","document_date","ark","invoice_no","declaration_no","tractor","tanker","quantity_liters","counterparty","destination","notes","usage_status"];
 const status=(message,bad=false)=>{$("status").textContent=message;$("status").classList.toggle("bad",bad);};
 const normalize=value=>String(value??"").trim().toLocaleLowerCase("bg");
 
@@ -36,11 +36,13 @@ function edit(record){
   $("save").textContent="Запази промените";$("cancel").hidden=false;
   $("form-panel").scrollIntoView({behavior:"smooth",block:"start"});
 }
+const usage=r=>r.usage_status||(r.is_used?"used":"unused");
+const usageLabel=s=>({unused:"Неизползван",used:"Използван",shared:"Общ"})[s]||"Неизползван";
 function groups(){
   const map=new Map();
   for(const r of records){
     if(!map.has(r.declaration_no))map.set(r.declaration_no,{count:0,liters:0,used:0});
-    const g=map.get(r.declaration_no);g.count++;g.liters+=Number(r.quantity_liters||0);if(r.is_used)g.used++;
+    const g=map.get(r.declaration_no);g.count++;g.liters+=Number(r.quantity_liters||0);if(usage(r)==="used")g.used++;
   }
   return [...map].sort((a,b)=>a[0].localeCompare(b[0],"bg",{numeric:true}));
 }
@@ -76,14 +78,14 @@ function renderGroups(){
 }
 function rowHtml(r){
   const field=(key,label,cls="")=>'<input class="inline-field '+cls+'" data-field="'+key+'" aria-label="'+label+'" value="'+safe(r[key]??"")+'" maxlength="'+(key==="notes"?4000:250)+'">';
-  return '<tr data-id="'+safe(r.id)+'" class="'+(r.is_used?"row-used ":"")+(selectedRowId===r.id?"row-selected":"")+'">'+
+  return '<tr data-id="'+safe(r.id)+'" class="'+(usage(r)==="used"?"row-used ":usage(r)==="shared"?"row-shared ":"")+(selectedRowId===r.id?"row-selected":"")+'">'+
     '<td>'+prettyDate(r.delivered_on)+'</td><td class="mono">'+safe(r.ark)+'</td>'+
     '<td>'+safe(r.invoice_no||"—")+'</td><td><span class="decl-label">'+safe(r.declaration_no)+'</span></td>'+
     '<td>'+field("tractor","Влекач")+'</td><td>'+field("tanker","Цистерна")+'</td>'+
     '<td class="number">'+(r.quantity_liters==null?"—":Number(r.quantity_liters).toLocaleString("bg-BG",{maximumFractionDigits:3}))+'</td>'+
     '<td>'+safe(r.destination||"—")+'</td><td>'+field("notes","Бележка","notes")+'</td>'+
-    '<td>'+(r.is_used?'<span class="row-used-label">✓ Използван</span>':'<span class="row-pending-label">Неизползван</span>')+'</td>'+
-    '<td><div class="row-buttons"><button type="button" data-edit="'+r.id+'">Редакция</button><button type="button" data-move="'+r.id+'">Отдели</button><button type="button" class="danger" data-delete="'+r.id+'">Изтрий</button></div></td></tr>';
+    '<td data-status-cell="true" class="usage-status-cell">'+('<span class="usage-label usage-'+usage(r)+'">'+safe(usageLabel(usage(r)))+'</span>')+'</td>'+
+    '<td><div class="row-buttons"><button type="button" data-edit="'+r.id+'">Редакция</button><button type="button" class="danger" data-delete="'+r.id+'">Изтрий</button></div></td></tr>';
 }
 function renderRows(){
   const rows=visibleRows(),pageCount=Math.max(1,Math.ceil(rows.length/PAGE_SIZE));
@@ -124,11 +126,11 @@ async function updateGroup(name,used){
   busy=true;
   try{
     // One atomic update for the entire declaration; no per-row network loop.
-    const {data,error}=await client.from("gta_deliveries").update({is_used:used}).eq("declaration_no",name).select("id");
+    const {data,error}=await client.from("gta_deliveries").update({is_used:used,usage_status:used?"used":"unused"}).eq("declaration_no",name).select("id");
     if(error)throw error;
     const expected=records.filter(r=>r.declaration_no===name).length;
     if(!data||data.length!==expected)throw Error("Не всички редове са актуализирани. Обновете регистъра.");
-    for(const r of records)if(r.declaration_no===name)r.is_used=used;
+    for(const r of records)if(r.declaration_no===name){r.is_used=used;r.usage_status=used?"used":"unused";}
     render();status(used?"Декларацията е маркирана като използвана.":"Маркировката е премахната.");
   }catch(error){status("Грешка: "+error.message,true);await load().catch(()=>{});}
   finally{busy=false;}
@@ -161,7 +163,7 @@ $("group-list").addEventListener("contextmenu",event=>{
   const btn=event.target.closest("[data-declaration]");if(!btn||!btn.dataset.declaration)return;
   event.preventDefault();const name=btn.dataset.declaration;
   const members=records.filter(r=>r.declaration_no===name);
-  const used=members.every(r=>r.is_used);
+  const used=members.every(r=>usage(r)==="used");
   menuTarget={type:"group",name,used};
   openMenu("group-menu",event.clientX,event.clientY);
   menuTarget={type:"group",name,used};
@@ -171,18 +173,18 @@ $("group-toggle-used").addEventListener("click",async()=>{
   const target=menuTarget;closeMenus();
   if(target?.type==="group")await updateGroup(target.name,!target.used);
 });
-$("row-toggle-used").addEventListener("click",async()=>{
+$("row-menu").addEventListener("click",async event=>{
+  const button=event.target.closest("[data-usage]");if(!button)return;
   const target=menuTarget;closeMenus();
-  if(target?.type==="row")await updateRow(target.id,{is_used:!target.used});
+  if(target?.type==="row")await updateRow(target.id,{usage_status:button.dataset.usage,is_used:button.dataset.usage==="used"});
 });
 $("records-body").addEventListener("contextmenu",event=>{
-  if(event.target.closest("input"))return;
+  if(!event.target.closest("[data-status-cell]"))return;
   const tr=event.target.closest("tr[data-id]");if(!tr)return;
   event.preventDefault();selectedRowId=tr.dataset.id;const record=records.find(r=>r.id===selectedRowId);
   if(!record)return;
   renderRows();openMenu("row-menu",event.clientX,event.clientY);
-  menuTarget={type:"row",id:record.id,used:record.is_used};
-  $("row-toggle-used").textContent=record.is_used?"Премахни маркировката":"✓ Маркирай като използван";
+  menuTarget={type:"row",id:record.id};
 });
 document.addEventListener("click",event=>{if(!event.target.closest(".context-menu"))closeMenus();});
 document.addEventListener("keydown",event=>{if(event.key==="Escape")closeMenus();});
@@ -208,11 +210,10 @@ $("records-body").addEventListener("keydown",event=>{
 });
 $("records-body").addEventListener("click",async event=>{
   const tr=event.target.closest("tr[data-id]");if(!tr)return;
-  const button=event.target.closest("button[data-edit],button[data-move],button[data-delete]");
+  const button=event.target.closest("button[data-edit],button[data-delete]");
   if(!button){if(!event.target.closest("input")){selectedRowId=tr.dataset.id;renderRows();}return;}
   const record=records.find(r=>r.id===tr.dataset.id);if(!record)return;
   if(button.dataset.edit){edit(record);return;}
-  if(button.dataset.move){edit(record);$("delivery-form").elements.declaration_no.focus();$("form-status").textContent="Въведи нов номер на декларацията.";return;}
   if(!window.confirm("Да се изтрие ли доставката с АРК "+record.ark+"?")||busy)return;
   busy=true;button.disabled=true;
   try{
@@ -224,8 +225,8 @@ $("records-body").addEventListener("click",async event=>{
 });
 const csvValue=value=>'"'+String(value??"").replaceAll('"','""')+'"';
 $("export").addEventListener("click",()=>{
-  const headers=["Дата доставка","Дата документ","АРК","Фактура №","Декларация №","Влекач","Цистерна","Литри","Контрагент","Място","Бележки","Използван"];
-  const rows=visibleRows().map(r=>csvFields.map(k=>csvValue(k==="is_used"?(r.is_used?"Да":"Не"):r[k])).join(";"));
+  const headers=["Дата доставка","Дата документ","АРК","Фактура №","Декларация №","Влекач","Цистерна","Литри","Контрагент","Място","Бележки","Статус"];
+  const rows=visibleRows().map(r=>csvFields.map(k=>csvValue(k==="usage_status"?usageLabel(usage(r)):r[k])).join(";"));
   const text="\uFEFF"+headers.map(csvValue).join(";")+"\r\n"+rows.join("\r\n");
   const url=URL.createObjectURL(new Blob([text],{type:"text/csv;charset=utf-8"}));
   const a=document.createElement("a");a.href=url;a.download=activeDeclaration?"декларация-"+activeDeclaration.replace(/[^a-zA-Z0-9_-]/g,"_")+".csv":"доставки-декларации.csv";
