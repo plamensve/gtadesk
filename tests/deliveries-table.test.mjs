@@ -238,11 +238,11 @@ test("ARK PDFs use a separate clickable file badge instead of a dot over row act
  assert.doesNotMatch(source,/row-doc-dot/);
  assert.match(js,/openDocs\(\{type:"row",id:arkTrigger.dataset.arkDocs\}\)/);
 });
-test("Delivery dates use DD/MM/YYYY in form widgets, tables, Excel exports, and Sofia clock",()=>{
+test("Delivery dates use DD.MM.YYYY in form widgets, tables, Excel exports, and Sofia clock",()=>{
  assert.match(js,/installDayMonthYearInputs\(document\)/);
  assert.match(js,/const prettyDate = date => formatDateDMY\(date\)/);
  assert.match(js,/formatDateDMY\(declarationDateOf\(r.declaration_no\)\)/);
- assert.match(html,/class="gta-clock-date">--\/--\/----/);
+ assert.ok(html.includes('class="gta-clock-date">--.--.----'));
  const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
  assert.match(css,/\.date-display-wrap/);
  assert.match(css,/\.date-native-input/);
@@ -252,4 +252,12 @@ test("ARK, invoice and declaration numbers use larger consistent typography",()=
  assert.match(css,/\.ark-copy-value\{[\s\S]*?font-size:15px/);
  assert.match(css,/\.invoice-copy-value\{[\s\S]*?font-size:13\.5px/);
  assert.match(css,/\.decl-label\{[\s\S]*?font-size:14px/);
+});
+
+test("Status labels keep space before the sticky row actions menu",()=>{
+ const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
+ const block=css.slice(css.lastIndexOf("/* Clearly separate status labels"));
+ assert.ok(block.length>200);
+ assert.match(block,/td\.usage-status-cell\{[\s\S]*?padding-right:20px/);
+ assert.match(block,/th\.actions-heading,[\s\S]*?td\.actions-cell\{[\s\S]*?width:58px/);
 });
