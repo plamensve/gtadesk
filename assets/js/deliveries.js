@@ -290,6 +290,19 @@ $("row-actions-menu").addEventListener("click",async event=>{
   else if(action==="delete")await deleteDelivery(record);
 });
 $("records-body").addEventListener("dblclick",event=>{
+  const numberCell=event.target.closest("td.copyable-number");
+  if(numberCell){
+    event.preventDefault();
+    event.stopPropagation();
+    const selection=window.getSelection();
+    if(selection){
+      const range=document.createRange();
+      range.selectNodeContents(numberCell);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+    return;
+  }
   if(event.target.closest("input,[data-status-cell]"))return;
   const id=event.target.closest("tr[data-id]")?.dataset.id;
   const record=records.find(r=>r.id===id);
