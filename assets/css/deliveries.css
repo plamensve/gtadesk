@@ -358,11 +358,21 @@ body.gta-deliveries-page #docs-preview-frame{display:block;width:100%;height:min
 
 /* Declarational workspace: fixed card geometry and individually accessible actions. */
 body.gta-deliveries-page .group-list .group-card{
-  box-sizing:border-box;flex:0 1 calc((100% - 30px)/4);
-  min-width:255px;max-width:none;width:calc((100% - 30px)/4);
-  height:132px;min-height:132px;max-height:132px;
-  padding:11px 12px;grid-template-columns:minmax(0,1fr) 112px;gap:8px;
-  align-items:stretch;overflow:hidden;
+  box-sizing:border-box;
+  width:100%;min-width:0;max-width:none;flex:none;
+  height:112px;min-height:112px;max-height:112px;
+  padding:12px 14px;
+  grid-template-columns:minmax(0,1fr) 112px;
+  gap:12px;align-items:center;overflow:hidden;
+}
+body.gta-deliveries-page .group-list .group-card[data-declaration=""]{
+  grid-template-columns:minmax(0,1fr);
+}
+body.gta-deliveries-page .group-card-main{
+  width:100%;min-width:0;gap:3px;overflow:hidden;
+}
+body.gta-deliveries-page .group-card .group-card-select b{
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 body.gta-deliveries-page .group-card .group-card-select{
   display:flex;flex-direction:column;align-items:stretch;text-align:left;
@@ -396,20 +406,16 @@ body.gta-deliveries-page .declaration-date-form input{
  background:#fafeff;border:1px solid #b8d5e1;border-radius:9px;color:#173e54
 }
 body.gta-deliveries-page .declaration-date-form .actions{display:flex;gap:9px;flex-wrap:wrap}
-@media(max-width:1250px){
- body.gta-deliveries-page .group-list .group-card{
-  width:calc((100% - 20px)/3);flex-basis:calc((100% - 20px)/3)
- }
+/* Fill the available row at every screen size: no narrow cards in wide grid tracks. */
+@media(max-width:1350px){
+  body.gta-deliveries-page .group-list{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
-@media(max-width:920px){
- body.gta-deliveries-page .group-list .group-card{
-  width:calc((100% - 10px)/2);flex-basis:calc((100% - 10px)/2)
- }
+@media(max-width:1050px){
+  body.gta-deliveries-page .group-list{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
-@media(max-width:580px){
- body.gta-deliveries-page .group-list .group-card{
-  width:100%;flex-basis:100%;
- }
+@media(max-width:680px){
+  body.gta-deliveries-page .group-list{grid-template-columns:minmax(0,1fr)}
+  body.gta-deliveries-page .group-list .group-card{height:116px;min-height:116px;max-height:116px}
 }
 
 /* Invoice: remove unused gap and show recognizable verified PDF icon. */
