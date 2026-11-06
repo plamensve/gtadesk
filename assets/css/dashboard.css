@@ -288,3 +288,30 @@ body{background:#f3faff!important}
 .dash-group-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .dash-group-grid .dash-tool{min-height:125px}
 @media(max-width:1050px){.dash-group-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* Dashboard redesign: dense, predictable module grid and a compact globe accent. */
+.main.cosmic-main.dash-v2{padding:30px clamp(18px,2.3vw,38px) 38px!important}
+.dash-header{max-width:1600px;margin:0 auto 24px;align-items:center}
+.dash-header h1{font-size:clamp(27px,2.6vw,37px)}
+.dash-workspace{max-width:1600px;display:grid!important;grid-template-columns:minmax(0,1fr) 250px!important;align-items:start;gap:24px!important;padding:0!important;min-height:0!important;background:none!important}
+.dash-tools.dash-tools-grouped{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:stretch}
+.dash-module-group{border:1px solid #d5e9f0;background:#ffffffd9;border-radius:16px;padding:16px;gap:12px;box-shadow:0 6px 22px #176b8410;align-content:start}
+.dash-module-group:first-child{grid-column:1/-1}
+.dash-module-group h2{font-size:12px;letter-spacing:0;color:#426d82}
+.dash-group-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.dash-module-group:not(:first-child) .dash-group-grid{grid-template-columns:1fr}
+.dash-group-grid .dash-tool,.dash-tool.is-ready{min-height:122px;padding:16px!important;gap:8px;box-shadow:none!important;background:#f9fdff!important}
+.dash-tool .ui-icon{width:24px;height:24px}
+.dash-tool strong{font-size:14px}
+.dash-tool>span:not(.dash-tool-action){font-size:11px}
+.dash-visual{position:sticky;top:35px;min-height:300px;height:300px;align-self:start;overflow:hidden;border:1px solid #d5e9f0;border-radius:18px;background:radial-gradient(circle at 50% 45%,#c5f3fc,#f8fdff 70%)}
+.dash-visual .earth-art{width:210px!important;max-width:85%!important}
+.dash-bottom{max-width:1600px;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:24px}
+.gta-sidebar-clock-wrap{margin-top:auto;padding:12px 8px 8px;min-width:0}
+.gta-clock-sidebar{display:flex;width:100%;min-width:0;max-width:100%;padding:10px 6px;gap:5px;justify-content:center;flex-wrap:wrap;white-space:normal}
+.gta-clock-sidebar .gta-clock-date{min-width:0;font-size:11px}
+.gta-clock-sidebar .gta-clock-time{min-width:0;font-size:14px}
+.gta-clock-sidebar .gta-clock-zone{font-size:10px;padding-left:6px}
+@media(max-width:1200px){.dash-workspace{grid-template-columns:minmax(0,1fr)!important}.dash-visual{display:none}.dash-tools.dash-tools-grouped{grid-template-columns:repeat(2,minmax(0,1fr))}.dash-module-group:first-child{grid-column:1/-1}}
+@media(max-width:850px){.dash-tools.dash-tools-grouped{grid-template-columns:1fr}.dash-module-group:first-child{grid-column:auto}.dash-bottom{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.gta-sidebar-clock-wrap{display:none}.dash-group-grid{grid-template-columns:1fr}.dash-bottom{grid-template-columns:1fr}}
