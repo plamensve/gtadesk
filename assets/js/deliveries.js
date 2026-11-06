@@ -40,6 +40,15 @@ function edit(record){
 }
 const usage=r=>r.usage_status||(r.is_used?"used":"unused");
 const usageLabel=s=>({unused:"Неизползван",used:"Използван",shared:"Общ"})[s]||"Неизползван";
+function visibleNote(record){
+  const note=String(record.notes??"");
+  if(record.source_extra?.notes_edited===true)return note;
+  // Legacy workbook import filled notes with "A=...; H=..."; keep those in source data,
+  // but don't present them as manually entered user notes.
+  const fromWorkbook=Boolean(record.source_sheet&&record.source_row&&record.source_extra?.workbook);
+  const isGenerated=/^[A-Z]=/u.test(note.trim());
+  return fromWorkbook&&isGenerated?"":note;
+}
 function groups(){
   const map=new Map();
   for(const r of records){
@@ -54,7 +63,7 @@ function visibleRows(){
     if(activeDeclaration&&r.declaration_no!==activeDeclaration)return false;
     if(from&&(!r.delivered_on||r.delivered_on<from))return false;
     if(to&&(!r.delivered_on||r.delivered_on>to))return false;
-    return !q||[r.ark,r.invoice_no,r.declaration_no,r.tractor,r.tanker,r.counterparty,r.destination,r.notes,r.source_sheet].some(v=>normalize(v).includes(q));
+    return !q||[r.ark,r.invoice_no,r.declaration_no,r.tractor,r.tanker,r.counterparty,r.destination,visibleNote(r),r.source_sheet].some(v=>normalize(v).includes(q));
   });
 }
 const litersOf=record=>{
@@ -83,10 +92,12 @@ function renderGroups(){
     const used=!!name&&g.used===g.count;
     const docCount=documents.filter(d=>d.declaration_no===name).length;
     return '<button type="button" class="group-card '+(used?"used ":"")+(activeDeclaration===name?"selected":"")+
-      '" data-declaration="'+safe(name)+'" aria-pressed="'+(activeDeclaration===name)+'"><b>'+
-      (name?"Декларация "+safe(name):"Всички декларации")+'</b><span>'+g.count+' доставки'+
-      ' · '+litersFormat(g.liters)+'</span><span class="group-remaining">Оставащи: '+litersFormat(g.remaining)+'</span>'+
-      (used?'<span class="used-label">✓ Използвана</span>':g.used?'<span class="used-label">'+g.used+' използвани реда</span>':"")+(name?'<span class="doc-indicator">📎 '+(docCount?docCount+' PDF':'Няма PDF')+'</span>':'')+'</button>';
+      '" data-declaration="'+safe(name)+'" aria-pressed="'+(activeDeclaration===name)+'">'+
+      '<span class="group-card-main"><b>'+(name?"Декларация "+safe(name):"Всички декларации")+'</b>'+
+      '<span>'+g.count+' доставки · '+litersFormat(g.liters)+'</span>'+
+      '<span class="group-remaining">Оставащи: '+litersFormat(g.remaining)+'</span>'+
+      (used?'<span class="used-label">✓ Използвана</span>':g.used?'<span class="used-label">'+g.used+' използвани реда</span>':"")+'</span>'+
+      (name?'<span class="group-card-docs '+(docCount?'has-docs':'no-docs')+'" title="'+docCount+' прикачени PDF документа"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.4 11.6-8.7 8.7a6 6 0 0 1-8.5-8.5l9.5-9.5a4 4 0 0 1 5.7 5.7l-9.5 9.5a2 2 0 0 1-2.8-2.8l8.8-8.8"/></svg><span>'+(docCount?docCount+' PDF':'Няма PDF')+'</span></span>':'')+'</button>';
   }).join("");
   $("group-page-info").textContent="Страница "+(groupPage+1)+" от "+pageCount+" · "+all.length+" декларации";
   $("group-previous").disabled=groupPage===0;$("group-next").disabled=groupPage>=pageCount-1;
@@ -95,7 +106,7 @@ function renderGroups(){
 }
 function rowHtml(r,number){
   const docCount=documents.filter(d=>d.delivery_id===r.id).length;
-  const field=(key,label,cls="")=>'<input class="inline-field '+cls+'" data-field="'+key+'" aria-label="'+label+'" value="'+safe(r[key]??"")+'" maxlength="'+(key==="notes"?4000:250)+'" autocomplete="off"'+(r.is_locked?' disabled title="Редът е само за четене"':'')+'>';
+  const field=(key,label,cls="")=>'<input class="inline-field '+cls+'" data-field="'+key+'" aria-label="'+label+'" value="'+safe(key==="notes"?visibleNote(r):(r[key]??""))+'" maxlength="'+(key==="notes"?4000:250)+'" autocomplete="off"'+(r.is_locked?' disabled title="Редът е само за четене"':'')+'>';
   return '<tr data-id="'+safe(r.id)+'" class="'+(usage(r)==="used"?"row-used ":usage(r)==="shared"?"row-shared ":"")+(selectedRowId===r.id?"row-selected":"")+'">'+
     '<td class="row-number">'+number+'</td><td>'+prettyDate(r.delivered_on)+'</td><td class="mono copyable-number" title="Маркирай и копирай АРК номера">'+safe(r.ark)+'</td>'+
     '<td class="invoice-number copyable-number" title="Маркирай и копирай номера на фактурата">'+safe(r.invoice_no||"—")+'</td><td><span class="decl-label">'+safe(r.declaration_no)+'</span></td>'+
@@ -159,22 +170,33 @@ async function updateGroup(name,used){
   finally{busy=false;}
 }
 function closeMenus(){for(const id of ["group-menu","row-menu","row-actions-menu"])$(id).hidden=true;document.querySelectorAll("[data-row-menu][aria-expanded=true]").forEach(button=>button.setAttribute("aria-expanded","false"));menuTarget=null;}
-function openMenu(id,x,y){
+function openMenu(id,x,y,anchor=null){
   closeMenus();
   const menu=$(id);
-  // Portal to body prevents clipping by scrollable table containers.
+  // Context menus are portaled to body, so table scrolling never clips them.
   if(menu.parentElement!==document.body)document.body.appendChild(menu);
   menu.hidden=false;
   menu.style.visibility="hidden";
   menu.style.left="0px";menu.style.top="0px";
-  const rect=menu.getBoundingClientRect(),gap=8;
-  const left=Math.max(gap,Math.min(x,window.innerWidth-rect.width-gap));
-  const below=y+rect.height+gap<=window.innerHeight;
-  const top=below?y:Math.max(gap,y-rect.height-6);
-  menu.style.left=left+"px";
-  menu.style.top=Math.max(gap,Math.min(top,window.innerHeight-rect.height-gap))+"px";
+  const {width,height}=menu.getBoundingClientRect();
+  const gap=10,edge=10;
+  let left=x,top=y;
+  if(anchor&&id==="row-actions-menu"){
+    // Place the menu to the LEFT of the three-dot trigger, aligned with its row.
+    left=anchor.left-width-gap;
+    if(left<edge)left=anchor.right+gap;
+    top=anchor.bottom+height+gap<=window.innerHeight?anchor.top:anchor.bottom-height;
+  }else if(anchor){
+    left=anchor.left;
+    top=anchor.bottom+height+gap<=window.innerHeight?anchor.bottom+5:anchor.top-height-5;
+  }else{
+    if(y+height+edge>window.innerHeight)top=y-height-6;
+  }
+  menu.style.left=Math.max(edge,Math.min(left,window.innerWidth-width-edge))+"px";
+  menu.style.top=Math.max(edge,Math.min(top,window.innerHeight-height-edge))+"px";
   menu.style.visibility="visible";
 }
+
 const arkInput=$("field-ark");
 const arkValidation=$("ark-validation");
 const arkValidIcon=$("ark-valid-icon");
@@ -222,7 +244,7 @@ $("group-list").addEventListener("contextmenu",event=>{
   const members=records.filter(r=>r.declaration_no===name);
   const used=members.every(r=>usage(r)==="used");
   menuTarget={type:"group",name,used};
-  openMenu("group-menu",event.clientX,event.clientY);
+  openMenu("group-menu",event.clientX,event.clientY,btn.getBoundingClientRect());
   menuTarget={type:"group",name,used};
   $("group-toggle-used").textContent=used?"Премахни маркировката":"✓ Маркирай като използвана";
 });
@@ -248,7 +270,7 @@ $("records-body").addEventListener("click",event=>{
   closeMenus();
   if(wasOpen)return;
   selectedRowId=record.id;
-  openMenu("row-menu",rect.left,rect.bottom+4);
+  openMenu("row-menu",rect.left,rect.bottom+4,rect);
   menuTarget={type:"row",id:record.id};
 });
 $("records-body").addEventListener("contextmenu",event=>{
@@ -262,7 +284,8 @@ $("records-body").addEventListener("contextmenu",event=>{
     $("row-actions-menu").querySelector('[data-row-action="edit"]').disabled=!!record.is_locked;
     $("row-actions-menu").querySelector('[data-row-action="delete"]').disabled=!!record.is_locked;
   }
-  renderRows();openMenu(statusCell?"row-menu":"row-actions-menu",event.clientX,event.clientY);
+  const anchor=statusCell?.getBoundingClientRect()||tr.querySelector("[data-row-menu]")?.getBoundingClientRect();
+  renderRows();openMenu(statusCell?"row-menu":"row-actions-menu",event.clientX,event.clientY,anchor);
   menuTarget={type:"row",id:record.id};
 });
 document.addEventListener("click",event=>{if(!event.target.closest(".context-menu"))closeMenus();});
@@ -280,10 +303,11 @@ $("records-body").addEventListener("change",async event=>{
   const tr=input.closest("tr[data-id]"),record=records.find(r=>r.id===tr.dataset.id);
   if(!record)return;
   const field=input.dataset.field,value=input.value.trim();
-  if(value===String(record[field]??""))return;
-  if(record.is_locked){input.value=record[field]??"";status("Редът е заключен.",true);return;}
-  const ok=await updateRow(record.id,{[field]:value});
-  if(!ok)input.value=record[field]??"";
+  if(value===String(field==="notes"?visibleNote(record):(record[field]??"")))return;
+  if(record.is_locked){input.value=field==="notes"?visibleNote(record):(record[field]??"");status("Редът е заключен.",true);return;}
+  const patch=field==="notes"?{notes:value,source_extra:{...(record.source_extra||{}),notes_edited:true}}:{[field]:value};
+  const ok=await updateRow(record.id,patch);
+  if(!ok)input.value=field==="notes"?visibleNote(record):(record[field]??"");
 });
 $("records-body").addEventListener("keydown",event=>{
   if(event.key==="Enter"&&event.target.matches("input[data-field]")){event.preventDefault();event.target.blur();}
@@ -346,7 +370,7 @@ $("records-body").addEventListener("click",event=>{
     lockButton.textContent=record.is_locked?"🔓 Отключи реда":"🔒 Само за четене";
     $("row-actions-menu").querySelector('[data-row-action="edit"]').disabled=!!record.is_locked;
     $("row-actions-menu").querySelector('[data-row-action="delete"]').disabled=!!record.is_locked;
-    openMenu("row-actions-menu",rect.left,rect.bottom+4);
+    openMenu("row-actions-menu",rect.left,rect.bottom+4,rect);
     menuTarget={type:"row",id};
     trigger.setAttribute("aria-expanded","true");
     return;
@@ -361,6 +385,7 @@ $("export").addEventListener("click",()=>{
   const data=visibleRows().map(r=>csvFields.map(k=>{
     if(k==="usage_status")return usageLabel(usage(r));
     if(k==="quantity_liters")return r[k]==null?"":Number(r[k]);
+    if(k==="notes")return visibleNote(r);
     return String(r[k]??"");
   }));
   const worksheet=XLSX.utils.aoa_to_sheet([headers,...data]);

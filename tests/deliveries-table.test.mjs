@@ -19,6 +19,7 @@ test("Inline editor markup stays valid and PDF indicators stay in action cells",
     selectedRowId:null,
     safe:value=>String(value??""),
     prettyDate:value=>value??"—",
+    visibleNote:r=>String(r.notes??""),
     usage:()=>"unused",
     usageLabel:()=>"Неизползван"
   });
@@ -39,10 +40,29 @@ test("Locked delivery fields remain disabled",()=>{
   const end=js.indexOf("function renderRows(){",start);
   const renderer=runInNewContext(js.slice(start,end)+";rowHtml",{
     documents:[],selectedRowId:null,safe:value=>String(value??""),
-    prettyDate:()=> "—",usage:()=> "unused",usageLabel:()=> "Неизползван"
+    prettyDate:()=> "—",visibleNote:r=>String(r.notes??""),usage:()=> "unused",usageLabel:()=> "Неизползван"
   });
   const row=renderer({id:"delivery-2",ark:"26BG000000000982636S9",declaration_no:"123",is_locked:true},2);
   const inputs=[...row.matchAll(/<input\b[^>]*>/g)].map(m=>m[0]);
   assert.equal(inputs.length,3);
   assert.ok(inputs.every(tag=>tag.includes(" disabled ")),"All edit fields must be disabled for locked deliveries");
+});
+
+test("Sofia clock is in the delivery header, not the sidebar",()=>{
+  const header=html.slice(html.indexOf('<header class="top">'),html.indexOf('</header>')+9);
+  assert.match(header,/gta-clock-deliveries/);
+  assert.doesNotMatch(html,/gta-sidebar-clock-wrap/);
+});
+test("Imported worksheet notes are hidden, manually written notes remain visible",()=>{
+  const start=js.indexOf("function visibleNote("),end=js.indexOf("function groups()",start);
+  assert.ok(start>=0&&end>start);
+  const visibleNote=runInNewContext(js.slice(start,end)+";visibleNote");
+  const imported={notes:"H=CE7802EE; I=2.11",source_sheet:"186",source_row:5,source_extra:{workbook:"original.xls"}};
+  assert.equal(visibleNote(imported),"");
+  assert.equal(visibleNote({...imported,notes:"Моля, проверете фактурата."}),"Моля, проверете фактурата.");
+  assert.equal(visibleNote({...imported,source_extra:{...imported.source_extra,notes_edited:true}}),imported.notes);
+});
+test("Declaration cards use a separate document badge in the right column",()=>{
+  assert.match(js,/group-card-main/);
+  assert.match(js,/group-card-docs/);
 });
