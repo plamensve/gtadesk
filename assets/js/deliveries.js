@@ -397,7 +397,8 @@ $("group-list").addEventListener("click",event=>{
     return;
   }
   if(event.target.closest("button")&&!event.target.closest("[data-group-select]"))return;
-  if(name&&[...selectedDeliveryIds].some(id=>records.find(r=>r.id===id)?.declaration_no!==name))selectedDeliveryIds.clear();
+  // Selection is independent of active declaration and invoice number.
+  // Keep already checked deliveries while navigating between declarations.
   activeDeclaration=name;currentPage=0;render();formReset();
 });
 $("group-list").addEventListener("contextmenu",event=>{
@@ -480,7 +481,7 @@ $("customs-export").addEventListener("click",async()=>{
     },window.PDFLib.PDFDocument,(done,total)=>{progress.textContent="Подготвяне на PDF: "+done+" от "+total+" части…";});
     const blob=new Blob([bytes],{type:"application/pdf"});
     const url=URL.createObjectURL(blob);
-    const link=document.createElement("a");link.href=url;link.download=customsPdfFileName(bundle.declarationNo);
+    const link=document.createElement("a");link.href=url;link.download=customsPdfFileName(bundle.declarationNos);
     document.body.appendChild(link);link.click();link.remove();
     setTimeout(()=>URL.revokeObjectURL(url),60000);
     const pages=bundle.rows.length,files=bundle.documents.length;
@@ -495,9 +496,8 @@ $("records-body").addEventListener("change",async event=>{
     const row=records.find(r=>r.id===selected.dataset.exportSelect);
     if(!row)return;
     if(selected.checked){
-      for(const id of selectedDeliveryIds){
-        if(records.find(r=>r.id===id)?.declaration_no!==row.declaration_no)selectedDeliveryIds.delete(id);
-      }
+      // A customs bundle can include deliveries with different invoices
+      // and from different declarations. Do not discard previous checks.
       selectedDeliveryIds.add(row.id);
     }else selectedDeliveryIds.delete(row.id);
     $("customs-export-progress").textContent="";
