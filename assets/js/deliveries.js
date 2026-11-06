@@ -330,24 +330,25 @@ $("customs-export").addEventListener("click",async()=>{
   let bundle;
   try{
     bundle=prepareCustomsBundle(records,documents,selectedDeliveryIds);
-    if(!bundle.documents.length)throw Error("Няма качени PDF документи към декларацията или избраните доставки.");
-    if(!window.PDFLib?.PDFDocument)throw Error("Библиотеката за обединяване на PDF не е заредена. Обнови страницата и опитай отново.");
+    // Include the manually entered note, never the generated legacy Excel-import note.
+    bundle.rows=bundle.rows.map(row=>({...row,notes:visibleNote(row)}));
+    if(!window.PDFLib?.PDFDocument)throw Error("Библиотеката за създаване на PDF не е заредена. Обнови страницата и опитай отново.");
   }catch(error){status(error.message,true);progress.textContent=error.message;return;}
   busy=true;updateCustomsSelectionUI();
   try{
-    const bytes=await mergeCustomsPdfs(bundle.documents,async doc=>{
+    const bytes=await mergeCustomsPdfs(bundle,async doc=>{
       const {data,error}=await client.storage.from(bucket).download(doc.storage_path);
       if(error)throw error;
       return data;
-    },window.PDFLib.PDFDocument,(done,total)=>{progress.textContent="Подготвяне на PDF: "+done+" от "+total+" документа…";});
+    },window.PDFLib.PDFDocument,(done,total)=>{progress.textContent="Подготвяне на PDF: "+done+" от "+total+" части…";});
     const blob=new Blob([bytes],{type:"application/pdf"});
     const url=URL.createObjectURL(blob);
     const link=document.createElement("a");link.href=url;link.download=customsPdfFileName(bundle.declarationNo);
     document.body.appendChild(link);link.click();link.remove();
     setTimeout(()=>URL.revokeObjectURL(url),60000);
-    const missing=bundle.rowsWithoutDocuments;
-    progress.textContent="Готово: "+bundle.documents.length+" PDF документа са обединени."+(missing?" "+missing+" избрани доставки нямат собствен прикачен PDF.":"");
-    status("PDF документите за украинска митница са подготвени.");
+    const pages=bundle.rows.length,files=bundle.documents.length;
+    progress.textContent="Готово: "+pages+" "+(pages===1?"избрана доставка":"избрани доставки")+" (информационни PDF страници) и "+files+" прикачени PDF файла в общ документ.";
+    status("PDF файлът за украинска митница е подготвен.");
   }catch(error){const message="Грешка при обединяване: "+error.message;status(message,true);progress.textContent=message;}
   finally{busy=false;updateCustomsSelectionUI();}
 });
