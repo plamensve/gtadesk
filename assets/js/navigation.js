@@ -9,8 +9,10 @@
   const isZaraex = document.body.classList.contains("gta-zaraex-page");
   const isDashboard = document.body.classList.contains("gta-dashboard-page");
   const isCertifications = document.body.classList.contains("gta-certs-page");
+  const isDeliveries = document.body.classList.contains("gta-deliveries-page");
   const dashboardPath = new URL("./dashboard.html", document.baseURI).pathname;
   const certificationsPath = new URL("./certifications.html", document.baseURI).pathname;
+  const deliveriesPath = new URL("./deliveries.html", document.baseURI).pathname;
   let currentTab = null;
 
   function requestedTab() {
@@ -23,6 +25,21 @@
   function syncNavigation() {
     const tab = requestedTab();
     if (isZaraex) {
+      const contexts = {
+        loads: ["Товарения", "Създаване на товарения и подготовка на XML експорти."],
+        settings: ["Номенклатури", "Управление на продукти, транспортни фирми, МПС, шофьори и петролни бази."],
+        stay: ["НАП · Престой", "Генериране на декларации за престой в XML формат."],
+        pdf: ["PDF инструменти", "Обединяване, компресиране и създаване на PDF файлове."]
+      };
+      const heading = document.getElementById("workspace-title");
+      const description = document.getElementById("workspace-description");
+      if (heading) heading.textContent = contexts[tab][0];
+      if (description) description.textContent = contexts[tab][1];
+      const tabs = document.getElementById("tabs");
+      if (tabs) tabs.hidden = !["loads","settings"].includes(tab);
+      for (const button of document.querySelectorAll("#tabs [data-tab]")) {
+        button.hidden = !["loads","settings"].includes(button.dataset.tab);
+      }
       for (const name of TABS) {
         const section = document.getElementById(name);
         if (section) section.hidden = name !== tab;
@@ -38,7 +55,8 @@
       const url = new URL(link.href, document.baseURI);
       const active = (isZaraex && link.dataset.tabTarget === tab) ||
         (isDashboard && url.pathname === dashboardPath) ||
-        (isCertifications && url.pathname === certificationsPath);
+        (isCertifications && url.pathname === certificationsPath) ||
+        (isDeliveries && url.pathname === deliveriesPath);
       link.classList.toggle("active", active);
       if (active) link.setAttribute("aria-current", "page");
       else link.removeAttribute("aria-current");

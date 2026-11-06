@@ -205,3 +205,17 @@ body.gta-zaraex-page .wrap,body.gta-certs-page .wrap{box-sizing:border-box}
 
 /* Authentication gate: the sidebar must never flash its default active item. */
 .gta-unified-sidebar.sidebar.workspace-sidebar[hidden]{display:none!important}
+
+/* Groups are identical on every module and retain the original shared icons. */
+.gta-unified-sidebar .gta-sidebar-nav {gap:12px!important}
+.gta-unified-sidebar .gta-nav-group {display:grid;gap:5px;min-width:0;padding-top:10px;border-top:1px solid #d8eaf0}
+.gta-unified-sidebar .gta-nav-group-title {padding:0 12px;font-size:10px;line-height:1.4;font-weight:800;letter-spacing:.035em;color:#7394a4}
+.gta-unified-sidebar .gta-nav-group-links {display:grid;gap:5px;min-width:0}
+body.gta-deliveries-page .gta-unified-sidebar{position:fixed!important;bottom:0!important}
+body.gta-deliveries-page .wrap{box-sizing:border-box}
+@media(max-width:700px){
+ body.gta-deliveries-page{padding-left:74px!important}
+ .gta-unified-sidebar .gta-nav-group-title{display:none}
+ .gta-unified-sidebar .gta-nav-group{padding-top:7px;gap:3px}
+}
+@media print{body.gta-deliveries-page{padding-left:0!important}}

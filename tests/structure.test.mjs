@@ -6,8 +6,8 @@ import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
-const modules = ["login", "dashboard", "zaraex", "certifications"];
-const pages = ["index.html", "dashboard.html", "zaraex.html", "certifications.html"];
+const modules = ["login", "dashboard", "zaraex", "certifications", "deliveries"];
+const pages = ["index.html", "dashboard.html", "zaraex.html", "certifications.html", "deliveries.html"];
 const allJS = [...modules, "navigation", "globe", "orbits", "dom"];
 
 function read(path) {

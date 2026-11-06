@@ -280,3 +280,11 @@ body{background:#f3faff!important}
 
 /* Mobile exit button */
 .mobile-logout-space{margin-top:20px}
+
+/* Dashboard modules mirror the sidebar's operational groups. */
+.dash-tools.dash-tools-grouped{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.dash-module-group{display:grid;gap:9px;min-width:0;padding-bottom:12px;border-bottom:1px solid #e1eff3}
+.dash-module-group h2{font-size:11px;line-height:1.4;font-weight:800;letter-spacing:.03em;color:#598297;margin:0 0 1px}
+.dash-group-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.dash-group-grid .dash-tool{min-height:125px}
+@media(max-width:1050px){.dash-group-grid{grid-template-columns:minmax(0,1fr)}}

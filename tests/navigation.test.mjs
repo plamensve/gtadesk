@@ -23,6 +23,7 @@ function setup(page, url) {
     ["zaraex.html?tab=settings", "settings"],
     ["zaraex.html?tab=stay", "stay"],
     ["certifications.html", null],
+    ["deliveries.html", null],
     ["zaraex.html?tab=pdf", "pdf"]
   ].map(([href, tab]) => {
     const attributes = {};
@@ -78,7 +79,7 @@ test("sidebar switches sections without native navigation or scroll fragments", 
   const ui = setup("gta-zaraex-page", site + "zaraex.html?tab=settings");
   let prevented = false;
   ui.handlers["sidebar:click"]({
-    target: { closest: () => ui.links[5] }, defaultPrevented: false, button: 0,
+    target: { closest: () => ui.links[6] }, defaultPrevented: false, button: 0,
     preventDefault() { prevented = true; }
   });
   assert.equal(prevented, true);
@@ -104,4 +105,5 @@ test("legacy hash routes still work and standalone pages highlight the right men
   assert.equal(legacy.links.filter(link => link.classList.contains("active")).length, 1);
   assert.equal(setup("gta-dashboard-page", site + "dashboard.html").links[0].classList.contains("active"), true);
   assert.equal(setup("gta-certs-page", site + "certifications.html").links[4].classList.contains("active"), true);
+  assert.equal(setup("gta-deliveries-page", site + "deliveries.html").links[5].classList.contains("active"), true);
 });

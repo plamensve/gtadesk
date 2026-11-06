@@ -14,7 +14,8 @@ GitHub Pages is public storage; UI-based access control is not a security bounda
 | `dashboard.html`, `assets/js/dashboard.js`, `assets/css/dashboard.css` | Authenticated landing page |
 | `zaraex.html`, `assets/js/zaraex.js`, `assets/css/zaraex.css` | Loads, catalogues, stay declarations, PDF tools |
 | `certifications.html`, `assets/js/certifications.js`, `assets/css/certifications.css` | Certificate register, companies, print preview |
-| `assets/js/navigation.js`, `assets/css/sidebar.css` | Shared sidebar and ZaraEx tab navigation |
+| `deliveries.html`, `assets/js/deliveries.js`, `assets/css/deliveries.css` | Deliveries and declarations register, search, grouping and export |
+| `assets/js/navigation.js`, `assets/css/sidebar.css` | Shared sidebar groups and ZaraEx tab navigation |
 | `assets/js/dom.js` | Shared safe HTML escaping and DOM lookups |
 | `assets/js/globe.js`, `assets/js/orbits.js`, `assets/css/globe.css` | Globe rendering and orbit artwork |
 | `assets/` SVG/JPG assets | Logos, icons, images |
