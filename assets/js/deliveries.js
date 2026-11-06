@@ -317,6 +317,74 @@ async function downloadDeclarationArchive(name){
   }finally{archiveBusy=false;}
 }
 
+
+function openDeclarationDeleteDialog(name){
+  if(!name||busy||pdfDocumentBusy||archiveBusy)return;
+  deleteDeclarationTarget=name;
+  const preview=previewDeclarationDeletion(name,records,documents,invoiceDocuments);
+  $("delete-declaration-title").textContent="Изтриване на декларация "+name;
+  $("delete-declaration-summary").textContent=
+    preview.deliveries+" доставки · "+preview.deliveryDocuments+" документа към АРК/декларацията · "+
+    preview.invoiceDocumentsToDelete+" несподелени фактури · "+preview.filesToDelete+" PDF файла за изтриване."+
+    (preview.sharedInvoiceDocumentsRetained?" "+preview.sharedInvoiceDocumentsRetained+" споделени фактури ще бъдат запазени.":"");
+  $("delete-declaration-confirm").value="";
+  $("delete-declaration-submit").disabled=true;
+  $("delete-declaration-status").textContent="";
+  $("delete-declaration-dialog").showModal();
+  $("delete-declaration-confirm").focus();
+}
+$("delete-declaration-close").addEventListener("click",()=>$("delete-declaration-dialog").close());
+$("delete-declaration-cancel").addEventListener("click",()=>$("delete-declaration-dialog").close());
+$("delete-declaration-confirm").addEventListener("input",()=>{
+  $("delete-declaration-submit").disabled=$("delete-declaration-confirm").value.trim()!==deleteDeclarationTarget||busy;
+});
+$("delete-active-declaration").addEventListener("click",()=>openDeclarationDeleteDialog(activeDeclaration));
+async function runQueuedFileCleanup(paths=null){
+  if(cleanupTask){
+    try{await cleanupTask;}catch(_ignored){}
+  }
+  const next=cleanupDeletedPdfFiles(client,paths,bucket);
+  cleanupTask=next;
+  try{return await next;}
+  finally{if(cleanupTask===next)cleanupTask=null;}
+}
+$("delete-declaration-submit").addEventListener("click",async()=>{
+  const name=deleteDeclarationTarget;
+  if(!name||busy||$("delete-declaration-confirm").value.trim()!==name)return;
+  busy=true;
+  const submit=$("delete-declaration-submit");
+  submit.disabled=true;
+  $("delete-declaration-status").textContent="Изтриване на свързаните записи…";
+  let removed;
+  try{
+    removed=await deleteDeclarationMetadata(client,name);
+    $("delete-declaration-dialog").close();
+    if(activeDeclaration===name)activeDeclaration="";
+    if($("delivery-form").elements.declaration_no.value===name)formReset();
+    await load();
+    const paths=Array.isArray(removed.queued_paths)?removed.queued_paths:[];
+    const outcome=await runQueuedFileCleanup(paths);
+    if(outcome.failed){
+      status("Декларация "+name+" и записите ѝ са изтрити. "+
+       outcome.failed+" PDF файла остават в опашката за почистване; системата ще опита отново при следващо отваряне.",true);
+    }else{
+      status("Декларация "+name+" е изтрита: "+removed.deleted_deliveries+
+        " доставки и "+outcome.cleaned+" PDF файла са премахнати.");
+    }
+  }catch(error){
+    if(!removed){
+      $("delete-declaration-status").textContent="Грешка: "+error.message;
+    }else{
+      status("Декларацията е изтрита, но почистването не е потвърдено: "+error.message+
+        ". Остатъчните файлове ще се обработят при следващо отваряне.",true);
+    }
+  }finally{busy=false;submit.disabled=$("delete-declaration-confirm").value.trim()!==deleteDeclarationTarget;}
+});
+$("group-delete-declaration").addEventListener("click",()=>{
+  const target=menuTarget;closeMenus();
+  if(target?.type==="group")openDeclarationDeleteDialog(target.name);
+});
+
 $("group-list").addEventListener("click",event=>{
   const btn=event.target.closest("[data-declaration]");if(!btn)return;
   const name=btn.dataset.declaration;
@@ -701,4 +769,10 @@ $("docs-upload").onclick=async()=>{
 };
 $("logout").addEventListener("click",async()=>{await client.auth.signOut();location.replace("./");});
 client.auth.onAuthStateChange(event=>{if(event==="SIGNED_OUT")location.replace("./");});
-try{await guard();await load();}catch(error){$("guard").textContent=error.message;if(!$("app").hidden)status(error.message,true);}
+try{
+  await guard();
+  await load();
+  void runQueuedFileCleanup().then(result=>{
+    if(result.failed)status("Има "+result.failed+" PDF файла, чакащи повторно почистване.",true);
+  }).catch(error=>status("Почистване на архивните файлове: "+error.message,true));
+}catch(error){$("guard").textContent=error.message;if(!$("app").hidden)status(error.message,true);}
