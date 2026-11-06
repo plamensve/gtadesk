@@ -236,7 +236,7 @@ test("ARK PDFs use a separate clickable file badge instead of a dot over row act
  assert.match(source,/data-ark-docs/);
  assert.match(source,/ark-doc-count/);
  assert.doesNotMatch(source,/row-doc-dot/);
- assert.match(js,/openDocs\(\{type:"row",id:arkTrigger.dataset.arkDocs\}\)/);
+ assert.match(js,/openDocs\(\{type:"row",id:arkTrigger.dataset.arkDocs\},\{previewIfSingle:true\}\)/);
 });
 test("Delivery dates use DD.MM.YYYY in form widgets, tables, Excel exports, and Sofia clock",()=>{
  assert.match(js,/installDayMonthYearInputs\(document\)/);
@@ -279,4 +279,28 @@ test("Upload entry points share the blue document icon and pointer cursor",()=>{
  assert.match(html,/id="docs-upload"[^>]*><img src="\.\/assets\/document-upload\.svg"/);
  assert.match(css,/#docs-file::file-selector-button\{[\s\S]*?cursor:pointer;/);
  assert.match(css,/#records-table \.ark-doc-trigger,[\s\S]*?cursor:pointer;/);
+});
+
+test("Uploaded documents use an eye icon, while empty controls use the yellow folder icon",()=>{
+  const folder=readFileSync(new URL("../assets/document-upload.svg",import.meta.url),"utf8");
+  const eye=readFileSync(new URL("../assets/document-view.svg",import.meta.url),"utf8");
+  const groups=js.slice(js.indexOf("function renderGroups("),js.indexOf("function rowHtml("));
+  const rows=js.slice(js.indexOf("function rowHtml("),js.indexOf("function renderRows("));
+  assert.match(folder,/#FFB80D/);
+  assert.match(folder,/#18CC29/);
+  assert.match(eye,/<circle/);
+  assert.match(groups,/document-view\.svg/);
+  assert.match(rows,/document-view\.svg/);
+  assert.match(rows,/document-upload\.svg/);
+  assert.match(js,/previewIfSingle/);
+});
+test("Delivery table uses column-based fluid widths without a horizontal scroll bar",()=>{
+  const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
+  const block=css.slice(css.lastIndexOf("/* Uniform document controls"));
+  assert.match(block,/table-layout:fixed/);
+  assert.match(block,/overflow-x:hidden/);
+  assert.match(block,/min-width:0!important/);
+  const percentages=[4,7.5,16.5,15,12,7,7,5,6.5,9,7.5,3];
+  assert.equal(percentages.reduce((a,b)=>a+b,0),100);
+  percentages.forEach((p,i)=>assert.ok(block.includes("nth-child("+(i+1)+"){width:"+p+"%!important}")));
 });
