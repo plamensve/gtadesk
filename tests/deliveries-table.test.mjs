@@ -261,3 +261,22 @@ test("Status labels keep space before the sticky row actions menu",()=>{
  assert.match(block,/td\.usage-status-cell\{[\s\S]*?padding-right:20px/);
  assert.match(block,/th\.actions-heading,[\s\S]*?td\.actions-cell\{[\s\S]*?width:58px/);
 });
+
+test("Upload entry points share the blue document icon and pointer cursor",()=>{
+ const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
+ const svg=readFileSync(new URL("../assets/document-upload.svg",import.meta.url),"utf8");
+ const rows=js.slice(js.indexOf("function rowHtml("),js.indexOf("function renderRows("));
+ const groups=js.slice(js.indexOf("function renderGroups("),js.indexOf("function rowHtml("));
+ assert.match(svg,/<svg/);
+ assert.match(svg,/<path/);
+ assert.match(svg,/#[0-9a-fA-F]{6}/);
+ assert.match(rows,/document-upload\.svg/);
+ assert.match(rows,/ark-doc-trigger/);
+ assert.match(rows,/invoice-attach-trigger/);
+ assert.match(groups,/document-upload\.svg/);
+ assert.match(groups,/group-card-docs/);
+ assert.match(groups,/group-card-analysis/);
+ assert.match(html,/id="docs-upload"[^>]*><img src="\.\/assets\/document-upload\.svg"/);
+ assert.match(css,/#docs-file::file-selector-button\{[\s\S]*?cursor:pointer;/);
+ assert.match(css,/#records-table \.ark-doc-trigger,[\s\S]*?cursor:pointer;/);
+});
