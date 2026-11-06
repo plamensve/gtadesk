@@ -612,7 +612,8 @@ $("export").addEventListener("click",()=>{
     if(k==="usage_status")return usageLabel(usage(r));
     if(k==="quantity_liters")return r[k]==null?"":Number(r[k]);
     if(k==="notes")return visibleNote(r);
-    if(k==="declaration_date")return declarationDateOf(r.declaration_no);
+    if(k==="declaration_date")return formatDateDMY(declarationDateOf(r.declaration_no));
+    if(["delivered_on","document_date","invoice_date"].includes(k))return formatDateDMY(r[k]);
     return String(r[k]??"");
   }));
   const worksheet=XLSX.utils.aoa_to_sheet([headers,...data]);
