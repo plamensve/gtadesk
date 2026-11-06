@@ -276,15 +276,78 @@ $("delivery-form").addEventListener("submit",async event=>{
 $("cancel").addEventListener("click",formReset);
 $("new-delivery").addEventListener("click",()=>{formReset();$("form-panel").scrollIntoView({behavior:"smooth"});});
 $("reload").addEventListener("click",()=>load().catch(error=>status(error.message,true)));
+
+async function persistDeclarationDate(name,date){
+  const {data,error}=await client.from("gta_declaration_details")
+    .upsert({declaration_no:name,declaration_date:date||null,updated_at:new Date().toISOString()},{onConflict:"declaration_no"})
+    .select("declaration_no,declaration_date").single();
+  if(error)throw error;
+  declarationDetails.set(name,data.declaration_date);
+}
+function openDeclarationDate(name){
+  declarationDateTarget=name;
+  $("declaration-date-title").textContent="Дата на декларация "+name;
+  $("declaration-date-input").value=declarationDateOf(name);
+  $("declaration-date-status").textContent="";
+  $("declaration-date-dialog").showModal();
+}
+$("declaration-date-close").addEventListener("click",()=>$("declaration-date-dialog").close());
+$("declaration-date-clear").addEventListener("click",()=>{
+  $("declaration-date-input").value="";
+  $("declaration-date-form").requestSubmit();
+});
+$("declaration-date-form").addEventListener("submit",async event=>{
+  event.preventDefault();
+  const name=declarationDateTarget;
+  if(!name||busy)return;
+  const button=$("declaration-date-save");button.disabled=true;
+  $("declaration-date-status").textContent="Запазване…";
+  try{
+    await persistDeclarationDate(name,$("declaration-date-input").value);
+    render();
+    $("declaration-date-dialog").close();
+    status("Датата на декларация "+name+" е актуализирана.");
+  }catch(error){$("declaration-date-status").textContent="Грешка: "+error.message;}
+  finally{button.disabled=false;}
+});
+async function downloadDeclarationArchive(name){
+  if(archiveBusy)return;
+  archiveBusy=true;
+  const progress=$("group-archive-progress");
+  progress.textContent="Подготвяне на ZIP за декларация "+name+"…";
+  try{
+    const plan=planDeclarationArchive(name,records,documents,invoiceDocuments);
+    const zip=await createDeclarationZip(plan,async doc=>{
+      const {data,error}=await client.storage.from(bucket).download(doc.storage_path);
+      if(error)throw error;
+      return data;
+    },window.JSZip,(done,total)=>{
+      progress.textContent="Изтегляне на файлове: "+done+"/"+total+"…";
+    });
+    const url=URL.createObjectURL(zip),link=document.createElement("a");
+    link.href=url;link.download=declarationZipFileName(name);
+    document.body.append(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+    progress.textContent="ZIP архивът е готов: "+plan.deliveryCount+" АРК папки, "+plan.entries.length+" файла.";
+  }catch(error){
+    progress.textContent="Грешка при архивиране: "+error.message;
+    status(progress.textContent,true);
+  }finally{archiveBusy=false;}
+}
+
 $("group-list").addEventListener("click",event=>{
   const btn=event.target.closest("[data-declaration]");if(!btn)return;
   const name=btn.dataset.declaration;
+  if(name&&event.target.closest("[data-group-date]")){openDeclarationDate(name);return;}
+  if(name&&event.target.closest("[data-group-analysis]")){openDocs({type:"analysis",name});return;}
+  if(name&&event.target.closest("[data-group-archive]")){downloadDeclarationArchive(name);return;}
   // Clicking the PDF badge opens this declaration's documents without changing the active filter.
   if(name&&event.target.closest(".group-card-docs")){
     event.preventDefault();
     openDocs({type:"group",name});
     return;
   }
+  if(event.target.closest("button")&&!event.target.closest("[data-group-select]"))return;
   if(name&&[...selectedDeliveryIds].some(id=>records.find(r=>r.id===id)?.declaration_no!==name))selectedDeliveryIds.clear();
   activeDeclaration=name;currentPage=0;render();formReset();
 });
