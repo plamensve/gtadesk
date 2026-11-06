@@ -8,7 +8,7 @@ const safe = value => escapeHtml(String(value ?? ""));
 const prettyDate = date => date ? date.slice(8,10)+"."+date.slice(5,7)+"."+date.slice(0,4) : "—";
 const PAGE_SIZE = 40, GROUP_PAGE_SIZE = 4;
 let records=[], activeDeclaration="", currentPage=0, groupPage=0, editId=null, selectedRowId=null, busy=false;
-let menuTarget=null;
+let menuTarget=null,documents=[],docsTarget=null;
 const createFields=["delivered_on","ark","declaration_no","counterparty","quantity_liters","invoice_no"];
 const csvFields=["delivered_on","document_date","ark","invoice_no","declaration_no","tractor","tanker","quantity_liters","counterparty","destination","notes","usage_status"];
 const status=(message,bad=false)=>{$("status").textContent=message;$("status").classList.toggle("bad",bad);};
@@ -81,11 +81,12 @@ function renderGroups(){
   const slice=options.slice(groupPage*GROUP_PAGE_SIZE,(groupPage+1)*GROUP_PAGE_SIZE);
   $("group-list").innerHTML=slice.map(([name,g])=>{
     const used=!!name&&g.used===g.count;
+    const docCount=documents.filter(d=>d.declaration_no===name).length;
     return '<button type="button" class="group-card '+(used?"used ":"")+(activeDeclaration===name?"selected":"")+
       '" data-declaration="'+safe(name)+'" aria-pressed="'+(activeDeclaration===name)+'"><b>'+
       (name?"Декларация "+safe(name):"Всички декларации")+'</b><span>'+g.count+' доставки'+
       ' · '+litersFormat(g.liters)+'</span><span class="group-remaining">Оставащи: '+litersFormat(g.remaining)+'</span>'+
-      (used?'<span class="used-label">✓ Използвана</span>':g.used?'<span class="used-label">'+g.used+' използвани реда</span>':"")+'</button>';
+      (used?'<span class="used-label">✓ Използвана</span>':g.used?'<span class="used-label">'+g.used+' използвани реда</span>':"")+(name?'<span class="doc-indicator">📎 '+(docCount?docCount+' PDF':'Няма PDF')+'</span>':'')+'</button>';
   }).join("");
   $("group-page-info").textContent="Страница "+(groupPage+1)+" от "+pageCount+" · "+all.length+" декларации";
   $("group-previous").disabled=groupPage===0;$("group-next").disabled=groupPage>=pageCount-1;
@@ -93,6 +94,7 @@ function renderGroups(){
   $("active-group").textContent=activeDeclaration?"Декларация "+activeDeclaration:"Всички декларации";
 }
 function rowHtml(r,number){
+  const docCount=documents.filter(d=>d.delivery_id===r.id).length;
   const field=(key,label,cls="")=>'<input class="inline-field '+cls+'" data-field="'+key+'" aria-label="'+label+'" value="'+safe(r[key]??"")+'" maxlength="'+(key==="notes"?4000:250)+'" '+(r.is_locked?"disabled title=\"Редът е само за четене\"":"")+'>';
   return '<tr data-id="'+safe(r.id)+'" class="'+(usage(r)==="used"?"row-used ":usage(r)==="shared"?"row-shared ":"")+(selectedRowId===r.id?"row-selected":"")+'">'+
     '<td class="row-number">'+number+'</td><td>'+prettyDate(r.delivered_on)+'</td><td class="mono copyable-number" title="Маркирай и копирай АРК номера">'+safe(r.ark)+'</td>'+
@@ -122,7 +124,7 @@ async function load(){
     list.push(...data);
     if(data.length<1000)break;
   }
-  records=list;render();status("Данните са актуални.");
+  records=list;await loadDocs();render();status("Данните са актуални.");
 }
 async function updateRow(id,patch){
   if(busy)return false;
@@ -209,6 +211,7 @@ $("group-list").addEventListener("contextmenu",event=>{
   menuTarget={type:"group",name,used};
   $("group-toggle-used").textContent=used?"Премахни маркировката":"✓ Маркирай като използвана";
 });
+$("group-documents").addEventListener("click",()=>{const t=menuTarget;closeMenus();if(t?.type==="group")openDocs({type:"group",name:t.name});});
 $("group-toggle-used").addEventListener("click",async()=>{
   const target=menuTarget;closeMenus();
   if(target?.type==="group")await updateGroup(target.name,!target.used);
@@ -288,6 +291,7 @@ $("row-actions-menu").addEventListener("click",async event=>{
   const target=menuTarget;closeMenus();
   if(!action||target?.type!=="row")return;
   const record=records.find(r=>r.id===target.id);if(!record)return;
+  if(action==="documents"){openDocs({type:"row",id:record.id});return;}
   if(action==="lock")await updateRow(record.id,{is_locked:!record.is_locked});
   else if(action==="edit")edit(record);
   else if(action==="delete")await deleteDelivery(record);
@@ -362,6 +366,29 @@ $("export").addEventListener("click",()=>{
   XLSX.writeFile(workbook,name,{compression:true});
   status("Excel файлът е генериран.");
 });
+
+const bucket="gta-delivery-pdfs";
+async function loadDocs(){const {data,error}=await client.from("gta_delivery_documents").select("id,delivery_id,declaration_no,storage_path,filename,created_at");if(error)throw error;documents=data||[];}
+async function openDocs(t){docsTarget=t;$("docs-file").value="";$("docs-message").textContent="";$("docs-title").textContent=t.type==="row"?"PDF към АРК "+(records.find(r=>r.id===t.id)?.ark||""):"PDF към декларация "+t.name;$("docs-dialog").showModal();renderDocs();}
+function renderDocs(){
+ const list=$("docs-list");list.replaceChildren();
+ const items=documents.filter(d=>docsTarget.type==="row"?d.delivery_id===docsTarget.id:d.declaration_no===docsTarget.name);
+ if(!items.length){list.textContent="Няма качени документи.";return;}
+ for(const doc of items){const line=document.createElement("div");line.className="docs-entry";const name=document.createElement("span");name.textContent=doc.filename;const btn=document.createElement("button");btn.type="button";btn.className="btn";btn.textContent="Свали";btn.onclick=async()=>{const {data,error}=await client.storage.from(bucket).download(doc.storage_path);if(error){$("docs-message").textContent=error.message;return;}const url=URL.createObjectURL(data),a=document.createElement("a");a.href=url;a.download=doc.filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);};line.append(name,btn);list.append(line);}
+}
+$("docs-close").onclick=()=>$("docs-dialog").close();
+$("docs-upload").onclick=async()=>{
+ const file=$("docs-file").files[0],t=docsTarget;if(!file||!t)return;
+ if(file.type!=="application/pdf"||!file.name.toLowerCase().endsWith(".pdf")||file.size===0||file.size>10485760){$("docs-message").textContent="Избери PDF до 10 MB.";return;}
+ const button=$("docs-upload");button.disabled=true;$("docs-message").textContent="Качване...";
+ const path=(t.type==="row"?"delivery/"+t.id:"declaration/"+t.name)+"/"+crypto.randomUUID()+".pdf";
+ try{const {error}=await client.storage.from(bucket).upload(path,file,{contentType:"application/pdf"});if(error)throw error;
+ const entry={delivery_id:t.type==="row"?t.id:null,declaration_no:t.type==="group"?t.name:null,storage_path:path,filename:file.name};
+ const {error:dbError}=await client.from("gta_delivery_documents").insert(entry);
+ if(dbError){await client.storage.from(bucket).remove([path]);throw dbError;}
+ await loadDocs();render();renderDocs();$("docs-file").value="";$("docs-message").textContent="Успешно качен PDF.";
+ }catch(e){$("docs-message").textContent="Грешка: "+e.message;}finally{button.disabled=false;}
+};
 $("logout").addEventListener("click",async()=>{await client.auth.signOut();location.replace("./");});
 client.auth.onAuthStateChange(event=>{if(event==="SIGNED_OUT")location.replace("./");});
 try{await guard();await load();}catch(error){$("guard").textContent=error.message;if(!$("app").hidden)status(error.message,true);}
