@@ -94,3 +94,19 @@ test("Clicking a declaration PDF badge opens its documents without changing sele
   assert.equal(scope.renderCalls,1);
   assert.equal(scope.resetCalls,1);
 });
+
+test("Declaration status space is reserved for used and unused cards",()=>{
+  const start=js.indexOf("function renderGroups(){");
+  const end=js.indexOf("function rowHtml(",start);
+  assert.ok(start>=0&&end>start);
+  const source=js.slice(start,end);
+  assert.match(source,/group-status-slot/);
+  assert.match(source,/used-label-placeholder/);
+  assert.match(source,/aria-hidden="true"/);
+});
+
+test("Actions column stays pinned to the table edge",()=>{
+  const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
+  assert.match(css,/scrollbar-gutter:auto/);
+  assert.match(css,/#records-table th\.actions-heading,#records-table td\.actions-cell\s*\{[\s\S]*?position:sticky;right:0/);
+});
