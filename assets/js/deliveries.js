@@ -4,14 +4,16 @@ import { escapeHtml } from "./dom.js";
 import { fetchDeliveryPdf, removeDeliveryPdf } from "./delivery-documents.js";
 import { invoiceKey, invoiceDisplay, documentsForInvoice } from "./invoice-documents.js";
 import { prepareCustomsBundle, mergeCustomsPdfs, customsPdfFileName } from "./delivery-pdf.js";
+import { sortDeliveryRows, planDeclarationArchive, createDeclarationZip, declarationZipFileName } from "./declaration-archive.js";
 
 const $ = id => document.getElementById(id);
 const client = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 const safe = value => escapeHtml(String(value ?? ""));
 const prettyDate = date => date ? date.slice(8,10)+"."+date.slice(5,7)+"."+date.slice(0,4) : "—";
+const declarationDateOf=no=>declarationDetails.get(no)||"";
 const PAGE_SIZE = 40, GROUP_PAGE_SIZE = 4;
 let records=[], activeDeclaration="", currentPage=0, groupPage=0, editId=null, selectedRowId=null, busy=false;
-let menuTarget=null,documents=[],invoiceDocuments=[],docsTarget=null;
+let menuTarget=null,documents=[],invoiceDocuments=[],docsTarget=null,declarationDetails=new Map(),archiveBusy=false,declarationDateTarget=null;
 let pdfPreviewObjectUrl=null,pdfPreviewRequest=0,pdfDocumentBusy=false,activePreviewDocumentId=null;
 const selectedDeliveryIds=new Set();
 const createFields=["delivered_on","ark","declaration_no","counterparty","quantity_liters","invoice_no","invoice_date"];
@@ -32,6 +34,7 @@ function formReset(){
   editId=null;$("delivery-form").reset();
   $("form-title").textContent="Нова доставка";$("save").textContent="Запиши доставка";
   $("cancel").hidden=true;$("delivery-form").elements.declaration_no.value=activeDeclaration||"";
+  $("delivery-form").elements.declaration_date.value=declarationDateOf(activeDeclaration);
   $("form-status").textContent="";
   arkInput.setCustomValidity("");arkValidation.textContent="";arkValidation.hidden=true;arkValidation.style.color="";arkValidIcon.hidden=true;
 }
@@ -39,6 +42,7 @@ function edit(record){
   if(record.is_locked){status("Редът е заключен. Отключи го от менюто ⋮, за да го редактираш.",true);return;}
   editId=record.id;
   for(const key of createFields)$("delivery-form").elements[key].value=record[key]??"";
+  $("delivery-form").elements.declaration_date.value=declarationDateOf(record.declaration_no);
   $("form-title").textContent="Редакция на доставка";
   $("save").textContent="Запази промените";$("cancel").hidden=false;
   $("form-panel").scrollIntoView({behavior:"smooth",block:"start"});
@@ -68,8 +72,8 @@ function visibleRows(){
     if(activeDeclaration&&r.declaration_no!==activeDeclaration)return false;
     if(from&&(!r.delivered_on||r.delivered_on<from))return false;
     if(to&&(!r.delivered_on||r.delivered_on>to))return false;
-    return !q||[r.ark,r.invoice_no,r.invoice_date,r.declaration_no,r.tractor,r.tanker,r.counterparty,r.destination,visibleNote(r),r.source_sheet].some(v=>normalize(v).includes(q));
-  });
+    return !q||[r.ark,r.invoice_no,r.invoice_date,r.declaration_no,declarationDateOf(r.declaration_no),r.tractor,r.tanker,r.counterparty,r.destination,visibleNote(r),r.source_sheet].some(v=>normalize(v).includes(q));
+  }).sort(sortDeliveryRows);
 }
 const litersOf=record=>{
   const value=Number(record.quantity_liters);
@@ -115,7 +119,7 @@ function rowHtml(r,number){
   const field=(key,label,cls="")=>'<input class="inline-field '+cls+'" data-field="'+key+'" aria-label="'+label+'" value="'+safe(key==="notes"?visibleNote(r):(r[key]??""))+'" maxlength="'+(key==="notes"?4000:250)+'" autocomplete="off"'+(r.is_locked?' disabled title="Редът е само за четене"':'')+'>';
   return '<tr data-id="'+safe(r.id)+'" class="'+(usage(r)==="used"?"row-used ":usage(r)==="shared"?"row-shared ":"")+(selectedRowId===r.id?"row-selected ":"")+(selectedDeliveryIds.has(r.id)?"row-export-selected":"")+'">'+
     '<td class="row-number"><span class="row-number-wrap"><span class="row-index">'+number+'</span><label class="delivery-select-label" title="Избери доставка за митническия PDF"><input type="checkbox" class="delivery-select" data-export-select="'+safe(r.id)+'" aria-label="Избери АРК '+safe(r.ark)+' за украинска митница"'+(selectedDeliveryIds.has(r.id)?' checked':'')+'><span class="delivery-check-ui" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.3 4.3L19 7"/></svg></span></label></span></td><td>'+prettyDate(r.delivered_on)+'</td><td class="mono copyable-number" title="Маркирай и копирай АРК номера">'+safe(r.ark)+'</td>'+
-    '<td class="invoice-number copyable-number"><span class="invoice-cell-content"><span class="invoice-copy-value" title="Двоен клик: маркирай номер и дата на фактурата">'+safe(invoiceDisplay(r))+'</span>'+(r.invoice_no?'<button type="button" class="invoice-attach-trigger '+(invoiceDocCount?'has-docs':'')+'" data-invoice-docs="'+safe(r.id)+'" aria-label="'+(invoiceDocCount?'Преглед на '+invoiceDocCount+' PDF документа':'Прикачи PDF документ')+' към фактура '+safe(r.invoice_no)+'" title="'+(invoiceDocCount?invoiceDocCount+' прикачени PDF файла':'Прикачи PDF към фактура')+'"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.4 11.6-8.7 8.7a6 6 0 0 1-8.5-8.5l9.5-9.5a4 4 0 0 1 5.7 5.7l-9.5 9.5a2 2 0 0 1-2.8-2.8l8.8-8.8"/></svg><span class="invoice-doc-dot" aria-hidden="true"></span></button>':'')+'</span></td><td><span class="decl-label">'+safe(r.declaration_no)+'</span></td>'+
+    '<td class="invoice-number copyable-number"><span class="invoice-cell-content"><span class="invoice-copy-value" title="Двоен клик: маркирай номер и дата на фактурата">'+safe(invoiceDisplay(r))+'</span>'+(r.invoice_no?'<button type="button" class="invoice-attach-trigger '+(invoiceDocCount?'has-docs':'')+'" data-invoice-docs="'+safe(r.id)+'" aria-label="'+(invoiceDocCount?'Преглед на '+invoiceDocCount+' PDF документа':'Прикачи PDF документ')+' към фактура '+safe(r.invoice_no)+'" title="'+(invoiceDocCount?invoiceDocCount+' прикачени PDF файла':'Прикачи PDF към фактура')+'"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.4 11.6-8.7 8.7a6 6 0 0 1-8.5-8.5l9.5-9.5a4 4 0 0 1 5.7 5.7l-9.5 9.5a2 2 0 0 1-2.8-2.8l8.8-8.8"/></svg><span class="invoice-doc-dot" aria-hidden="true"></span></button>':'')+'</span></td><td><span class="decl-reference"><span class="decl-label">'+safe(r.declaration_no)+'</span><span class="decl-date-inline">'+(declarationDateOf(r.declaration_no)?prettyDate(declarationDateOf(r.declaration_no)):"Без дата")+'</span></span></td>'+
     '<td>'+field("tractor","Влекач")+'</td><td>'+field("tanker","Цистерна")+'</td>'+
     '<td class="number">'+(r.quantity_liters==null?"—":Number(r.quantity_liters).toLocaleString("bg-BG",{maximumFractionDigits:3}))+'</td>'+
     '<td>'+safe(r.destination||"—")+'</td><td>'+field("notes","Бележка","notes")+'</td>'+
@@ -155,6 +159,9 @@ async function load(){
     if(data.length<1000)break;
   }
   records=list;
+  const {data:metadata,error:metaError}=await client.from("gta_declaration_details").select("declaration_no,declaration_date");
+  if(metaError)throw metaError;
+  declarationDetails=new Map((metadata||[]).map(d=>[d.declaration_no,d.declaration_date]));
   for(const id of selectedDeliveryIds)if(!records.some(r=>r.id===id))selectedDeliveryIds.delete(id);
   await loadDocs();render();status("Данните са актуални.");
 }
@@ -243,6 +250,7 @@ $("delivery-form").addEventListener("submit",async event=>{
     $("form-status").textContent="За фактура попълни едновременно номер и дата.";return;
   }
   payload.invoice_date=payload.invoice_date||null;
+  const declarationDate=form.elements.declaration_date.value||null;
   const quantity=Number(payload.quantity_liters);
   if(!Number.isFinite(quantity)||quantity<=0){$("form-status").textContent="Въведете валидно количество, по-голямо от 0 литра.";return;}
   payload.quantity_liters=quantity;
@@ -252,6 +260,7 @@ $("delivery-form").addEventListener("submit",async event=>{
       client.from("gta_deliveries").insert({...payload,notes:""}).select("id");
     const {data,error}=await query.single();
     if(error)throw error;if(!data)throw Error("Записът не беше потвърден.");
+    if(declarationDate!==declarationDateOf(payload.declaration_no))await persistDeclarationDate(payload.declaration_no,declarationDate);
     formReset();await load();status("Доставката е записана.");
   }catch(error){$("form-status").textContent="Грешка: "+error.message;}
   finally{busy=false;$("save").disabled=false;}
