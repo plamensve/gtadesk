@@ -4,18 +4,20 @@ import { escapeHtml } from "./dom.js";
 import { fetchDeliveryPdf, removeDeliveryPdf } from "./delivery-documents.js";
 import { invoiceKey, invoiceDisplay, documentsForInvoice } from "./invoice-documents.js";
 import { prepareCustomsBundle, mergeCustomsPdfs, customsPdfFileName } from "./delivery-pdf.js";
+import { sortDeliveryRows, planDeclarationArchive, createDeclarationZip, declarationZipFileName } from "./declaration-archive.js";
 
 const $ = id => document.getElementById(id);
 const client = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 const safe = value => escapeHtml(String(value ?? ""));
 const prettyDate = date => date ? date.slice(8,10)+"."+date.slice(5,7)+"."+date.slice(0,4) : "—";
+const declarationDateOf=no=>declarationDetails.get(no)||"";
 const PAGE_SIZE = 40, GROUP_PAGE_SIZE = 4;
 let records=[], activeDeclaration="", currentPage=0, groupPage=0, editId=null, selectedRowId=null, busy=false;
-let menuTarget=null,documents=[],invoiceDocuments=[],docsTarget=null;
+let menuTarget=null,documents=[],invoiceDocuments=[],docsTarget=null,declarationDetails=new Map(),archiveBusy=false,declarationDateTarget=null;
 let pdfPreviewObjectUrl=null,pdfPreviewRequest=0,pdfDocumentBusy=false,activePreviewDocumentId=null;
 const selectedDeliveryIds=new Set();
 const createFields=["delivered_on","ark","declaration_no","counterparty","quantity_liters","invoice_no","invoice_date"];
-const csvFields=["delivered_on","document_date","ark","invoice_no","invoice_date","declaration_no","tractor","tanker","quantity_liters","counterparty","destination","notes","usage_status"];
+const csvFields=["delivered_on","document_date","ark","invoice_no","invoice_date","declaration_no","declaration_date","tractor","tanker","quantity_liters","counterparty","destination","notes","usage_status"];
 const status=(message,bad=false)=>{$("status").textContent=message;$("status").classList.toggle("bad",bad);};
 const normalize=value=>String(value??"").trim().toLocaleLowerCase("bg");
 
@@ -32,6 +34,7 @@ function formReset(){
   editId=null;$("delivery-form").reset();
   $("form-title").textContent="Нова доставка";$("save").textContent="Запиши доставка";
   $("cancel").hidden=true;$("delivery-form").elements.declaration_no.value=activeDeclaration||"";
+  $("delivery-form").elements.declaration_date.value=declarationDateOf(activeDeclaration);
   $("form-status").textContent="";
   arkInput.setCustomValidity("");arkValidation.textContent="";arkValidation.hidden=true;arkValidation.style.color="";arkValidIcon.hidden=true;
 }
@@ -39,6 +42,7 @@ function edit(record){
   if(record.is_locked){status("Редът е заключен. Отключи го от менюто ⋮, за да го редактираш.",true);return;}
   editId=record.id;
   for(const key of createFields)$("delivery-form").elements[key].value=record[key]??"";
+  $("delivery-form").elements.declaration_date.value=declarationDateOf(record.declaration_no);
   $("form-title").textContent="Редакция на доставка";
   $("save").textContent="Запази промените";$("cancel").hidden=false;
   $("form-panel").scrollIntoView({behavior:"smooth",block:"start"});
@@ -68,8 +72,8 @@ function visibleRows(){
     if(activeDeclaration&&r.declaration_no!==activeDeclaration)return false;
     if(from&&(!r.delivered_on||r.delivered_on<from))return false;
     if(to&&(!r.delivered_on||r.delivered_on>to))return false;
-    return !q||[r.ark,r.invoice_no,r.invoice_date,r.declaration_no,r.tractor,r.tanker,r.counterparty,r.destination,visibleNote(r),r.source_sheet].some(v=>normalize(v).includes(q));
-  });
+    return !q||[r.ark,r.invoice_no,r.invoice_date,r.declaration_no,declarationDateOf(r.declaration_no),r.tractor,r.tanker,r.counterparty,r.destination,visibleNote(r),r.source_sheet].some(v=>normalize(v).includes(q));
+  }).sort(sortDeliveryRows);
 }
 const litersOf=record=>{
   const value=Number(record.quantity_liters);
@@ -95,14 +99,22 @@ function renderGroups(){
   const slice=options.slice(groupPage*GROUP_PAGE_SIZE,(groupPage+1)*GROUP_PAGE_SIZE);
   $("group-list").innerHTML=slice.map(([name,g])=>{
     const used=!!name&&g.used===g.count;
-    const docCount=documents.filter(d=>d.declaration_no===name).length;
-    return '<button type="button" class="group-card '+(used?"used ":"")+(activeDeclaration===name?"selected":"")+
-      '" data-declaration="'+safe(name)+'" aria-pressed="'+(activeDeclaration===name)+'">'+
-      '<span class="group-card-main"><b>'+(name?"Декларация "+safe(name):"Всички декларации")+'</b>'+
+    const docCount=documents.filter(d=>d.declaration_no===name&&d.document_kind!=="analysis").length;
+    const analysisCount=documents.filter(d=>d.declaration_no===name&&d.document_kind==="analysis").length;
+    const date=declarationDateOf(name);
+    return '<div class="group-card '+(used?"used ":"")+(activeDeclaration===name?"selected":"")+'" data-declaration="'+safe(name)+'">'+
+      '<button type="button" class="group-card-main group-card-select" data-group-select="'+safe(name)+'" aria-pressed="'+(activeDeclaration===name)+'">'+
+      '<b>'+(name?"Декларация "+safe(name):"Всички декларации")+'</b>'+
       '<span>'+g.count+' доставки · '+litersFormat(g.liters)+'</span>'+
       '<span class="group-remaining">Оставащи: '+litersFormat(g.remaining)+'</span>'+
-      '<span class="group-status-slot">'+(used?'<span class="used-label">✓ Използвана</span>':g.used?'<span class="used-label">'+g.used+' използвани реда</span>':'<span class="used-label used-label-placeholder" aria-hidden="true">✓ Използвана</span>')+'</span></span>'+
-      (name?'<span class="group-card-docs '+(docCount?'has-docs':'no-docs')+'" title="Кликни за качване и преглед на PDF документи · '+docCount+' прикачени"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.4 11.6-8.7 8.7a6 6 0 0 1-8.5-8.5l9.5-9.5a4 4 0 0 1 5.7 5.7l-9.5 9.5a2 2 0 0 1-2.8-2.8l8.8-8.8"/></svg><span>'+(docCount?docCount+' PDF':'Няма PDF')+'</span></span>':'')+'</button>';
+      '<span class="declaration-card-date">'+(name?"Дата: "+(date?prettyDate(date):"не е въведена"):"")+'</span>'+
+      '<span class="group-status-slot">'+(used?'<span class="used-label">✓ Използвана</span>':g.used?'<span class="used-label">'+g.used+' използвани реда</span>':'<span class="used-label used-label-placeholder" aria-hidden="true">✓ Използвана</span>')+'</span></button>'+
+      (name?'<div class="group-card-operations">'+
+       '<button type="button" class="group-card-mini group-card-docs '+(docCount?'has-docs':'no-docs')+'" data-group-docs="'+safe(name)+'" title="Придружаващи PDF: '+docCount+'">PDF '+(docCount||"")+'</button>'+
+       '<button type="button" class="group-card-mini group-card-analysis '+(analysisCount?'has-docs':'')+'" data-group-analysis="'+safe(name)+'" title="Качи или виж анализ на декларацията">Анализ'+(analysisCount?' ✓':'')+'</button>'+
+       '<button type="button" class="group-card-mini" data-group-date="'+safe(name)+'" title="Редактирай дата на декларацията">Дата</button>'+
+       '<button type="button" class="group-card-mini group-card-archive" data-group-archive="'+safe(name)+'" title="Изтегли ZIP архива с папки по АРК">ZIP ↓</button>'+
+       '</div>':'')+'</div>';
   }).join("");
   $("group-page-info").textContent="Страница "+(groupPage+1)+" от "+pageCount+" · "+all.length+" декларации";
   $("group-previous").disabled=groupPage===0;$("group-next").disabled=groupPage>=pageCount-1;
@@ -115,7 +127,7 @@ function rowHtml(r,number){
   const field=(key,label,cls="")=>'<input class="inline-field '+cls+'" data-field="'+key+'" aria-label="'+label+'" value="'+safe(key==="notes"?visibleNote(r):(r[key]??""))+'" maxlength="'+(key==="notes"?4000:250)+'" autocomplete="off"'+(r.is_locked?' disabled title="Редът е само за четене"':'')+'>';
   return '<tr data-id="'+safe(r.id)+'" class="'+(usage(r)==="used"?"row-used ":usage(r)==="shared"?"row-shared ":"")+(selectedRowId===r.id?"row-selected ":"")+(selectedDeliveryIds.has(r.id)?"row-export-selected":"")+'">'+
     '<td class="row-number"><span class="row-number-wrap"><span class="row-index">'+number+'</span><label class="delivery-select-label" title="Избери доставка за митническия PDF"><input type="checkbox" class="delivery-select" data-export-select="'+safe(r.id)+'" aria-label="Избери АРК '+safe(r.ark)+' за украинска митница"'+(selectedDeliveryIds.has(r.id)?' checked':'')+'><span class="delivery-check-ui" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.3 4.3L19 7"/></svg></span></label></span></td><td>'+prettyDate(r.delivered_on)+'</td><td class="mono copyable-number" title="Маркирай и копирай АРК номера">'+safe(r.ark)+'</td>'+
-    '<td class="invoice-number copyable-number"><span class="invoice-cell-content"><span class="invoice-copy-value" title="Двоен клик: маркирай номер и дата на фактурата">'+safe(invoiceDisplay(r))+'</span>'+(r.invoice_no?'<button type="button" class="invoice-attach-trigger '+(invoiceDocCount?'has-docs':'')+'" data-invoice-docs="'+safe(r.id)+'" aria-label="'+(invoiceDocCount?'Преглед на '+invoiceDocCount+' PDF документа':'Прикачи PDF документ')+' към фактура '+safe(r.invoice_no)+'" title="'+(invoiceDocCount?invoiceDocCount+' прикачени PDF файла':'Прикачи PDF към фактура')+'"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.4 11.6-8.7 8.7a6 6 0 0 1-8.5-8.5l9.5-9.5a4 4 0 0 1 5.7 5.7l-9.5 9.5a2 2 0 0 1-2.8-2.8l8.8-8.8"/></svg><span class="invoice-doc-dot" aria-hidden="true"></span></button>':'')+'</span></td><td><span class="decl-label">'+safe(r.declaration_no)+'</span></td>'+
+    '<td class="invoice-number copyable-number"><span class="invoice-cell-content"><span class="invoice-copy-value" title="Двоен клик: маркирай номер и дата на фактурата">'+safe(invoiceDisplay(r))+'</span>'+(r.invoice_no?'<button type="button" class="invoice-attach-trigger '+(invoiceDocCount?'has-docs':'')+'" data-invoice-docs="'+safe(r.id)+'" aria-label="'+(invoiceDocCount?'Преглед на '+invoiceDocCount+' PDF документа':'Прикачи PDF документ')+' към фактура '+safe(r.invoice_no)+'" title="'+(invoiceDocCount?invoiceDocCount+' прикачени PDF файла':'Прикачи PDF към фактура')+'">'+(invoiceDocCount?'<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l4 4v14H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M14 3v5h5"/><path d="m9 15 2 2 4-4"/></svg><span class="invoice-document-count">'+invoiceDocCount+'</span>':'<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.4 11.6-8.7 8.7a6 6 0 0 1-8.5-8.5l9.5-9.5a4 4 0 0 1 5.7 5.7l-9.5 9.5a2 2 0 0 1-2.8-2.8l8.8-8.8"/></svg>')+'</button>':'')+'</span></td><td><span class="decl-reference"><span class="decl-label">'+safe(r.declaration_no)+'</span><span class="decl-date-inline">'+(declarationDateOf(r.declaration_no)?prettyDate(declarationDateOf(r.declaration_no)):"Без дата")+'</span></span></td>'+
     '<td>'+field("tractor","Влекач")+'</td><td>'+field("tanker","Цистерна")+'</td>'+
     '<td class="number">'+(r.quantity_liters==null?"—":Number(r.quantity_liters).toLocaleString("bg-BG",{maximumFractionDigits:3}))+'</td>'+
     '<td>'+safe(r.destination||"—")+'</td><td>'+field("notes","Бележка","notes")+'</td>'+
@@ -155,6 +167,9 @@ async function load(){
     if(data.length<1000)break;
   }
   records=list;
+  const {data:metadata,error:metaError}=await client.from("gta_declaration_details").select("declaration_no,declaration_date");
+  if(metaError)throw metaError;
+  declarationDetails=new Map((metadata||[]).map(d=>[d.declaration_no,d.declaration_date]));
   for(const id of selectedDeliveryIds)if(!records.some(r=>r.id===id))selectedDeliveryIds.delete(id);
   await loadDocs();render();status("Данните са актуални.");
 }
@@ -243,6 +258,7 @@ $("delivery-form").addEventListener("submit",async event=>{
     $("form-status").textContent="За фактура попълни едновременно номер и дата.";return;
   }
   payload.invoice_date=payload.invoice_date||null;
+  const declarationDate=form.elements.declaration_date.value||null;
   const quantity=Number(payload.quantity_liters);
   if(!Number.isFinite(quantity)||quantity<=0){$("form-status").textContent="Въведете валидно количество, по-голямо от 0 литра.";return;}
   payload.quantity_liters=quantity;
@@ -252,6 +268,7 @@ $("delivery-form").addEventListener("submit",async event=>{
       client.from("gta_deliveries").insert({...payload,notes:""}).select("id");
     const {data,error}=await query.single();
     if(error)throw error;if(!data)throw Error("Записът не беше потвърден.");
+    if(declarationDate!==declarationDateOf(payload.declaration_no))await persistDeclarationDate(payload.declaration_no,declarationDate);
     formReset();await load();status("Доставката е записана.");
   }catch(error){$("form-status").textContent="Грешка: "+error.message;}
   finally{busy=false;$("save").disabled=false;}
@@ -259,15 +276,78 @@ $("delivery-form").addEventListener("submit",async event=>{
 $("cancel").addEventListener("click",formReset);
 $("new-delivery").addEventListener("click",()=>{formReset();$("form-panel").scrollIntoView({behavior:"smooth"});});
 $("reload").addEventListener("click",()=>load().catch(error=>status(error.message,true)));
+
+async function persistDeclarationDate(name,date){
+  const {data,error}=await client.from("gta_declaration_details")
+    .upsert({declaration_no:name,declaration_date:date||null,updated_at:new Date().toISOString()},{onConflict:"declaration_no"})
+    .select("declaration_no,declaration_date").single();
+  if(error)throw error;
+  declarationDetails.set(name,data.declaration_date);
+}
+function openDeclarationDate(name){
+  declarationDateTarget=name;
+  $("declaration-date-title").textContent="Дата на декларация "+name;
+  $("declaration-date-input").value=declarationDateOf(name);
+  $("declaration-date-status").textContent="";
+  $("declaration-date-dialog").showModal();
+}
+$("declaration-date-close").addEventListener("click",()=>$("declaration-date-dialog").close());
+$("declaration-date-clear").addEventListener("click",()=>{
+  $("declaration-date-input").value="";
+  $("declaration-date-form").requestSubmit();
+});
+$("declaration-date-form").addEventListener("submit",async event=>{
+  event.preventDefault();
+  const name=declarationDateTarget;
+  if(!name||busy)return;
+  const button=$("declaration-date-save");button.disabled=true;
+  $("declaration-date-status").textContent="Запазване…";
+  try{
+    await persistDeclarationDate(name,$("declaration-date-input").value);
+    render();
+    $("declaration-date-dialog").close();
+    status("Датата на декларация "+name+" е актуализирана.");
+  }catch(error){$("declaration-date-status").textContent="Грешка: "+error.message;}
+  finally{button.disabled=false;}
+});
+async function downloadDeclarationArchive(name){
+  if(archiveBusy)return;
+  archiveBusy=true;
+  const progress=$("group-archive-progress");
+  progress.textContent="Подготвяне на ZIP за декларация "+name+"…";
+  try{
+    const plan=planDeclarationArchive(name,records,documents,invoiceDocuments);
+    const zip=await createDeclarationZip(plan,async doc=>{
+      const {data,error}=await client.storage.from(bucket).download(doc.storage_path);
+      if(error)throw error;
+      return data;
+    },window.JSZip,(done,total)=>{
+      progress.textContent="Изтегляне на файлове: "+done+"/"+total+"…";
+    });
+    const url=URL.createObjectURL(zip),link=document.createElement("a");
+    link.href=url;link.download=declarationZipFileName(name);
+    document.body.append(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+    progress.textContent="ZIP архивът е готов: "+plan.deliveryCount+" АРК папки, "+plan.entries.length+" файла.";
+  }catch(error){
+    progress.textContent="Грешка при архивиране: "+error.message;
+    status(progress.textContent,true);
+  }finally{archiveBusy=false;}
+}
+
 $("group-list").addEventListener("click",event=>{
   const btn=event.target.closest("[data-declaration]");if(!btn)return;
   const name=btn.dataset.declaration;
+  if(name&&event.target.closest("[data-group-date]")){openDeclarationDate(name);return;}
+  if(name&&event.target.closest("[data-group-analysis]")){openDocs({type:"analysis",name});return;}
+  if(name&&event.target.closest("[data-group-archive]")){downloadDeclarationArchive(name);return;}
   // Clicking the PDF badge opens this declaration's documents without changing the active filter.
   if(name&&event.target.closest(".group-card-docs")){
     event.preventDefault();
     openDocs({type:"group",name});
     return;
   }
+  if(event.target.closest("button")&&!event.target.closest("[data-group-select]"))return;
   if(name&&[...selectedDeliveryIds].some(id=>records.find(r=>r.id===id)?.declaration_no!==name))selectedDeliveryIds.clear();
   activeDeclaration=name;currentPage=0;render();formReset();
 });
@@ -472,15 +552,16 @@ $("records-body").addEventListener("click",event=>{
 });
 $("export").addEventListener("click",()=>{
   if(!window.XLSX){status("Библиотеката за Excel не е заредена. Проверете връзката и опитайте отново.",true);return;}
-  const headers=["Дата доставка","Дата документ","АРК","Фактура №","Дата фактура","Декларация №","Влекач","Цистерна","Литри","Контрагент","Място","Бележки","Статус"];
+  const headers=["Дата доставка","Дата документ","АРК","Фактура №","Дата фактура","Декларация №","Дата декларация","Влекач","Цистерна","Литри","Контрагент","Място","Бележки","Статус"];
   const data=visibleRows().map(r=>csvFields.map(k=>{
     if(k==="usage_status")return usageLabel(usage(r));
     if(k==="quantity_liters")return r[k]==null?"":Number(r[k]);
     if(k==="notes")return visibleNote(r);
+    if(k==="declaration_date")return declarationDateOf(r.declaration_no);
     return String(r[k]??"");
   }));
   const worksheet=XLSX.utils.aoa_to_sheet([headers,...data]);
-  worksheet["!cols"]=[{wch:16},{wch:16},{wch:25},{wch:19},{wch:16},{wch:18},{wch:17},{wch:17},{wch:16},{wch:24},{wch:22},{wch:35},{wch:17}];
+  worksheet["!cols"]=[{wch:16},{wch:16},{wch:25},{wch:19},{wch:16},{wch:18},{wch:16},{wch:17},{wch:17},{wch:16},{wch:24},{wch:22},{wch:35},{wch:17}];
   worksheet["!autofilter"]={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:data.length,c:headers.length-1}})};
   // ARK and invoice identifiers must remain exact text, including leading zeros.
   for(let row=1;row<=data.length;row++){
@@ -488,7 +569,7 @@ $("export").addEventListener("click",()=>{
       const cell=worksheet[XLSX.utils.encode_cell({r:row,c:col})];
       if(cell){cell.t="s";cell.v=String(cell.v);}
     }
-    const liters=worksheet[XLSX.utils.encode_cell({r:row,c:8})];
+    const liters=worksheet[XLSX.utils.encode_cell({r:row,c:9})];
     if(liters&&liters.t==="n")liters.z="#,##0.###";
   }
   const workbook=XLSX.utils.book_new();
@@ -501,7 +582,7 @@ $("export").addEventListener("click",()=>{
 const bucket="gta-delivery-pdfs";
 async function loadDocs(){
  const [deliveryResult,invoiceResult]=await Promise.all([
-  client.from("gta_delivery_documents").select("id,delivery_id,declaration_no,storage_path,filename,created_at"),
+  client.from("gta_delivery_documents").select("id,delivery_id,declaration_no,document_kind,storage_path,filename,created_at"),
   client.from("gta_invoice_documents").select("id,invoice_no,invoice_date,storage_path,filename,created_at")
  ]);
  if(deliveryResult.error)throw deliveryResult.error;
@@ -527,6 +608,7 @@ async function openDocs(target){
   $("docs-title").textContent=target.type==="row"?
     "PDF към АРК "+(records.find(r=>r.id===target.id)?.ark||""):
     target.type==="invoice"?"Фактура "+target.invoiceNo+" / "+prettyDate(target.invoiceDate):
+    target.type==="analysis"?"Анализ към декларация "+target.name:
     "PDF към декларация "+target.name;
   $("docs-dialog").showModal();
   renderDocs();
@@ -557,7 +639,9 @@ function renderDocs(){
   if(!target)return;
   const items=target.type==="invoice"
     ?documentsForInvoice(invoiceDocuments,{invoice_no:target.invoiceNo,invoice_date:target.invoiceDate})
-    :documents.filter(d=>target.type==="row"?d.delivery_id===target.id:d.declaration_no===target.name);
+    :documents.filter(d=>target.type==="row"
+      ?d.delivery_id===target.id
+      :d.declaration_no===target.name&&(target.type==="analysis"?d.document_kind==="analysis":d.document_kind!=="analysis"));
   if(!items.length){
     list.textContent="Няма качени PDF документи.";
     return;
@@ -622,7 +706,7 @@ $("docs-upload").onclick=async()=>{
  try{const {error}=await client.storage.from(bucket).upload(path,file,{contentType:"application/pdf"});if(error)throw error;
  const entry=t.type==="invoice"
   ?{invoice_no:t.invoiceNo,invoice_date:t.invoiceDate,storage_path:path,filename:file.name}
-  :{delivery_id:t.type==="row"?t.id:null,declaration_no:t.type==="group"?t.name:null,storage_path:path,filename:file.name};
+  :{delivery_id:t.type==="row"?t.id:null,declaration_no:(t.type==="group"||t.type==="analysis")?t.name:null,document_kind:t.type==="analysis"?"analysis":"supporting",storage_path:path,filename:file.name};
  const {error:dbError}=await client.from(t.type==="invoice"?"gta_invoice_documents":"gta_delivery_documents").insert(entry);
  if(dbError){await client.storage.from(bucket).remove([path]);throw dbError;}
  await loadDocs();render();renderDocs();$("docs-file").value="";$("docs-message").textContent="Успешно качен PDF.";

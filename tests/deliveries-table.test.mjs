@@ -19,6 +19,7 @@ test("Inline editor markup stays valid and PDF indicators stay in action cells",
     invoiceDocuments:[],
     documentsForInvoice:()=>[],
     invoiceDisplay:record=>record.invoice_no||"—",
+    declarationDateOf:()=>"",
     selectedRowId:null,
     selectedDeliveryIds:new Set(),
     safe:value=>String(value??""),
@@ -45,7 +46,7 @@ test("Locked delivery fields remain disabled",()=>{
   const start=js.indexOf("function rowHtml(r,number){");
   const end=js.indexOf("function renderRows(){",start);
   const renderer=runInNewContext(js.slice(start,end)+";rowHtml",{
-    documents:[],invoiceDocuments:[],documentsForInvoice:()=>[],invoiceDisplay:r=>r.invoice_no||"—",selectedRowId:null,selectedDeliveryIds:new Set(),safe:value=>String(value??""),
+    documents:[],invoiceDocuments:[],documentsForInvoice:()=>[],invoiceDisplay:r=>r.invoice_no||"—",declarationDateOf:()=>"",selectedRowId:null,selectedDeliveryIds:new Set(),safe:value=>String(value??""),
     prettyDate:()=> "—",visibleNote:r=>String(r.notes??""),usage:()=> "unused",usageLabel:()=> "Неизползван"
   });
   const row=renderer({id:"delivery-2",ark:"26BG000000000982636S9",declaration_no:"123",is_locked:true},2);
@@ -157,4 +158,25 @@ test("Invoice field includes invoice date and paperclip upload action",()=>{
  assert.match(source,/data-invoice-docs/);
  assert.match(source,/invoice-attach-trigger/);
  assert.match(js,/gta_invoice_documents/);
+});
+
+test("Declaration date is available in the form and next to declaration number",()=>{
+ assert.match(html,/name="declaration_date" type="date"/);
+ const block=js.slice(js.indexOf("function rowHtml("),js.indexOf("function renderRows("));
+ assert.match(block,/decl-date-inline/);
+ assert.match(block,/declarationDateOf\(r.declaration_no\)/);
+ assert.match(html,/declaration-date-dialog/);
+});
+test("Declaration cards offer separate PDF, analysis, date and ZIP actions",()=>{
+ const block=js.slice(js.indexOf("function renderGroups("),js.indexOf("function rowHtml("));
+ for(const selector of ["data-group-docs","data-group-analysis","data-group-date","data-group-archive"]){
+  assert.ok(block.includes(selector),selector);
+ }
+ assert.match(block,/group-status-slot/);
+});
+test("Separate declaration analysis uses a document_kind discriminator",()=>{
+ assert.match(js,/document_kind:t.type==="analysis"\?"analysis":"supporting"/);
+ assert.match(js,/target.type==="analysis"\?d.document_kind==="analysis"/);
+ assert.match(js,/createDeclarationZip/);
+ assert.match(html,/jszip@3\.10\.1/);
 });
