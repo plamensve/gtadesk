@@ -36,6 +36,7 @@ export function installDayMonthYearInputs(root=document){
     display.autocomplete="off";
     display.spellcheck=false;
     display.required=native.required;
+    native.required=false; // Only the visible DD/MM/YYYY control participates in validation.
     display.setAttribute("aria-label",(native.closest(".field")?.querySelector("label")?.textContent||native.id||"Дата")+" — ден/месец/година");
     const picker=root.createElement("button");
     picker.type="button";
