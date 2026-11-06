@@ -343,3 +343,19 @@ test("Different invoices remain selectable inside one declaration, but other dec
  assert.match(group,/selectedDeliveryIds\.clear\(\)/);
  assert.match(js,/customsPdfFileName\(bundle\.declarationNos\)/);
 });
+
+test("ZIP archive download button has its own WinRAR-style vector icon and keeps its label",()=>{
+ const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
+ const icon=readFileSync(new URL("../assets/archive-download.svg",import.meta.url),"utf8");
+ const groups=js.slice(js.indexOf("function renderGroups("),js.indexOf("function rowHtml("));
+ assert.match(groups,/data-group-archive/);
+ assert.match(groups,/archive-download\.svg/);
+ assert.match(groups,/archive-download-label/);
+ assert.match(groups,/ZIP ↓/);
+ assert.match(css,/\.group-card-archive \.archive-download-icon\{/);
+ assert.match(css,/cursor:pointer/);
+ assert.match(icon,/<svg/);
+ assert.match(icon,/#764D9B/i);
+ assert.match(icon,/#2869B4/i);
+ assert.match(icon,/#38B69E/i);
+});

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-labelledby="archive-title">
+<title id="archive-title">Свали ZIP архив</title>
+<!-- Three distinct compact archival binders, reminiscent of classic compression tools. -->
+<rect x="8" y="8" width="48" height="16" rx="3.2" fill="#764D9B"/>
+<path d="M8 20h48v4H8z" fill="#57357B"/>
+<rect x="8" y="25" width="48" height="16" rx="3.2" fill="#2869B4"/>
+<path d="M8 37h48v4H8z" fill="#1D4D87"/>
+<rect x="8" y="42" width="48" height="16" rx="3.2" fill="#38B69E"/>
+<path d="M8 54h48v4H8z" fill="#208775"/>
+<!-- Archive spine and zipper, original construction rather than product logo. -->
+<rect x="27.3" y="8" width="9.4" height="50" fill="#F8E6B0"/>
+<path d="M28 10h8M28 15h8M28 20h8M28 25h8M28 30h8M28 35h8M28 40h8M28 45h8M28 50h8" stroke="#C3984A" stroke-width="1.7" stroke-dasharray="1.7 2.5"/>
+<rect x="28.5" y="39" width="7" height="10" rx="1.4" fill="#D89F32" stroke="#F8E6B0" stroke-width="1"/>
+<path d="M32 43v4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

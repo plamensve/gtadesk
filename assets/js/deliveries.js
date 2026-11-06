@@ -118,7 +118,7 @@ function renderGroups(){
        '<button type="button" class="group-card-mini group-card-docs '+(docCount?'has-docs':'no-docs')+'" data-group-docs="'+safe(name)+'" title="Придружаващи PDF: '+docCount+'">'+(docCount?'<img class="document-view-icon" src="./assets/document-view.svg" alt="" aria-hidden="true">':'<img class="document-upload-icon" src="./assets/document-upload.svg" alt="" aria-hidden="true">')+'<span class="group-card-upload-label">PDF'+(docCount?' '+docCount:'')+'</span></button>'+
        '<button type="button" class="group-card-mini group-card-analysis '+(analysisCount?'has-docs':'')+'" data-group-analysis="'+safe(name)+'" title="Качи или виж анализ на декларацията">'+(analysisCount?'<img class="document-view-icon" src="./assets/document-view.svg" alt="" aria-hidden="true">':'<img class="document-upload-icon" src="./assets/document-upload.svg" alt="" aria-hidden="true">')+'<span class="group-card-upload-label">Анализ</span></button>'+
 
-       '<button type="button" class="group-card-mini group-card-archive" data-group-archive="'+safe(name)+'" title="Изтегли ZIP архива с папки по АРК">ZIP ↓</button>'+
+       '<button type="button" class="group-card-mini group-card-archive" data-group-archive="'+safe(name)+'" title="Изтегли ZIP архива с папки по АРК" aria-label="Свали ZIP архив на декларацията"><img class="archive-download-icon" src="./assets/archive-download.svg" alt="" aria-hidden="true"><span class="archive-download-label">ZIP ↓</span></button>'+
        '</div>':'')+'</div>';
   }).join("");
   $("group-page-info").textContent="Страница "+(groupPage+1)+" от "+pageCount+" · "+all.length+" декларации";
