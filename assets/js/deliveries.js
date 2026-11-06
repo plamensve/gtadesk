@@ -43,8 +43,8 @@ const usageLabel=s=>({unused:"Неизползван",used:"Използван",
 function groups(){
   const map=new Map();
   for(const r of records){
-    if(!map.has(r.declaration_no))map.set(r.declaration_no,{count:0,liters:0,used:0});
-    const g=map.get(r.declaration_no);g.count++;g.liters+=Number(r.quantity_liters||0);if(usage(r)==="used")g.used++;
+    if(!map.has(r.declaration_no))map.set(r.declaration_no,{count:0,liters:0,remaining:0,used:0});
+    const g=map.get(r.declaration_no);g.count++;const liters=litersOf(r);g.liters+=liters;if(usage(r)==="used")g.used++;else g.remaining+=liters;
   }
   return [...map].sort((a,b)=>a[0].localeCompare(b[0],"bg",{numeric:true}));
 }
@@ -75,7 +75,7 @@ function renderGroups(){
   const all=groups(),filter=$("group-filter").value,q=normalize($("group-search").value);
   $("declaration-options").innerHTML=all.map(([name])=>'<option value="'+safe(name)+'"></option>').join("");
   const filtered=all.filter(([name,g])=>(!q||normalize(name).includes(q))&&(filter==="all"||(filter==="used"?g.used===g.count:g.used<g.count)));
-  const options=[["",{count:records.length,liters:0,used:0}],...filtered];
+  const options=[["",{count:records.length,liters:records.reduce((sum,r)=>sum+litersOf(r),0),remaining:records.reduce((sum,r)=>sum+(usage(r)==="used"?0:litersOf(r)),0),used:records.filter(r=>usage(r)==="used").length}],...filtered];
   const pageCount=Math.max(1,Math.ceil(options.length/GROUP_PAGE_SIZE));
   groupPage=Math.min(groupPage,pageCount-1);
   const slice=options.slice(groupPage*GROUP_PAGE_SIZE,(groupPage+1)*GROUP_PAGE_SIZE);
@@ -84,7 +84,7 @@ function renderGroups(){
     return '<button type="button" class="group-card '+(used?"used ":"")+(activeDeclaration===name?"selected":"")+
       '" data-declaration="'+safe(name)+'" aria-pressed="'+(activeDeclaration===name)+'"><b>'+
       (name?"Декларация "+safe(name):"Всички декларации")+'</b><span>'+g.count+' доставки'+
-      (name?' · '+Math.round(g.liters).toLocaleString("bg-BG")+' л':"")+'</span>'+
+      ' · '+litersFormat(g.liters)+'</span><span class="group-remaining">Оставащи: '+litersFormat(g.remaining)+'</span>'+
       (used?'<span class="used-label">✓ Използвана</span>':g.used?'<span class="used-label">'+g.used+' използвани реда</span>':"")+'</button>';
   }).join("");
   $("group-page-info").textContent="Страница "+(groupPage+1)+" от "+pageCount+" · "+all.length+" декларации";
