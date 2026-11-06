@@ -97,7 +97,7 @@ function renderGroups(){
       '<span>'+g.count+' доставки · '+litersFormat(g.liters)+'</span>'+
       '<span class="group-remaining">Оставащи: '+litersFormat(g.remaining)+'</span>'+
       (used?'<span class="used-label">✓ Използвана</span>':g.used?'<span class="used-label">'+g.used+' използвани реда</span>':"")+'</span>'+
-      (name?'<span class="group-card-docs '+(docCount?'has-docs':'no-docs')+'" title="'+docCount+' прикачени PDF документа"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.4 11.6-8.7 8.7a6 6 0 0 1-8.5-8.5l9.5-9.5a4 4 0 0 1 5.7 5.7l-9.5 9.5a2 2 0 0 1-2.8-2.8l8.8-8.8"/></svg><span>'+(docCount?docCount+' PDF':'Няма PDF')+'</span></span>':'')+'</button>';
+      (name?'<span class="group-card-docs '+(docCount?'has-docs':'no-docs')+'" title="Кликни за качване и преглед на PDF документи · '+docCount+' прикачени"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.4 11.6-8.7 8.7a6 6 0 0 1-8.5-8.5l9.5-9.5a4 4 0 0 1 5.7 5.7l-9.5 9.5a2 2 0 0 1-2.8-2.8l8.8-8.8"/></svg><span>'+(docCount?docCount+' PDF':'Няма PDF')+'</span></span>':'')+'</button>';
   }).join("");
   $("group-page-info").textContent="Страница "+(groupPage+1)+" от "+pageCount+" · "+all.length+" декларации";
   $("group-previous").disabled=groupPage===0;$("group-next").disabled=groupPage>=pageCount-1;
@@ -236,7 +236,14 @@ $("new-delivery").addEventListener("click",()=>{formReset();$("form-panel").scro
 $("reload").addEventListener("click",()=>load().catch(error=>status(error.message,true)));
 $("group-list").addEventListener("click",event=>{
   const btn=event.target.closest("[data-declaration]");if(!btn)return;
-  activeDeclaration=btn.dataset.declaration;currentPage=0;render();formReset();
+  const name=btn.dataset.declaration;
+  // Clicking the PDF badge opens this declaration's documents without changing the active filter.
+  if(name&&event.target.closest(".group-card-docs")){
+    event.preventDefault();
+    openDocs({type:"group",name});
+    return;
+  }
+  activeDeclaration=name;currentPage=0;render();formReset();
 });
 $("group-list").addEventListener("contextmenu",event=>{
   const btn=event.target.closest("[data-declaration]");if(!btn||!btn.dataset.declaration)return;

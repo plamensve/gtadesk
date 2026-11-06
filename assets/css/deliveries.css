@@ -253,3 +253,8 @@ body.gta-deliveries-page .group-card-docs span{font-size:10px;color:inherit!impo
 
 /* Anchored action menu, clearly separated from the clicked row and viewport edges. */
 body.gta-deliveries-page .context-menu{border-radius:12px;border-color:#c7dfe8;box-shadow:0 16px 40px rgba(15,54,76,.18)}
+
+/* The PDF badge is an independent click target within a declaration card. */
+body.gta-deliveries-page .group-card-docs{cursor:pointer;transition:background-color .15s,border-color .15s,box-shadow .15s}
+body.gta-deliveries-page .group-card-docs:hover{background:#ddf4f0;border-color:#81cfc2;box-shadow:0 0 0 2px rgba(0,153,155,.12)}
+body.gta-deliveries-page .group-card-docs.no-docs:hover{background:#eaf7fa;border-color:#9bcad8}
