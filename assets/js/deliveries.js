@@ -85,13 +85,13 @@ function rowHtml(r){
     '<td class="number">'+(r.quantity_liters==null?"—":Number(r.quantity_liters).toLocaleString("bg-BG",{maximumFractionDigits:3}))+'</td>'+
     '<td>'+safe(r.destination||"—")+'</td><td>'+field("notes","Бележка","notes")+'</td>'+
     '<td data-status-cell="true" class="usage-status-cell">'+('<span class="usage-label usage-'+usage(r)+'">'+safe(usageLabel(usage(r)))+'</span>')+'</td>'+
-    '<td><div class="row-buttons"><button type="button" data-edit="'+r.id+'">Редакция</button><button type="button" class="danger" data-delete="'+r.id+'">Изтрий</button></div></td></tr>';
+    '</tr>';
 }
 function renderRows(){
   const rows=visibleRows(),pageCount=Math.max(1,Math.ceil(rows.length/PAGE_SIZE));
   currentPage=Math.min(currentPage,pageCount-1);
   $("records-body").innerHTML=rows.slice(currentPage*PAGE_SIZE,(currentPage+1)*PAGE_SIZE).map(rowHtml).join("")||
-    '<tr><td colspan="11" class="empty">Няма намерени доставки.</td></tr>';
+    '<tr><td colspan="10" class="empty">Няма намерени доставки.</td></tr>';
   $("pagination").textContent=rows.length+" записа · страница "+(currentPage+1)+" от "+pageCount;
   $("previous").disabled=currentPage===0;$("next").disabled=currentPage>=pageCount-1;
   $("export").disabled=!rows.length;
@@ -135,7 +135,7 @@ async function updateGroup(name,used){
   }catch(error){status("Грешка: "+error.message,true);await load().catch(()=>{});}
   finally{busy=false;}
 }
-function closeMenus(){for(const id of ["group-menu","row-menu"])$(id).hidden=true;menuTarget=null;}
+function closeMenus(){for(const id of ["group-menu","row-menu","row-actions-menu"])$(id).hidden=true;menuTarget=null;}
 function openMenu(id,x,y){closeMenus();const menu=$(id);menu.hidden=false;menu.style.left=Math.max(8,Math.min(x,window.innerWidth-menu.offsetWidth-8))+"px";menu.style.top=Math.max(8,Math.min(y,window.innerHeight-menu.offsetHeight-8))+"px";}
 $("delivery-form").addEventListener("submit",async event=>{
   event.preventDefault();const form=event.currentTarget;
@@ -179,11 +179,12 @@ $("row-menu").addEventListener("click",async event=>{
   if(target?.type==="row")await updateRow(target.id,{usage_status:button.dataset.usage,is_used:button.dataset.usage==="used"});
 });
 $("records-body").addEventListener("contextmenu",event=>{
-  if(!event.target.closest("[data-status-cell]"))return;
+  if(event.target.closest("input"))return;
   const tr=event.target.closest("tr[data-id]");if(!tr)return;
   event.preventDefault();selectedRowId=tr.dataset.id;const record=records.find(r=>r.id===selectedRowId);
   if(!record)return;
-  renderRows();openMenu("row-menu",event.clientX,event.clientY);
+  const statusCell=event.target.closest("[data-status-cell]");
+  renderRows();openMenu(statusCell?"row-menu":"row-actions-menu",event.clientX,event.clientY);
   menuTarget={type:"row",id:record.id};
 });
 document.addEventListener("click",event=>{if(!event.target.closest(".context-menu"))closeMenus();});
@@ -208,20 +209,36 @@ $("records-body").addEventListener("change",async event=>{
 $("records-body").addEventListener("keydown",event=>{
   if(event.key==="Enter"&&event.target.matches("input[data-field]")){event.preventDefault();event.target.blur();}
 });
-$("records-body").addEventListener("click",async event=>{
-  const tr=event.target.closest("tr[data-id]");if(!tr)return;
-  const button=event.target.closest("button[data-edit],button[data-delete]");
-  if(!button){if(!event.target.closest("input")){selectedRowId=tr.dataset.id;renderRows();}return;}
-  const record=records.find(r=>r.id===tr.dataset.id);if(!record)return;
-  if(button.dataset.edit){edit(record);return;}
-  if(!window.confirm("Да се изтрие ли доставката с АРК "+record.ark+"?")||busy)return;
-  busy=true;button.disabled=true;
+async function deleteDelivery(record){
+  if(busy||!window.confirm("Да се изтрие ли доставката с АРК "+record.ark+"?"))return;
+  busy=true;
   try{
     const {data,error}=await client.from("gta_deliveries").delete().eq("id",record.id).select("id").single();
     if(error)throw error;if(!data)throw Error("Неуспешно изтриване.");
-    records=records.filter(r=>r.id!==record.id);if(editId===record.id)formReset();render();status("Доставката е изтрита.");
-  }catch(error){status("Грешка: "+error.message,true);button.disabled=false;}
+    records=records.filter(r=>r.id!==record.id);
+    if(editId===record.id)formReset();
+    render();status("Доставката е изтрита.");
+  }catch(error){status("Грешка: "+error.message,true);}
   finally{busy=false;}
+}
+$("row-actions-menu").addEventListener("click",async event=>{
+  const action=event.target.closest("[data-row-action]")?.dataset.rowAction;
+  const target=menuTarget;closeMenus();
+  if(!action||target?.type!=="row")return;
+  const record=records.find(r=>r.id===target.id);if(!record)return;
+  if(action==="edit")edit(record);
+  else if(action==="delete")await deleteDelivery(record);
+});
+$("records-body").addEventListener("dblclick",event=>{
+  if(event.target.closest("input,[data-status-cell]"))return;
+  const id=event.target.closest("tr[data-id]")?.dataset.id;
+  const record=records.find(r=>r.id===id);
+  if(record)edit(record);
+});
+$("records-body").addEventListener("click",event=>{
+  if(event.target.closest("input"))return;
+  const id=event.target.closest("tr[data-id]")?.dataset.id;
+  if(id){selectedRowId=id;renderRows();}
 });
 const csvValue=value=>'"'+String(value??"").replaceAll('"','""')+'"';
 $("export").addEventListener("click",()=>{

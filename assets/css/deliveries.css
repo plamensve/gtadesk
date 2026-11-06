@@ -104,3 +104,9 @@ tr.row-shared td{background:#eaf2ff!important;border-bottom-color:#cbdaf5}
 #records-body td.mono{font-size:15px;font-weight:750;letter-spacing:.15px;line-height:1.5;white-space:nowrap;color:#103b54;padding-inline:14px}
 #records-body tr.row-used td.mono{color:#28724d}
 #records-body td:nth-child(2),#records-table th:nth-child(2){min-width:290px}
+
+/* Compact deliveries register: reclaim former actions column. */
+#records-table{min-width:1020px}
+#records-table th:nth-child(2),#records-body td:nth-child(2){min-width:290px}
+#records-table th:nth-child(9),#records-body td:nth-child(9){min-width:200px}
+#row-actions-menu .danger{color:#b43c52}
