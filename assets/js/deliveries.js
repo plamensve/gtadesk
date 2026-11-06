@@ -86,13 +86,13 @@ function rowHtml(r){
     '<td class="number">'+(r.quantity_liters==null?"—":Number(r.quantity_liters).toLocaleString("bg-BG",{maximumFractionDigits:3}))+'</td>'+
     '<td>'+safe(r.destination||"—")+'</td><td>'+field("notes","Бележка","notes")+'</td>'+
     '<td data-status-cell="true" class="usage-status-cell">'+('<span class="usage-label usage-'+usage(r)+'">'+safe(usageLabel(usage(r)))+'</span>')+'</td>'+
-    '</tr>';
+    '<td class="actions-cell"><button type="button" class="row-actions-trigger" data-row-menu="'+safe(r.id)+'" aria-label="Действия за АРК '+safe(r.ark)+'" aria-haspopup="menu" aria-expanded="false" title="Действия">⋮</button></td></tr>';
 }
 function renderRows(){
   const rows=visibleRows(),pageCount=Math.max(1,Math.ceil(rows.length/PAGE_SIZE));
   currentPage=Math.min(currentPage,pageCount-1);
   $("records-body").innerHTML=rows.slice(currentPage*PAGE_SIZE,(currentPage+1)*PAGE_SIZE).map(rowHtml).join("")||
-    '<tr><td colspan="10" class="empty">Няма намерени доставки.</td></tr>';
+    '<tr><td colspan="11" class="empty">Няма намерени доставки.</td></tr>';
   $("pagination").textContent=rows.length+" записа · страница "+(currentPage+1)+" от "+pageCount;
   $("previous").disabled=currentPage===0;$("next").disabled=currentPage>=pageCount-1;
   $("export").disabled=!rows.length;
@@ -136,7 +136,7 @@ async function updateGroup(name,used){
   }catch(error){status("Грешка: "+error.message,true);await load().catch(()=>{});}
   finally{busy=false;}
 }
-function closeMenus(){for(const id of ["group-menu","row-menu","row-actions-menu"])$(id).hidden=true;menuTarget=null;}
+function closeMenus(){for(const id of ["group-menu","row-menu","row-actions-menu"])$(id).hidden=true;document.querySelectorAll("[data-row-menu][aria-expanded=true]").forEach(button=>button.setAttribute("aria-expanded","false"));menuTarget=null;}
 function openMenu(id,x,y){closeMenus();const menu=$(id);menu.hidden=false;menu.style.left=Math.max(8,Math.min(x,window.innerWidth-menu.offsetWidth-8))+"px";menu.style.top=Math.max(8,Math.min(y,window.innerHeight-menu.offsetHeight-8))+"px";}
 const arkInput=$("field-ark");
 const arkValidation=$("ark-validation");
@@ -249,6 +249,22 @@ $("records-body").addEventListener("dblclick",event=>{
   if(record)edit(record);
 });
 $("records-body").addEventListener("click",event=>{
+  const trigger=event.target.closest("[data-row-menu]");
+  if(trigger){
+    event.stopPropagation();
+    const id=trigger.dataset.rowMenu;
+    const record=records.find(r=>r.id===id);
+    if(!record)return;
+    const wasOpen=!$("row-actions-menu").hidden&&menuTarget?.id===id;
+    closeMenus();
+    if(wasOpen)return;
+    selectedRowId=id;
+    const rect=trigger.getBoundingClientRect();
+    openMenu("row-actions-menu",rect.left,rect.bottom+4);
+    menuTarget={type:"row",id};
+    trigger.setAttribute("aria-expanded","true");
+    return;
+  }
   if(event.target.closest("input"))return;
   const id=event.target.closest("tr[data-id]")?.dataset.id;
   if(id){selectedRowId=id;renderRows();}

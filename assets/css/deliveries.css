@@ -110,3 +110,9 @@ tr.row-shared td{background:#eaf2ff!important;border-bottom-color:#cbdaf5}
 #records-table th:nth-child(2),#records-body td:nth-child(2){min-width:290px}
 #records-table th:nth-child(9),#records-body td:nth-child(9){min-width:200px}
 #row-actions-menu .danger{color:#b43c52}
+
+/* Compact vertical-ellipsis action column: menu floats outside the scrollable table. */
+#records-table th.actions-heading,#records-table td.actions-cell{width:60px;min-width:60px;max-width:60px;text-align:center;padding-inline:6px}
+.row-actions-trigger{display:inline-flex;align-items:center;justify-content:center;width:32px;height:36px;border:1px solid transparent;border-radius:9px;background:transparent;color:#15526c;font-size:27px;font-weight:800;line-height:1;cursor:pointer}
+.row-actions-trigger:hover,.row-actions-trigger[aria-expanded=true]{background:#e7f6fa;border-color:#a8d6e4}
+.row-actions-trigger:focus-visible{outline:2px solid #009ca9;outline-offset:2px}
