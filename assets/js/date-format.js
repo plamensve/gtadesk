@@ -42,11 +42,13 @@ export function installDayMonthYearInputs(root=document){
     picker.className="date-display-picker";
     picker.setAttribute("aria-label","Избери дата от календар");
     picker.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/></svg>';
+    let isTyping=false;
     const synchronize=()=>{
       display.value=formatDateDMY(native.value);
       display.setCustomValidity("");
     };
     display.addEventListener("input",()=>{
+      isTyping=true;
       const parsed=parseDateDMY(display.value);
       const invalid=parsed===null;
       display.setCustomValidity(invalid?"Използвай DD/MM/YYYY и реална календарна дата.":"");
@@ -56,13 +58,14 @@ export function installDayMonthYearInputs(root=document){
         native.dispatchEvent(new Event("input",{bubbles:true}));
         native.dispatchEvent(new Event("change",{bubbles:true}));
       }
+      isTyping=false;
     });
     display.addEventListener("blur",()=>{
       if(!display.value.trim())synchronize();
       else if(parseDateDMY(display.value)!==null)synchronize();
     });
-    native.addEventListener("input",synchronize);
-    native.addEventListener("change",synchronize);
+    native.addEventListener("input",()=>{if(!isTyping)synchronize();});
+    native.addEventListener("change",()=>{if(!isTyping)synchronize();});
     picker.addEventListener("click",()=>{
       if(typeof native.showPicker==="function")native.showPicker();
       else native.focus();
