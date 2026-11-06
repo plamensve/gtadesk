@@ -1,6 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.58.0";
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "../../config.js";
 import { escapeHtml } from "./dom.js";
+import { fetchDeliveryPdf, removeDeliveryPdf } from "./delivery-documents.js";
 import { prepareCustomsBundle, mergeCustomsPdfs, customsPdfFileName } from "./delivery-pdf.js";
 
 const $ = id => document.getElementById(id);
@@ -10,6 +11,7 @@ const prettyDate = date => date ? date.slice(8,10)+"."+date.slice(5,7)+"."+date.
 const PAGE_SIZE = 40, GROUP_PAGE_SIZE = 4;
 let records=[], activeDeclaration="", currentPage=0, groupPage=0, editId=null, selectedRowId=null, busy=false;
 let menuTarget=null,documents=[],docsTarget=null;
+let pdfPreviewObjectUrl=null,pdfPreviewRequest=0,pdfDocumentBusy=false,activePreviewDocumentId=null;
 const selectedDeliveryIds=new Set();
 const createFields=["delivered_on","ark","declaration_no","counterparty","quantity_liters","invoice_no"];
 const csvFields=["delivered_on","document_date","ark","invoice_no","declaration_no","tractor","tanker","quantity_liters","counterparty","destination","notes","usage_status"];
@@ -478,17 +480,111 @@ $("export").addEventListener("click",()=>{
 
 const bucket="gta-delivery-pdfs";
 async function loadDocs(){const {data,error}=await client.from("gta_delivery_documents").select("id,delivery_id,declaration_no,storage_path,filename,created_at");if(error)throw error;documents=data||[];}
-async function openDocs(t){docsTarget=t;$("docs-file").value="";$("docs-message").textContent="";$("docs-title").textContent=t.type==="row"?"PDF към АРК "+(records.find(r=>r.id===t.id)?.ark||""):"PDF към декларация "+t.name;$("docs-dialog").showModal();renderDocs();}
-function renderDocs(){
- const list=$("docs-list");list.replaceChildren();
- const items=documents.filter(d=>docsTarget.type==="row"?d.delivery_id===docsTarget.id:d.declaration_no===docsTarget.name);
- if(!items.length){list.textContent="Няма качени документи.";return;}
- for(const doc of items){const line=document.createElement("div");line.className="docs-entry";const name=document.createElement("span");name.textContent=doc.filename;const btn=document.createElement("button");btn.type="button";btn.className="btn";btn.textContent="Свали";btn.onclick=async()=>{const {data,error}=await client.storage.from(bucket).download(doc.storage_path);if(error){$("docs-message").textContent=error.message;return;}const url=URL.createObjectURL(data),a=document.createElement("a");a.href=url;a.download=doc.filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);};line.append(name,btn);list.append(line);}
+
+function resetDocPreview(){
+  pdfPreviewRequest++;
+  const frame=$("docs-preview-frame");
+  frame.removeAttribute("src");
+  if(pdfPreviewObjectUrl){URL.revokeObjectURL(pdfPreviewObjectUrl);pdfPreviewObjectUrl=null;}
+  activePreviewDocumentId=null;
+  $("docs-preview-name").textContent="";
+  $("docs-preview").hidden=true;
 }
-$("docs-close").onclick=()=>$("docs-dialog").close();
+async function openDocs(target){
+  docsTarget=target;
+  resetDocPreview();
+  $("docs-file").value="";
+  $("docs-message").textContent="";
+  $("docs-title").textContent=target.type==="row"?
+    "PDF към АРК "+(records.find(r=>r.id===target.id)?.ark||""):
+    "PDF към декларация "+target.name;
+  $("docs-dialog").showModal();
+  renderDocs();
+}
+async function previewDeliveryPdf(doc,button){
+  if(pdfDocumentBusy)return;
+  resetDocPreview();
+  const requested=pdfPreviewRequest;
+  button.disabled=true;
+  $("docs-message").textContent="Зареждане на PDF преглед…";
+  try{
+    const pdf=await fetchDeliveryPdf(client,doc,bucket);
+    if(requested!==pdfPreviewRequest)return;
+    pdfPreviewObjectUrl=URL.createObjectURL(new Blob([pdf],{type:"application/pdf"}));
+    activePreviewDocumentId=doc.id;
+    $("docs-preview-name").textContent=doc.filename;
+    $("docs-preview-frame").src=pdfPreviewObjectUrl;
+    $("docs-preview").hidden=false;
+    $("docs-message").textContent="";
+    $("docs-preview").scrollIntoView({behavior:"smooth",block:"nearest"});
+  }catch(error){
+    if(requested===pdfPreviewRequest)$("docs-message").textContent="Грешка при преглед: "+error.message;
+  }finally{button.disabled=false;}
+}
+function renderDocs(){
+  const list=$("docs-list");list.replaceChildren();
+  const target=docsTarget;
+  if(!target)return;
+  const items=documents.filter(d=>target.type==="row"?d.delivery_id===target.id:d.declaration_no===target.name);
+  if(!items.length){
+    list.textContent="Няма качени PDF документи.";
+    return;
+  }
+  for(const doc of items){
+    const entry=document.createElement("div");entry.className="docs-entry";
+    const name=document.createElement("span");name.className="docs-filename";name.textContent=doc.filename;
+    name.title=doc.filename;
+    const controls=document.createElement("div");controls.className="docs-entry-controls";
+    const preview=document.createElement("button");preview.type="button";preview.className="btn";
+    preview.textContent="Преглед";preview.title="Прегледай "+doc.filename;
+    preview.addEventListener("click",()=>previewDeliveryPdf(doc,preview));
+    const download=document.createElement("button");download.type="button";download.className="btn";download.textContent="Свали";
+    download.addEventListener("click",async()=>{
+      download.disabled=true;
+      try{
+        const pdf=await fetchDeliveryPdf(client,doc,bucket);
+        const url=URL.createObjectURL(pdf);
+        const a=document.createElement("a");a.href=url;a.download=doc.filename;
+        document.body.appendChild(a);a.click();a.remove();
+        setTimeout(()=>URL.revokeObjectURL(url),30000);
+        $("docs-message").textContent="";
+      }catch(error){$("docs-message").textContent="Грешка при сваляне: "+error.message;}
+      finally{download.disabled=false;}
+    });
+    const remove=document.createElement("button");remove.type="button";remove.className="btn docs-remove";
+    remove.textContent="Изтрий";remove.title="Изтрий "+doc.filename;
+    remove.addEventListener("click",async()=>{
+      if(pdfDocumentBusy||!window.confirm("Да изтрия ли PDF документа „"+doc.filename+"“? Това действие е необратимо."))return;
+      pdfDocumentBusy=true;
+      $("docs-upload").disabled=true;
+      controls.querySelectorAll("button").forEach(btn=>btn.disabled=true);
+      $("docs-message").textContent="Изтриване на документа…";
+      try{
+        await removeDeliveryPdf(client,doc,bucket);
+        if(activePreviewDocumentId===doc.id)resetDocPreview();
+        await loadDocs();render();renderDocs();
+        $("docs-message").textContent="PDF документът е изтрит успешно.";
+      }catch(error){
+        $("docs-message").textContent="Грешка при изтриване: "+error.message;
+        try{await loadDocs();render();renderDocs();}catch(_reloadError){}
+      }finally{
+        pdfDocumentBusy=false;
+        $("docs-upload").disabled=false;
+        controls.querySelectorAll("button").forEach(btn=>btn.disabled=false);
+      }
+    });
+    controls.append(preview,download,remove);
+    entry.append(name,controls);
+    list.append(entry);
+  }
+}
+$("docs-close").addEventListener("click",()=>$("docs-dialog").close());
+$("docs-preview-close").addEventListener("click",resetDocPreview);
+$("docs-dialog").addEventListener("close",resetDocPreview);
 $("docs-upload").onclick=async()=>{
- const file=$("docs-file").files[0],t=docsTarget;if(!file||!t)return;
+ const file=$("docs-file").files[0],t=docsTarget;if(!file||!t||pdfDocumentBusy)return;
  if(file.type!=="application/pdf"||!file.name.toLowerCase().endsWith(".pdf")||file.size===0||file.size>10485760){$("docs-message").textContent="Избери PDF до 10 MB.";return;}
+ pdfDocumentBusy=true;
  const button=$("docs-upload");button.disabled=true;$("docs-message").textContent="Качване...";
  const path=(t.type==="row"?"delivery/"+t.id:"declaration/"+t.name)+"/"+crypto.randomUUID()+".pdf";
  try{const {error}=await client.storage.from(bucket).upload(path,file,{contentType:"application/pdf"});if(error)throw error;
@@ -496,7 +592,7 @@ $("docs-upload").onclick=async()=>{
  const {error:dbError}=await client.from("gta_delivery_documents").insert(entry);
  if(dbError){await client.storage.from(bucket).remove([path]);throw dbError;}
  await loadDocs();render();renderDocs();$("docs-file").value="";$("docs-message").textContent="Успешно качен PDF.";
- }catch(e){$("docs-message").textContent="Грешка: "+e.message;}finally{button.disabled=false;}
+ }catch(e){$("docs-message").textContent="Грешка: "+e.message;}finally{button.disabled=false;pdfDocumentBusy=false;}
 };
 $("logout").addEventListener("click",async()=>{await client.auth.signOut();location.replace("./");});
 client.auth.onAuthStateChange(event=>{if(event==="SIGNED_OUT")location.replace("./");});
