@@ -578,3 +578,113 @@ body.gta-deliveries-page .group-card-operations > .group-card-archive{
     max-height:116px;
   }
 }
+
+
+/* DD/MM/YYYY is always visible, independently of Chrome/Windows locale.
+   Native date inputs retain ISO values for PostgreSQL, filters and calendar selection. */
+body.gta-deliveries-page .date-native-input{
+  position:absolute!important;width:1px!important;height:1px!important;
+  padding:0!important;margin:0!important;opacity:0!important;
+  border:0!important;clip-path:inset(50%)!important;pointer-events:none!important;
+}
+body.gta-deliveries-page .date-display-wrap{
+  position:relative;display:flex;align-items:center;
+  width:100%;min-width:0;height:44px;
+  background:#fbfeff;border:1px solid #bad8e6;
+  border-radius:10px;overflow:hidden;
+}
+body.gta-deliveries-page .date-display-wrap:focus-within{
+  outline:2px solid #40bbcc;outline-offset:1px;border-color:#159cad;
+}
+body.gta-deliveries-page input.date-display-input{
+  flex:1;min-width:0;width:100%;height:100%;
+  border:0!important;outline:0!important;box-shadow:none!important;
+  padding:10px 8px 10px 12px!important;background:transparent!important;
+  font:500 13px/1.2 inherit;font-variant-numeric:tabular-nums;
+  color:#153b51;letter-spacing:.01em;
+}
+body.gta-deliveries-page input.date-display-input::placeholder{color:#648195;opacity:1}
+body.gta-deliveries-page .date-display-picker{
+  box-sizing:border-box;display:flex;align-items:center;justify-content:center;
+  width:39px;min-width:39px;height:100%;padding:9px;
+  border:0;border-left:1px solid #dbeaf0;border-radius:0;
+  background:transparent;color:#225c71;cursor:pointer;
+}
+body.gta-deliveries-page .date-display-picker:hover{background:#e6f7fa;color:#007f91}
+body.gta-deliveries-page .date-display-picker:focus-visible{outline:2px solid #008f9e;outline-offset:-2px}
+body.gta-deliveries-page .date-display-picker svg{width:19px;height:19px;pointer-events:none}
+body.gta-deliveries-page .filters .date-display-wrap{height:43px}
+
+/* Distinct ARK attachments: a document with a visible check and file count,
+   while the three-dot button is reserved solely for row actions. */
+#records-table th:nth-child(3),#records-table td:nth-child(3){
+  width:253px;min-width:253px;max-width:253px;padding-inline:6px;
+}
+#records-table td.ark-column{white-space:nowrap}
+#records-table .ark-content{display:flex;align-items:center;gap:6px;justify-content:flex-start;min-width:0;width:100%}
+#records-table .ark-copy-value{
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+  font-size:15px;font-weight:800;letter-spacing:-.3px;line-height:1.2;
+  font-variant-numeric:tabular-nums;white-space:nowrap;user-select:text;-webkit-user-select:text;
+}
+#records-table .ark-doc-trigger{
+  flex:0 0 37px;width:37px;height:30px;padding:3px;box-sizing:border-box;
+  display:inline-flex;justify-content:center;align-items:center;gap:2px;
+  border:1px solid #cce0e9;border-radius:8px;background:#f6fbfd;
+  color:#688a9c;cursor:pointer;transition:background .15s,border-color .15s;
+}
+#records-table .ark-doc-trigger svg{width:16px;height:17px;flex-shrink:0;pointer-events:none}
+#records-table .ark-doc-trigger.has-docs{background:#def6e9;color:#087e54;border-color:#76d3a1}
+#records-table .ark-doc-trigger:hover{background:#d0edf5;border-color:#51b7c5}
+#records-table .ark-doc-trigger.has-docs:hover{background:#c5f0d9;border-color:#32ae78}
+#records-table .ark-doc-trigger:focus-visible{outline:2px solid #0a94a3;outline-offset:2px}
+#records-table .ark-doc-count{font-size:10px;font-weight:850;font-family:system-ui,sans-serif;line-height:1}
+#records-table .row-doc-dot{display:none!important}
+
+/* Increase identification readability without widening the entire table. */
+#records-table th:nth-child(4),#records-table td:nth-child(4){
+  width:240px;min-width:240px;max-width:240px;padding-inline:6px;
+}
+#records-table .invoice-cell-content{display:flex;align-items:center;justify-content:flex-start;gap:5px}
+#records-table .invoice-copy-value{
+  font-size:13.5px;font-weight:800;letter-spacing:-.22px;line-height:1.2;
+  font-variant-numeric:tabular-nums;color:#113d53;
+}
+#records-table th:nth-child(5),#records-table td:nth-child(5){
+  width:165px;min-width:165px;max-width:165px;
+}
+#records-table .decl-label{
+  font-size:14px;font-weight:850;line-height:1.2;
+  font-variant-numeric:tabular-nums;
+}
+#records-table .decl-date-inline{font-size:12px;font-weight:600;color:#53788a}
+#records-table tbody td:nth-child(2){font-size:12px;font-weight:600}
+#records-table tbody td.number{font-size:12.5px;font-weight:650;font-variant-numeric:tabular-nums}
+#records-table .inline-field{font-size:12.5px}
+#records-table thead th{font-size:11.5px}
+
+/* Deliberate, hard-to-misclick destructive declaration controls. */
+body.gta-deliveries-page .declaration-delete-button{
+  background:#fff0f2;color:#b62e46;border:1px solid #e8a5b2;
+  font-weight:750;cursor:pointer;
+}
+body.gta-deliveries-page .declaration-delete-button:hover{background:#ffe0e6;border-color:#c65970}
+body.gta-deliveries-page .declaration-delete-button:disabled{opacity:.55;cursor:not-allowed}
+body.gta-deliveries-page .declaration-delete-button[hidden]{display:none!important}
+body.gta-deliveries-page .declaration-delete-dialog{max-width:550px}
+body.gta-deliveries-page .delete-declaration-warning{color:#8f3946;line-height:1.6}
+body.gta-deliveries-page .delete-declaration-summary{
+  padding:13px 15px;background:#f4f9fc;border:1px solid #d6e6ec;border-radius:10px;
+  line-height:1.65;font-size:13px;color:#264c61;
+}
+body.gta-deliveries-page .delete-declaration-label{
+  display:block;margin-top:14px;margin-bottom:7px;font-size:12px;font-weight:700;
+}
+body.gta-deliveries-page #delete-declaration-confirm{
+  width:100%;height:43px;box-sizing:border-box;padding:10px 12px;
+  border:1px solid #c0d9e3;border-radius:9px;background:#fff;
+}
+body.gta-deliveries-page .delete-declaration-buttons{
+  display:flex;justify-content:flex-end;flex-wrap:wrap;gap:8px;margin-top:18px;
+}
+body.gta-deliveries-page #delete-declaration-status{font-size:12px;color:#a43846}
