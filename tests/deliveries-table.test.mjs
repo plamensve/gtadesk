@@ -409,3 +409,12 @@ test("Sticky Actions header exposes a visible resize handle for Status",()=>{
  assert.match(css,/left:-6px;right:auto;z-index:8/);
  assert.match(css,/td\.actions-cell\{[\s\S]*?border-left:1px solid #cadde6/);
 });
+
+test("Notes resize boundary is accessible from the left edge of Status",()=>{
+ const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
+ assert.match(js,/addDeliveryResizeGrip\(deliveryHeadings\[10\],9,"left"\)/);
+ assert.match(js,/if\(index!==9&&index!==10\)addDeliveryResizeGrip\(heading,index\)/);
+ assert.match(js,/addDeliveryResizeGrip\(deliveryHeadings\[11\],10,"left"\)/);
+ assert.match(css,/thead th:nth-child\(11\) \.delivery-column-grip-left\{/);
+ assert.match(css,/border-left:1px solid #cadde6/);
+});
