@@ -1,3 +1,4 @@
+import { fitDeliveryColumns, resizeDeliveryBoundary } from "./delivery-column-sizing.js";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.58.0";
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from "../../config.js";
 import { escapeHtml } from "./dom.js";
@@ -503,9 +504,9 @@ deliveryCellTooltip.hidden=true;
 document.body.appendChild(deliveryCellTooltip);
 const deliveryCells=$("records-body");
 const deliveryTable=$("records-table");
-const DELIVERY_COLUMN_KEY="gtadesk.delivery-columns.v2"; // Discard widths corrupted by previous auto-expansion.
+const DELIVERY_COLUMN_KEY="gtadesk.delivery-columns.v3";
 const DELIVERY_COLUMN_RATIOS=[4,7.5,16.5,15,12,7,7,5,6.5,9,7.5,3];
-const DELIVERY_COLUMN_MIN=[65,85,210,170,150,90,90,70,100,105,120,46];
+const DELIVERY_COLUMN_MIN=[60,82,190,155,140,78,78,65,90,90,113,46];
 const DELIVERY_ACTIONS_INDEX=11;
 const DELIVERY_ACTIONS_WIDTH=46;
 const deliveryHeadings=[...deliveryTable.tHead.rows[0].cells];
@@ -516,163 +517,118 @@ deliveryTable.insertBefore(deliveryColumnGroup,deliveryTable.firstChild);
 let deliveryColumnWidths=[],deliveryResizing=null;
 function deliverySavedWidths(){
   try{
-    const saved=JSON.parse(localStorage.getItem(DELIVERY_COLUMN_KEY)||"null");
-    if(Array.isArray(saved)&&saved.length===deliveryColumns.length&&
-      saved.every((width,index)=>Number.isFinite(width)&&width>=0&&width<=2000))return saved.map((width,index)=>Math.max(DELIVERY_COLUMN_MIN[index],width));
+    const stored=JSON.parse(localStorage.getItem(DELIVERY_COLUMN_KEY)||"null");
+    if(Array.isArray(stored)&&stored.length===deliveryColumns.length&&
+       stored.every((w,i)=>Number.isFinite(w)&&w>=DELIVERY_COLUMN_MIN[i]&&w<=2000))return stored;
   }catch(_ignored){}
   return null;
 }
-function fitDeliveryColumnWidths(priorityIndex=null){
-  const available=Math.max(0,Math.floor(deliveryTable.parentElement.clientWidth));
-  deliveryColumnWidths[DELIVERY_ACTIONS_INDEX]=DELIVERY_ACTIONS_WIDTH;
-  const minTotal=DELIVERY_COLUMN_MIN.reduce((sum,width)=>sum+width,0);
-  const target=Math.max(available,minTotal);
-  const total=()=>deliveryColumnWidths.reduce((sum,width)=>sum+width,0);
-  // Distribute the reduction proportionally, never sacrifice one column alone.
-  // During a drag keep the active width unless all other columns reach minimum.
-  let excess=total()-target;
-  if(excess>0){
-    const groups=[
-      deliveryColumnWidths.map((_,i)=>i).filter(i=>i!==DELIVERY_ACTIONS_INDEX&&i!==priorityIndex),
-      ...(priorityIndex!==null?[ [priorityIndex] ]:[])
-    ];
-    for(const group of groups){
-      if(excess<=0)break;
-      const room=group.reduce((sum,i)=>sum+Math.max(0,deliveryColumnWidths[i]-DELIVERY_COLUMN_MIN[i]),0);
-      if(room<=0)continue;
-      const reduction=Math.min(excess,room);
-      for(const i of group){
-        const capacity=Math.max(0,deliveryColumnWidths[i]-DELIVERY_COLUMN_MIN[i]);
-        deliveryColumnWidths[i]-=reduction*capacity/room;
-      }
-      excess-=reduction;
-    }
-  }
-  // Distribute any free space across columns by their design weights.
-  // Previously all spare pixels were assigned to Notes, breaking the table.
-  const free=target-total();
-  if(free>0.01){
-    const recipients=deliveryColumnWidths.map((_,i)=>i)
-      .filter(i=>i!==DELIVERY_ACTIONS_INDEX&&i!==priorityIndex);
-    if(!recipients.length)return;
-    const weight=recipients.reduce((sum,i)=>sum+DELIVERY_COLUMN_RATIOS[i],0);
-    for(const i of recipients)deliveryColumnWidths[i]+=free*DELIVERY_COLUMN_RATIOS[i]/weight;
-  }
+function saveDeliveryWidths(){
+  try{localStorage.setItem(DELIVERY_COLUMN_KEY,JSON.stringify(deliveryColumnWidths));}catch(_ignored){}
 }
-function applyDeliveryColumnWidths(priorityIndex=null){
-  fitDeliveryColumnWidths(priorityIndex);
+function applyDeliveryColumnWidths(){
   deliveryColumns.forEach((column,index)=>{column.style.width=deliveryColumnWidths[index]+"px";});
-  const total=deliveryColumnWidths.reduce((sum,width)=>sum+width,0);
+  const total=deliveryColumnWidths.reduce((sum,value)=>sum+value,0);
   deliveryTable.style.width=total+"px";
   deliveryTable.style.minWidth=total+"px";
 }
 function initializeDeliveryColumns(){
-  const saved=deliverySavedWidths();
-  const available=deliveryTable.parentElement.clientWidth;
-  deliveryColumnWidths=saved||DELIVERY_COLUMN_RATIOS.map((ratio,index)=>
-    Math.max(DELIVERY_COLUMN_MIN[index],Math.round(available*ratio/100)));
-  deliveryColumnWidths[DELIVERY_ACTIONS_INDEX]=DELIVERY_ACTIONS_WIDTH;
+  deliveryColumnWidths=fitDeliveryColumns(deliverySavedWidths(),
+    deliveryTable.parentElement.clientWidth,DELIVERY_COLUMN_MIN,
+    DELIVERY_COLUMN_RATIOS,DELIVERY_ACTIONS_INDEX,DELIVERY_ACTIONS_WIDTH);
   applyDeliveryColumnWidths();
 }
-window.addEventListener("resize",()=>{if(!deliveryResizing&&!notesCellDrag)applyDeliveryColumnWidths();},{passive:true});
+function startDeliveryResize(index,startX){
+  hideDeliveryTooltip();
+  finishDeliveryResize();
+  deliveryResizing={index,startX,widths:deliveryColumnWidths.slice()};
+  document.body.classList.add("delivery-column-dragging");
+}
+function moveDeliveryResize(clientX){
+  if(!deliveryResizing)return;
+  deliveryColumnWidths=resizeDeliveryBoundary(deliveryResizing.widths,
+    deliveryResizing.index,clientX-deliveryResizing.startX,
+    DELIVERY_COLUMN_MIN,DELIVERY_ACTIONS_INDEX);
+  applyDeliveryColumnWidths();
+}
 function finishDeliveryResize(){
   if(!deliveryResizing)return;
   deliveryResizing=null;
   document.body.classList.remove("delivery-column-dragging");
-  try{localStorage.setItem(DELIVERY_COLUMN_KEY,JSON.stringify(deliveryColumnWidths));}catch(_ignored){}
+  saveDeliveryWidths();
 }
-function addDeliveryResizeGrip(heading,index,edge="right"){
+deliveryHeadings.forEach((heading,index)=>{
+  if(index===DELIVERY_ACTIONS_INDEX)return;
   const grip=document.createElement("span");
-  grip.className="delivery-column-grip"+(edge==="left"?" delivery-column-grip-left":"");
+  grip.className="delivery-column-grip";
   grip.setAttribute("role","separator");
   grip.setAttribute("aria-orientation","vertical");
-  grip.setAttribute("aria-label","Промени ширината на колона "+deliveryHeadings[index].textContent.trim());
+  grip.setAttribute("aria-label","Промени ширината на колона "+heading.textContent.trim());
   grip.setAttribute("tabindex","0");
   grip.addEventListener("pointerdown",event=>{
     if(event.button!==0)return;
     event.preventDefault();
-    finishDeliveryResize();
-    deliveryResizing={index,startX:event.clientX,startWidth:deliveryColumnWidths[index]};
-    document.body.classList.add("delivery-column-dragging");
+    startDeliveryResize(index,event.clientX);
     grip.setPointerCapture(event.pointerId);
   });
-  grip.addEventListener("pointermove",event=>{
-    if(!deliveryResizing||deliveryResizing.index!==index)return;
-    deliveryColumnWidths[index]=Math.max(DELIVERY_COLUMN_MIN[index],
-      Math.min(2000,Math.round(deliveryResizing.startWidth+event.clientX-deliveryResizing.startX)));
-    applyDeliveryColumnWidths(index);
-  });
+  grip.addEventListener("pointermove",event=>moveDeliveryResize(event.clientX));
   grip.addEventListener("pointerup",finishDeliveryResize);
   grip.addEventListener("pointercancel",finishDeliveryResize);
   grip.addEventListener("lostpointercapture",finishDeliveryResize);
   grip.addEventListener("keydown",event=>{
     if(event.key!=="ArrowLeft"&&event.key!=="ArrowRight")return;
     event.preventDefault();
-    deliveryColumnWidths[index]=Math.max(DELIVERY_COLUMN_MIN[index],
-      Math.min(2000,deliveryColumnWidths[index]+(event.key==="ArrowRight"?10:-10)));
-    applyDeliveryColumnWidths(index);
-    try{localStorage.setItem(DELIVERY_COLUMN_KEY,JSON.stringify(deliveryColumnWidths));}catch(_ignored){}
+    deliveryColumnWidths=resizeDeliveryBoundary(deliveryColumnWidths,index,
+      event.key==="ArrowRight"?10:-10,DELIVERY_COLUMN_MIN,DELIVERY_ACTIONS_INDEX);
+    applyDeliveryColumnWidths();
+    saveDeliveryWidths();
   });
   heading.appendChild(grip);
-}
-deliveryHeadings.forEach((heading,index)=>{
-  // Boundaries next to another header can be covered by that header's paint layer.
-  // Place the Notes handle on the visible left edge of Status instead.
-  if(index!==9&&index!==10&&index!==DELIVERY_ACTIONS_INDEX)addDeliveryResizeGrip(heading,index);
 });
-// Use the actual right boundary of Notes for resizing, not a floating line.
-// Raise the Notes header above Status so this grip receives pointer events.
-addDeliveryResizeGrip(deliveryHeadings[9],9);
-// Keep Status resize on the visible left edge of the sticky Actions column.
-addDeliveryResizeGrip(deliveryHeadings[11],10,"left");
-initializeDeliveryColumns();
-
-// Delegated edge resizing works on the actual Notes cell boundary throughout
-// the table, including rows rerendered after filtering or page changes.
-let notesCellDrag=null;
-let notesEdgeHover=null;
-function notesCellAtBorder(event){
-  const cell=event.target.closest("td:nth-child(10)");
+// A body-cell divider has the same meaning as its header counterpart.
+// Accept either side of the line so the neighboring cell cannot intercept it.
+function deliveryBoundaryAt(event){
+  const cell=event.target.closest("td");
   if(!cell||!deliveryCells.contains(cell))return null;
   const rect=cell.getBoundingClientRect();
-  return event.clientX>=rect.right-9&&event.clientX<=rect.right+2?cell:null;
+  if(cell.cellIndex<DELIVERY_ACTIONS_INDEX&&event.clientX>=rect.right-8)return cell.cellIndex;
+  if(cell.cellIndex>0&&event.clientX<=rect.left+8)return cell.cellIndex-1;
+  return null;
 }
-function clearNotesEdgeHover(){
-  if(notesEdgeHover)notesEdgeHover.classList.remove("notes-resize-edge");
-  notesEdgeHover=null;
-}
+let hoveredResizeCell=null;
 deliveryCells.addEventListener("pointermove",event=>{
-  if(notesCellDrag||event.pointerType==="touch")return;
-  const cell=notesCellAtBorder(event);
-  if(cell===notesEdgeHover)return;
-  clearNotesEdgeHover();
-  notesEdgeHover=cell;
-  if(cell)cell.classList.add("notes-resize-edge");
+  if(deliveryResizing||event.pointerType==="touch")return;
+  const cell=event.target.closest("td");
+  const index=deliveryBoundaryAt(event);
+  if(hoveredResizeCell)hoveredResizeCell.classList.remove("delivery-resize-hover");
+  hoveredResizeCell=index!==null?cell:null;
+  if(hoveredResizeCell)hoveredResizeCell.classList.add("delivery-resize-hover");
 });
-deliveryCells.addEventListener("pointerleave",clearNotesEdgeHover);
+deliveryCells.addEventListener("pointerleave",()=>{
+  if(hoveredResizeCell)hoveredResizeCell.classList.remove("delivery-resize-hover");
+  hoveredResizeCell=null;
+});
 deliveryCells.addEventListener("pointerdown",event=>{
-  if(event.button!==0||!notesCellAtBorder(event))return;
+  if(event.button!==0)return;
+  const index=deliveryBoundaryAt(event);
+  if(index===null)return;
   event.preventDefault();
-  hideDeliveryTooltip();
-  clearNotesEdgeHover();
-  notesCellDrag={startX:event.clientX,startWidth:deliveryColumnWidths[9]};
-  document.body.classList.add("delivery-column-dragging");
+  startDeliveryResize(index,event.clientX);
 });
 document.addEventListener("pointermove",event=>{
-  if(!notesCellDrag)return;
-  const width=notesCellDrag.startWidth+event.clientX-notesCellDrag.startX;
-  deliveryColumnWidths[9]=Math.max(DELIVERY_COLUMN_MIN[9],Math.min(2000,Math.round(width)));
-  applyDeliveryColumnWidths(9);
+  if(deliveryResizing)moveDeliveryResize(event.clientX);
 });
-function finishNotesCellDrag(){
-  if(!notesCellDrag)return;
-  notesCellDrag=null;
-  document.body.classList.remove("delivery-column-dragging");
-  try{localStorage.setItem(DELIVERY_COLUMN_KEY,JSON.stringify(deliveryColumnWidths));}catch(_ignored){}
-}
-document.addEventListener("pointerup",finishNotesCellDrag);
-document.addEventListener("pointercancel",finishNotesCellDrag);
-window.addEventListener("blur",finishNotesCellDrag);
+document.addEventListener("pointerup",finishDeliveryResize);
+document.addEventListener("pointercancel",finishDeliveryResize);
+window.addEventListener("blur",finishDeliveryResize);
+window.addEventListener("resize",()=>{
+  if(deliveryResizing)return;
+  deliveryColumnWidths=fitDeliveryColumns(deliveryColumnWidths,
+    deliveryTable.parentElement.clientWidth,DELIVERY_COLUMN_MIN,
+    DELIVERY_COLUMN_RATIOS,DELIVERY_ACTIONS_INDEX,DELIVERY_ACTIONS_WIDTH);
+  applyDeliveryColumnWidths();
+},{passive:true});
+// Initialize only after the protected app becomes visible: hidden containers report zero width.
 
 const DELIVERY_TOOLTIP_DELAY=2100;
 let hoveredDeliveryCell=null,deliveryTooltipTimer=null,deliveryTooltipPoint=null;
@@ -1027,6 +983,7 @@ $("logout").addEventListener("click",async()=>{await client.auth.signOut();locat
 client.auth.onAuthStateChange(event=>{if(event==="SIGNED_OUT")location.replace("./");});
 try{
   await guard();
+  initializeDeliveryColumns();
   await load();
   void runQueuedFileCleanup().then(result=>{
     if(result.failed)status("Има "+result.failed+" PDF файла, чакащи повторно почистване.",true);
