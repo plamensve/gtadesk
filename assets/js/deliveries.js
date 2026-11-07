@@ -539,12 +539,12 @@ function finishDeliveryResize(){
   document.body.classList.remove("delivery-column-dragging");
   try{localStorage.setItem(DELIVERY_COLUMN_KEY,JSON.stringify(deliveryColumnWidths));}catch(_ignored){}
 }
-deliveryHeadings.forEach((heading,index)=>{
+function addDeliveryResizeGrip(heading,index,edge="right"){
   const grip=document.createElement("span");
-  grip.className="delivery-column-grip";
+  grip.className="delivery-column-grip"+(edge==="left"?" delivery-column-grip-left":"");
   grip.setAttribute("role","separator");
   grip.setAttribute("aria-orientation","vertical");
-  grip.setAttribute("aria-label","Промени ширината на колона "+heading.textContent.trim());
+  grip.setAttribute("aria-label","Промени ширината на колона "+deliveryHeadings[index].textContent.trim());
   grip.setAttribute("tabindex","0");
   grip.addEventListener("pointerdown",event=>{
     if(event.button!==0)return;
@@ -572,7 +572,13 @@ deliveryHeadings.forEach((heading,index)=>{
     try{localStorage.setItem(DELIVERY_COLUMN_KEY,JSON.stringify(deliveryColumnWidths));}catch(_ignored){}
   });
   heading.appendChild(grip);
+}
+deliveryHeadings.forEach((heading,index)=>{
+  if(index!==10)addDeliveryResizeGrip(heading,index);
 });
+// The sticky Actions heading covers the right edge of Status. Put its resize
+// handle on the visible left edge of Actions, targeting the Status width.
+addDeliveryResizeGrip(deliveryHeadings[11],10,"left");
 initializeDeliveryColumns();
 
 const DELIVERY_TOOLTIP_DELAY=2100;
