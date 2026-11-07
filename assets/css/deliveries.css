@@ -1067,3 +1067,26 @@ body.gta-deliveries-page #records-table thead th:nth-child(11) .delivery-column-
 body.gta-deliveries-page #records-table thead th:nth-child(11) .delivery-column-grip-left:focus-visible::after{
   background:#0b9bb1;
 }
+
+/* Independent Notes/Status resize target above sticky table headers. */
+body.gta-deliveries-page .delivery-notes-resize-overlay{
+  position:fixed;
+  z-index:1001;
+  width:14px;
+  cursor:col-resize;
+  touch-action:none;
+  background:transparent;
+}
+body.gta-deliveries-page .delivery-notes-resize-overlay[hidden]{display:none}
+body.gta-deliveries-page .delivery-notes-resize-overlay::after{
+  content:"";
+  position:absolute;
+  top:0;bottom:0;left:6px;
+  width:1px;
+  background:#c1d8e2;
+  pointer-events:none;
+}
+body.gta-deliveries-page .delivery-notes-resize-overlay:hover::after,
+body.gta-deliveries-page .delivery-notes-resize-overlay:focus-visible::after{
+  width:2px;background:#0b9bb1;
+}
