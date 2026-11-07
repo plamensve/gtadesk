@@ -807,18 +807,6 @@ body.gta-deliveries-page #records-table tbody td{
   padding-left:clamp(3px,.36vw,7px);
   padding-right:clamp(3px,.36vw,7px);
 }
-body.gta-deliveries-page #records-table tr > :nth-child(1){width:4%!important}
-body.gta-deliveries-page #records-table tr > :nth-child(2){width:7.5%!important}
-body.gta-deliveries-page #records-table tr > :nth-child(3){width:16.5%!important}
-body.gta-deliveries-page #records-table tr > :nth-child(4){width:15%!important}
-body.gta-deliveries-page #records-table tr > :nth-child(5){width:12%!important}
-body.gta-deliveries-page #records-table tr > :nth-child(6){width:7%!important}
-body.gta-deliveries-page #records-table tr > :nth-child(7){width:7%!important}
-body.gta-deliveries-page #records-table tr > :nth-child(8){width:5%!important}
-body.gta-deliveries-page #records-table tr > :nth-child(9){width:6.5%!important}
-body.gta-deliveries-page #records-table tr > :nth-child(10){width:9%!important}
-body.gta-deliveries-page #records-table tr > :nth-child(11){width:7.5%!important}
-body.gta-deliveries-page #records-table tr > :nth-child(12){width:3%!important}
 body.gta-deliveries-page #records-table td:nth-child(2),
 body.gta-deliveries-page #records-table td:nth-child(8),
 body.gta-deliveries-page #records-table td:nth-child(9){
@@ -955,8 +943,6 @@ body.gta-deliveries-page #records-table .invoice-document-count{
   font-size:9px;
   line-height:1;
 }
-body.gta-deliveries-page #records-table tr > :nth-child(10){width:8%!important}
-body.gta-deliveries-page #records-table tr > :nth-child(12){width:4%!important}
 body.gta-deliveries-page #records-table th.actions-heading{
   font-size:10px;
   text-align:center;
@@ -1025,3 +1011,23 @@ body.gta-deliveries-page .group-card-archive:hover{
   font:500 12px/1.45 system-ui,sans-serif;
 }
 .delivery-cell-tooltip[hidden]{display:none}
+
+/* Draggable table columns use explicit pixel widths from the colgroup. */
+body.gta-deliveries-page .scroll[aria-label="Регистър доставки"]{overflow-x:auto;overflow-y:auto}
+body.gta-deliveries-page #records-table{max-width:none;table-layout:fixed}
+body.gta-deliveries-page #records-table thead th{overflow:visible}
+body.gta-deliveries-page #records-table .delivery-column-grip{
+ position:absolute;right:-5px;top:0;bottom:0;width:11px;z-index:6;
+ cursor:col-resize;touch-action:none;
+}
+body.gta-deliveries-page #records-table .delivery-column-grip:hover,
+body.gta-deliveries-page #records-table .delivery-column-grip:focus-visible{
+ background:rgba(11,155,177,.12);outline:none;
+}
+body.gta-deliveries-page #records-table .delivery-column-grip::after{
+ content:"";position:absolute;width:2px;top:25%;bottom:25%;left:4px;
+ border-radius:2px;background:transparent;
+}
+body.gta-deliveries-page #records-table .delivery-column-grip:hover::after,
+body.gta-deliveries-page #records-table .delivery-column-grip:focus-visible::after{background:#0b9bb1}
+body.delivery-column-dragging,body.delivery-column-dragging *{cursor:col-resize!important;user-select:none!important}
