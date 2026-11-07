@@ -312,9 +312,9 @@ test("Document action buttons keep labels, icons and borders inside a consistent
  assert.match(block,/\.group-card-upload-label\{[\s\S]*?text-overflow:ellipsis/);
  assert.match(block,/\.document-view-icon\{[\s\S]*?flex:0 0 17px/);
  assert.match(block,/\.ark-doc-trigger,[\s\S]*?height:32px/);
- assert.match(js,/DELIVERY_COLUMN_MIN=\\[[^\\n]*58\\]/);
-  assert.match(js,/addDeliveryResizeGrip\\(heading,index\\)/);
-  assert.doesNotMatch(block,/nth-child\\(12\\)\\{width:4%!important\\}/);
+  assert.ok(js.includes("DELIVERY_COLUMN_MIN=[65,85,170,135,145,95,95,75,105,110,105,58]"));
+  assert.ok(js.includes("addDeliveryResizeGrip(heading,index)"));
+  assert.ok(!block.includes("nth-child(12){width:4%!important}"));
 });
 
 test("Full Analysis label is never ellipsized and document buttons have sufficient width",()=>{
