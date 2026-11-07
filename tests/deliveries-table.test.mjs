@@ -315,7 +315,7 @@ test("Document action buttons keep labels, icons and borders inside a consistent
  assert.match(block,/\.document-view-icon\{[\s\S]*?flex:0 0 17px/);
  assert.match(block,/\.ark-doc-trigger,[\s\S]*?height:32px/);
   assert.ok(js.includes("DELIVERY_ACTIONS_WIDTH=46"));
-  assert.ok(js.includes("addDeliveryResizeGrip(heading,index)"));
+  assert.ok(js.includes("heading.appendChild(grip)"));
   assert.ok(!block.includes("nth-child(12){width:4%!important}"));
 });
 
@@ -393,88 +393,23 @@ test("Hover preview waits over two seconds and selection hint is removed",()=>{
   assert.doesNotMatch(js,/title="Избери доставка за митническия PDF"/);
 });
 
-test("Delivery table supports draggable, saved column widths",()=>{
+test("Every column except Actions has one right-side resize grip",()=>{
  const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
- assert.match(js,/DELIVERY_COLUMN_KEY="gtadesk.delivery-columns.v2"/);
- assert.match(js,/document.createElement\("colgroup"\)/);
+ assert.match(js,/DELIVERY_COLUMN_KEY="gtadesk.delivery-columns.v3"/);
+ assert.match(js,/if\(index===DELIVERY_ACTIONS_INDEX\)return/);
+ assert.match(js,/heading.appendChild\(grip\)/);
  assert.match(js,/grip.setPointerCapture\(event.pointerId\)/);
- assert.match(js,/grip.addEventListener\("keydown"/);
- assert.match(js,/localStorage.setItem\(DELIVERY_COLUMN_KEY/);
- assert.match(css,/\.scroll\[aria-label="Регистър доставки"\]\{overflow-x:auto/);
- assert.match(css,/\.delivery-column-grip\{/);
- assert.doesNotMatch(css,/#records-table tr > :nth-child\(\d+\)\{width:[^\n]*!important/);
+ assert.match(js,/deliveryColumnWidths=resizeDeliveryBoundary/);
+ assert.match(js,/deliveryBoundaryAt\(event\)/);
+ assert.match(js,/document.addEventListener\("pointerup",finishDeliveryResize\)/);
+ assert.match(css,/\.delivery-column-grip\{[\s\S]*?right:0/);
+ assert.doesNotMatch(js,/notesCellDrag|notesResizeOverlay|addDeliveryResizeGrip/);
+ assert.doesNotMatch(css,/delivery-column-grip-left|delivery-notes-resize-overlay/);
 });
-
-test("Sticky Actions header exposes a visible resize handle for Status",()=>{
+test("Actions stay compact and no longer overlap other columns",()=>{
  const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
- assert.match(js,/addDeliveryResizeGrip\(deliveryHeadings\[11\],10,"left"\)/);
- assert.match(js,/if\(index!==9&&index!==10&&index!==DELIVERY_ACTIONS_INDEX\)addDeliveryResizeGrip\(heading,index\)/);
- assert.match(css,/th\.actions-heading \.delivery-column-grip-left\{/);
- assert.match(css,/left:-6px;right:auto;z-index:8/);
- assert.match(css,/td\.actions-cell\{[\s\S]*?border-left:1px solid #cadde6/);
-});
-
-test("Notes resize handle belongs to the real right edge of Notes",()=>{
- const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
- assert.match(js,/addDeliveryResizeGrip\(deliveryHeadings\[9\],9\)/);
- assert.match(js,/addDeliveryResizeGrip\(deliveryHeadings\[11\],10,"left"\)/);
- assert.doesNotMatch(js,/notesResizeOverlay|positionNotesResizeOverlay/);
- assert.match(css,/thead th:nth-child\(10\) \.delivery-column-grip\{/);
- assert.match(css,/right:-6px;/);
- assert.match(css,/thead th:nth-child\(10\)\{[\s\S]*?z-index:5/);
- assert.match(css,/thead th\.actions-heading\{[\s\S]*?z-index:10/);
- assert.doesNotMatch(css,/delivery-notes-resize-overlay/);
-});
-
-test("Notes cells allow resizing by dragging their real right border",()=>{
- const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
- assert.match(js,/event\.clientX>=rect\.right-9&&event\.clientX<=rect\.right\+2/);
- assert.match(js,/deliveryCells\.addEventListener\("pointerdown"/);
- assert.match(js,/notesCellDrag=\{startX:event\.clientX,startWidth:deliveryColumnWidths\[9\]\}/);
- assert.match(js,/document\.addEventListener\("pointermove"/);
- assert.match(js,/document\.addEventListener\("pointerup",finishNotesCellDrag\)/);
- assert.match(css,/td:nth-child\(10\)\.notes-resize-edge/);
- assert.doesNotMatch(js,/notesResizeOverlay/);
-});
-
-test("Actions are compact and column widths fit within the available space",()=>{
- const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
- assert.match(html,/class="actions-heading" aria-label="Действия" title="Действия">⋮/);
  assert.match(js,/DELIVERY_ACTIONS_WIDTH=46/);
- assert.match(js,/function fitDeliveryColumnWidths\(priorityIndex=null\)/);
- assert.match(js,/deliveryColumnWidths\[DELIVERY_ACTIONS_INDEX\]=DELIVERY_ACTIONS_WIDTH/);
- assert.match(js,/applyDeliveryColumnWidths\(index\)/);
- assert.match(js,/applyDeliveryColumnWidths\(9\)/);
- assert.match(css,/th\.actions-heading,[\s\S]*?td\.actions-cell\{[\s\S]*?width:46px!important/);
-});
-
-test("Column sizing keeps ARK and invoice readable and distributes unused space",()=>{
- assert.match(js,/DELIVERY_COLUMN_MIN=\[65,85,210,170,150/);
- assert.doesNotMatch(js,/deliveryColumnWidths\[9\]\+=available-total/);
- const beginning=js.indexOf("function fitDeliveryColumnWidths(priorityIndex=null){");
- const ending=js.indexOf("function applyDeliveryColumnWidths(",beginning);
- assert.ok(beginning>=0&&ending>beginning);
- const layout=js.slice(beginning,ending);
- const weights=[4,7.5,16.5,15,12,7,7,5,6.5,9,7.5,3];
- const mins=[65,85,210,170,150,90,90,70,100,105,120,46];
- const run=(widths,available,active=null)=>{
-  const context={deliveryColumnWidths:[...widths],deliveryTable:{parentElement:{clientWidth:available}},DELIVERY_COLUMN_RATIOS:weights,DELIVERY_COLUMN_MIN:mins,DELIVERY_ACTIONS_INDEX:11,DELIVERY_ACTIONS_WIDTH:46};
-  const fit=runInNewContext(layout+";fitDeliveryColumnWidths",context);
-  fit(active);
-  return context.deliveryColumnWidths;
- };
- const baseline=weights.map((w,i)=>Math.max(mins[i],1600*w/100));
- const normal=run(baseline,1600);
- assert.ok(Math.abs(normal.reduce((a,b)=>a+b,0)-1600)<0.01);
- assert.ok(normal[9]<210,"Notes must never absorb all spare width");
- assert.ok(normal[2]>=210&&normal[3]>=170);
- assert.equal(normal[11],46);
- // Previously saved disproportionate widths are normalized instead of crushing ARK.
- const damaged=[65,85,210,170,150,90,90,70,100,490,120,46];
- const repaired=run(damaged,1600);
- assert.ok(repaired[9]<490&&repaired[2]>=210);
- assert.ok(Math.abs(repaired.reduce((a,b)=>a+b,0)-1600)<0.01);
- const drag=run(normal.map((w,i)=>i===9?w+70:w),1600,9);
- assert.ok(drag[9]>normal[9],"Notes remains draggable");
- assert.ok(Math.abs(drag.reduce((a,b)=>a+b,0)-1600)<0.01);
+ assert.match(css,/th.actions-heading,[\s\S]*?td.actions-cell\{[\s\S]*?width:46px!important/);
+ assert.match(css,/tbody td.actions-cell\{[\s\S]*?position:static!important/);
+ assert.match(js,/fitDeliveryColumns\(deliverySavedWidths\(\)/);
 });
