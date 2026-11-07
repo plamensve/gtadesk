@@ -505,7 +505,9 @@ const deliveryCells=$("records-body");
 const deliveryTable=$("records-table");
 const DELIVERY_COLUMN_KEY="gtadesk.delivery-columns.v1";
 const DELIVERY_COLUMN_RATIOS=[4,7.5,16.5,15,12,7,7,5,6.5,9,7.5,3];
-const DELIVERY_COLUMN_MIN=[65,85,170,135,145,95,95,75,105,110,105,58];
+const DELIVERY_COLUMN_MIN=[58,75,150,125,130,80,80,65,85,90,105,46];
+const DELIVERY_ACTIONS_INDEX=11;
+const DELIVERY_ACTIONS_WIDTH=46;
 const deliveryHeadings=[...deliveryTable.tHead.rows[0].cells];
 const deliveryColumnGroup=document.createElement("colgroup");
 const deliveryColumns=deliveryHeadings.map(()=>document.createElement("col"));
@@ -516,11 +518,31 @@ function deliverySavedWidths(){
   try{
     const saved=JSON.parse(localStorage.getItem(DELIVERY_COLUMN_KEY)||"null");
     if(Array.isArray(saved)&&saved.length===deliveryColumns.length&&
-      saved.every((width,index)=>Number.isFinite(width)&&width>=DELIVERY_COLUMN_MIN[index]&&width<=2000))return saved;
+      saved.every((width,index)=>Number.isFinite(width)&&width>=0&&width<=2000))return saved.map((width,index)=>Math.max(DELIVERY_COLUMN_MIN[index],width));
   }catch(_ignored){}
   return null;
 }
-function applyDeliveryColumnWidths(){
+function fitDeliveryColumnWidths(priorityIndex=null){
+  const available=Math.floor(deliveryTable.parentElement.clientWidth);
+  deliveryColumnWidths[DELIVERY_ACTIONS_INDEX]=DELIVERY_ACTIONS_WIDTH;
+  let excess=deliveryColumnWidths.reduce((sum,width)=>sum+width,0)-available;
+  // Preserve the column the user is dragging. Shrink other columns first.
+  const order=deliveryColumnWidths.map((_,index)=>index)
+    .filter(index=>index!==DELIVERY_ACTIONS_INDEX&&index!==priorityIndex)
+    .sort((a,b)=>(deliveryColumnWidths[b]-DELIVERY_COLUMN_MIN[b])-
+                 (deliveryColumnWidths[a]-DELIVERY_COLUMN_MIN[a]));
+  if(priorityIndex!==null)order.push(priorityIndex);
+  for(const index of order){
+    if(excess<=0)break;
+    const shrink=Math.min(excess,deliveryColumnWidths[index]-DELIVERY_COLUMN_MIN[index]);
+    if(shrink>0){deliveryColumnWidths[index]-=shrink;excess-=shrink;}
+  }
+  // Only screens narrower than all minimum widths can need horizontal scrolling.
+  const total=deliveryColumnWidths.reduce((sum,width)=>sum+width,0);
+  if(total<available)deliveryColumnWidths[9]+=available-total;
+}
+function applyDeliveryColumnWidths(priorityIndex=null){
+  fitDeliveryColumnWidths(priorityIndex);
   deliveryColumns.forEach((column,index)=>{column.style.width=deliveryColumnWidths[index]+"px";});
   const total=deliveryColumnWidths.reduce((sum,width)=>sum+width,0);
   deliveryTable.style.width=total+"px";
@@ -531,8 +553,10 @@ function initializeDeliveryColumns(){
   const available=deliveryTable.parentElement.clientWidth;
   deliveryColumnWidths=saved||DELIVERY_COLUMN_RATIOS.map((ratio,index)=>
     Math.max(DELIVERY_COLUMN_MIN[index],Math.round(available*ratio/100)));
+  deliveryColumnWidths[DELIVERY_ACTIONS_INDEX]=DELIVERY_ACTIONS_WIDTH;
   applyDeliveryColumnWidths();
 }
+window.addEventListener("resize",()=>{if(!deliveryResizing&&!notesCellDrag)applyDeliveryColumnWidths();},{passive:true});
 function finishDeliveryResize(){
   if(!deliveryResizing)return;
   deliveryResizing=null;
@@ -558,7 +582,7 @@ function addDeliveryResizeGrip(heading,index,edge="right"){
     if(!deliveryResizing||deliveryResizing.index!==index)return;
     deliveryColumnWidths[index]=Math.max(DELIVERY_COLUMN_MIN[index],
       Math.min(2000,Math.round(deliveryResizing.startWidth+event.clientX-deliveryResizing.startX)));
-    applyDeliveryColumnWidths();
+    applyDeliveryColumnWidths(index);
   });
   grip.addEventListener("pointerup",finishDeliveryResize);
   grip.addEventListener("pointercancel",finishDeliveryResize);
@@ -568,7 +592,7 @@ function addDeliveryResizeGrip(heading,index,edge="right"){
     event.preventDefault();
     deliveryColumnWidths[index]=Math.max(DELIVERY_COLUMN_MIN[index],
       Math.min(2000,deliveryColumnWidths[index]+(event.key==="ArrowRight"?10:-10)));
-    applyDeliveryColumnWidths();
+    applyDeliveryColumnWidths(index);
     try{localStorage.setItem(DELIVERY_COLUMN_KEY,JSON.stringify(deliveryColumnWidths));}catch(_ignored){}
   });
   heading.appendChild(grip);
@@ -576,7 +600,7 @@ function addDeliveryResizeGrip(heading,index,edge="right"){
 deliveryHeadings.forEach((heading,index)=>{
   // Boundaries next to another header can be covered by that header's paint layer.
   // Place the Notes handle on the visible left edge of Status instead.
-  if(index!==9&&index!==10)addDeliveryResizeGrip(heading,index);
+  if(index!==9&&index!==10&&index!==DELIVERY_ACTIONS_INDEX)addDeliveryResizeGrip(heading,index);
 });
 // Use the actual right boundary of Notes for resizing, not a floating line.
 // Raise the Notes header above Status so this grip receives pointer events.
@@ -620,7 +644,7 @@ document.addEventListener("pointermove",event=>{
   if(!notesCellDrag)return;
   const width=notesCellDrag.startWidth+event.clientX-notesCellDrag.startX;
   deliveryColumnWidths[9]=Math.max(DELIVERY_COLUMN_MIN[9],Math.min(2000,Math.round(width)));
-  applyDeliveryColumnWidths();
+  applyDeliveryColumnWidths(9);
 });
 function finishNotesCellDrag(){
   if(!notesCellDrag)return;
