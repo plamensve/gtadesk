@@ -119,10 +119,11 @@ test("Declaration status space is reserved for used and unused cards",()=>{
   assert.match(source,/aria-hidden="true"/);
 });
 
-test("Actions column stays pinned to the table edge",()=>{
+test("Actions column does not cover Status or Notes divider",()=>{
   const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
   assert.match(css,/scrollbar-gutter:auto/);
-  assert.match(css,/#records-table th\.actions-heading,#records-table td\.actions-cell\s*\{[\s\S]*?position:sticky;right:0/);
+  assert.match(css,/#records-table th\.actions-heading,#records-table td\.actions-cell\s*\{[\s\S]*?position:static;right:auto/);
+  assert.match(css,/tbody td\.actions-cell\{[\s\S]*?position:static!important/);
 });
 
 test("Customs selection checkboxes are inside the row-number column",()=>{
@@ -422,4 +423,15 @@ test("Notes resize handle belongs to the real right edge of Notes",()=>{
  assert.match(css,/thead th:nth-child\(10\)\{[\s\S]*?z-index:5/);
  assert.match(css,/thead th\.actions-heading\{[\s\S]*?z-index:10/);
  assert.doesNotMatch(css,/delivery-notes-resize-overlay/);
+});
+
+test("Notes cells allow resizing by dragging their real right border",()=>{
+ const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
+ assert.match(js,/event\.clientX>=rect\.right-9&&event\.clientX<=rect\.right\+2/);
+ assert.match(js,/deliveryCells\.addEventListener\("pointerdown"/);
+ assert.match(js,/notesCellDrag=\{startX:event\.clientX,startWidth:deliveryColumnWidths\[9\]\}/);
+ assert.match(js,/document\.addEventListener\("pointermove"/);
+ assert.match(js,/document\.addEventListener\("pointerup",finishNotesCellDrag\)/);
+ assert.match(css,/td:nth-child\(10\)\.notes-resize-edge/);
+ assert.doesNotMatch(js,/notesResizeOverlay/);
 });

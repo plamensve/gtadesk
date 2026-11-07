@@ -585,6 +585,53 @@ addDeliveryResizeGrip(deliveryHeadings[9],9);
 addDeliveryResizeGrip(deliveryHeadings[11],10,"left");
 initializeDeliveryColumns();
 
+// Delegated edge resizing works on the actual Notes cell boundary throughout
+// the table, including rows rerendered after filtering or page changes.
+let notesCellDrag=null;
+let notesEdgeHover=null;
+function notesCellAtBorder(event){
+  const cell=event.target.closest("td:nth-child(10)");
+  if(!cell||!deliveryCells.contains(cell))return null;
+  const rect=cell.getBoundingClientRect();
+  return event.clientX>=rect.right-9&&event.clientX<=rect.right+2?cell:null;
+}
+function clearNotesEdgeHover(){
+  if(notesEdgeHover)notesEdgeHover.classList.remove("notes-resize-edge");
+  notesEdgeHover=null;
+}
+deliveryCells.addEventListener("pointermove",event=>{
+  if(notesCellDrag||event.pointerType==="touch")return;
+  const cell=notesCellAtBorder(event);
+  if(cell===notesEdgeHover)return;
+  clearNotesEdgeHover();
+  notesEdgeHover=cell;
+  if(cell)cell.classList.add("notes-resize-edge");
+});
+deliveryCells.addEventListener("pointerleave",clearNotesEdgeHover);
+deliveryCells.addEventListener("pointerdown",event=>{
+  if(event.button!==0||!notesCellAtBorder(event))return;
+  event.preventDefault();
+  hideDeliveryTooltip();
+  clearNotesEdgeHover();
+  notesCellDrag={startX:event.clientX,startWidth:deliveryColumnWidths[9]};
+  document.body.classList.add("delivery-column-dragging");
+});
+document.addEventListener("pointermove",event=>{
+  if(!notesCellDrag)return;
+  const width=notesCellDrag.startWidth+event.clientX-notesCellDrag.startX;
+  deliveryColumnWidths[9]=Math.max(DELIVERY_COLUMN_MIN[9],Math.min(2000,Math.round(width)));
+  applyDeliveryColumnWidths();
+});
+function finishNotesCellDrag(){
+  if(!notesCellDrag)return;
+  notesCellDrag=null;
+  document.body.classList.remove("delivery-column-dragging");
+  try{localStorage.setItem(DELIVERY_COLUMN_KEY,JSON.stringify(deliveryColumnWidths));}catch(_ignored){}
+}
+document.addEventListener("pointerup",finishNotesCellDrag);
+document.addEventListener("pointercancel",finishNotesCellDrag);
+window.addEventListener("blur",finishNotesCellDrag);
+
 const DELIVERY_TOOLTIP_DELAY=2100;
 let hoveredDeliveryCell=null,deliveryTooltipTimer=null,deliveryTooltipPoint=null;
 function deliveryCellText(cell){
