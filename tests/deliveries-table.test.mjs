@@ -294,15 +294,12 @@ test("Uploaded documents use an eye icon, while empty controls use the yellow fo
   assert.match(rows,/document-upload\.svg/);
   assert.match(js,/previewIfSingle/);
 });
-test("Delivery table uses column-based fluid widths without a horizontal scroll bar",()=>{
+test("Delivery table has fixed layout with horizontal scrolling for resized columns",()=>{
   const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
-  const block=css.slice(css.lastIndexOf("/* Uniform document controls"));
-  assert.match(block,/table-layout:fixed/);
-  assert.match(block,/overflow-x:hidden/);
-  assert.match(block,/min-width:0!important/);
-  const percentages=[4,7.5,16.5,15,12,7,7,5,6.5,9,7.5,3];
-  assert.equal(percentages.reduce((a,b)=>a+b,0),100);
-  percentages.forEach((p,i)=>assert.ok(block.includes("nth-child("+(i+1)+"){width:"+p+"%!important}")));
+  assert.match(css,/table-layout:fixed/);
+  assert.match(css,/\.scroll\[aria-label="Регистър доставки"\]\{overflow-x:auto/);
+  assert.match(js,/DELIVERY_COLUMN_RATIOS=\[4,7\.5,16\.5,15,12,7,7,5,6\.5,9,7\.5,3\]/);
+  assert.doesNotMatch(css,/#records-table tr > :nth-child\(\d+\)\{width:[^\n]*!important/);
 });
 
 test("Document action buttons keep labels, icons and borders inside a consistent layout",()=>{
