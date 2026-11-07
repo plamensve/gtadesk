@@ -1012,90 +1012,71 @@ body.gta-deliveries-page .group-card-archive:hover{
 }
 .delivery-cell-tooltip[hidden]{display:none}
 
-/* Draggable table columns use explicit pixel widths from the colgroup. */
-body.gta-deliveries-page .scroll[aria-label="Регистър доставки"]{overflow-x:auto;overflow-y:auto}
-body.gta-deliveries-page #records-table{max-width:none;table-layout:fixed}
-body.gta-deliveries-page #records-table thead th{overflow:visible}
-body.gta-deliveries-page #records-table .delivery-column-grip{
- position:absolute;right:-5px;top:0;bottom:0;width:11px;z-index:6;
- cursor:col-resize;touch-action:none;
+/* Delivery table: one right-edge handle per column, never floating lines. */
+body.gta-deliveries-page .scroll[aria-label="Регистър доставки"]{
+  overflow-x:auto;
+  overflow-y:auto;
 }
-body.gta-deliveries-page #records-table .delivery-column-grip:hover,
-body.gta-deliveries-page #records-table .delivery-column-grip:focus-visible{
- background:rgba(11,155,177,.12);outline:none;
+body.gta-deliveries-page #records-table{
+  max-width:none;
+  table-layout:fixed;
 }
-body.gta-deliveries-page #records-table .delivery-column-grip::after{
- content:"";position:absolute;width:2px;top:25%;bottom:25%;left:4px;
- border-radius:2px;background:transparent;
-}
-body.gta-deliveries-page #records-table .delivery-column-grip:hover::after,
-body.gta-deliveries-page #records-table .delivery-column-grip:focus-visible::after{background:#0b9bb1}
-body.delivery-column-dragging,body.delivery-column-dragging *{cursor:col-resize!important;user-select:none!important}
-
-/* Expose the Status/Actions boundary above the sticky Actions column. */
-body.gta-deliveries-page #records-table th.actions-heading,
-body.gta-deliveries-page #records-table td.actions-cell{
-  border-left:1px solid #cadde6;
-  box-shadow:inset 1px 0 #e2edf2;
-}
-body.gta-deliveries-page #records-table th.actions-heading .delivery-column-grip-left{
-  left:-6px;right:auto;z-index:8;
-}
-body.gta-deliveries-page #records-table th.actions-heading .delivery-column-grip-left::after{
-  left:4px;background:#c1d8e2;
-}
-body.gta-deliveries-page #records-table th.actions-heading .delivery-column-grip-left:hover::after,
-body.gta-deliveries-page #records-table th.actions-heading .delivery-column-grip-left:focus-visible::after{
-  background:#0b9bb1;
-}
-
-/* Keep the Notes resize handle directly on its real right-hand border.
-   Notes must paint above Status; Actions remains above Notes when sticky. */
-body.gta-deliveries-page #records-table thead th:nth-child(10){
-  z-index:5;
-}
-body.gta-deliveries-page #records-table thead th:nth-child(10) .delivery-column-grip{
-  right:-6px;
-  z-index:9;
-}
-body.gta-deliveries-page #records-table thead th:nth-child(10) .delivery-column-grip::after{
-  background:#c1d8e2;
-}
-body.gta-deliveries-page #records-table thead th:nth-child(10) .delivery-column-grip:hover::after,
-body.gta-deliveries-page #records-table thead th:nth-child(10) .delivery-column-grip:focus-visible::after{
-  background:#0b9bb1;
+body.gta-deliveries-page #records-table thead th{
+  overflow:visible;
+  position:sticky;
+  top:0;
+  z-index:3;
 }
 body.gta-deliveries-page #records-table thead th.actions-heading{
-  z-index:10;
+  position:sticky;
+  top:0;
+  right:auto!important;
+  z-index:3;
 }
-
-/* The action column participates in normal table layout: it must never
-   paint over Status or the real right border of Notes. */
 body.gta-deliveries-page #records-table tbody td.actions-cell{
   position:static!important;
   right:auto!important;
   z-index:auto!important;
 }
-body.gta-deliveries-page #records-table thead th.actions-heading{
-  right:auto!important;
-}
-body.gta-deliveries-page #records-table tbody td:nth-child(10).notes-resize-edge{
-  cursor:col-resize!important;
-}
-
-/* Compact Actions button column, with no wasted space or forced horizontal overflow. */
 body.gta-deliveries-page #records-table th.actions-heading,
 body.gta-deliveries-page #records-table td.actions-cell{
+  box-sizing:border-box;
   width:46px!important;
   min-width:46px!important;
   max-width:46px!important;
   padding-inline:2px!important;
   text-align:center;
 }
-body.gta-deliveries-page #records-table th.actions-heading{
-  font-size:18px;
-  letter-spacing:0;
+body.gta-deliveries-page #records-table .delivery-column-grip{
+  position:absolute;
+  right:0;
+  top:0;
+  bottom:0;
+  width:11px;
+  z-index:5;
+  cursor:col-resize;
+  touch-action:none;
 }
-body.gta-deliveries-page .scroll[aria-label="Регистър доставки"]{
-  overflow-x:auto;
+body.gta-deliveries-page #records-table .delivery-column-grip::after{
+  content:"";
+  position:absolute;
+  width:1px;
+  right:0;
+  top:0;
+  bottom:0;
+  background:#d8e7ed;
+  pointer-events:none;
+}
+body.gta-deliveries-page #records-table .delivery-column-grip:hover::after,
+body.gta-deliveries-page #records-table .delivery-column-grip:focus-visible::after{
+  width:2px;
+  background:#0b9bb1;
+}
+body.gta-deliveries-page #records-table tbody td.delivery-resize-hover{
+  cursor:col-resize!important;
+}
+body.delivery-column-dragging,
+body.delivery-column-dragging *{
+  cursor:col-resize!important;
+  user-select:none!important;
 }
