@@ -1099,3 +1099,17 @@ body.gta-deliveries-page #records-table .delivery-status-actions-grip:hover::aft
 body.gta-deliveries-page #records-table .delivery-status-actions-grip:focus-visible::after{
   left:6px;
 }
+
+/* The register must occupy the panel, without a horizontal scrolling strip.
+   Width is shared by the colgroup; clipped long values keep their tooltips. */
+body.gta-deliveries-page .scroll[aria-label="Регистър доставки"]{
+  overflow-x:hidden;
+  max-width:100%;
+  box-sizing:border-box;
+}
+body.gta-deliveries-page #records-table{
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  table-layout:fixed;
+}
