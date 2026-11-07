@@ -414,9 +414,19 @@ test("Sticky Actions header exposes a visible resize handle for Status",()=>{
 
 test("Notes resize boundary is accessible from the left edge of Status",()=>{
  const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
- assert.match(js,/addDeliveryResizeGrip\(deliveryHeadings\[10\],9,"left"\)/);
+ assert.match(js,/notesResizeOverlay\.setPointerCapture\(event\.pointerId\)/);
  assert.match(js,/if\(index!==9&&index!==10\)addDeliveryResizeGrip\(heading,index\)/);
  assert.match(js,/addDeliveryResizeGrip\(deliveryHeadings\[11\],10,"left"\)/);
- assert.match(css,/thead th:nth-child\(11\) \.delivery-column-grip-left\{/);
+ assert.match(css,/\.delivery-notes-resize-overlay\{/);
  assert.match(css,/border-left:1px solid #cadde6/);
+});
+
+test("Notes resize overlay sits above sticky headers and tracks scroll",()=>{
+ const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
+ assert.match(js,/document\.body\.appendChild\(notesResizeOverlay\)/);
+ assert.match(js,/deliveryHeadings\[10\]\.getBoundingClientRect\(\)/);
+ assert.match(js,/deliveryTable\.parentElement\.addEventListener\("scroll",positionNotesResizeOverlay/);
+ assert.match(js,/notesResizeOverlay\.addEventListener\("pointermove"/);
+ assert.match(js,/setNotesColumnWidth\(deliveryResizing\.startWidth\+event\.clientX-deliveryResizing\.startX\)/);
+ assert.match(css,/\.delivery-notes-resize-overlay\{[\s\S]*?z-index:1001/);
 });
