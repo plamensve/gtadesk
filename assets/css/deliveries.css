@@ -1031,3 +1031,20 @@ body.gta-deliveries-page #records-table .delivery-column-grip::after{
 body.gta-deliveries-page #records-table .delivery-column-grip:hover::after,
 body.gta-deliveries-page #records-table .delivery-column-grip:focus-visible::after{background:#0b9bb1}
 body.delivery-column-dragging,body.delivery-column-dragging *{cursor:col-resize!important;user-select:none!important}
+
+/* Expose the Status/Actions boundary above the sticky Actions column. */
+body.gta-deliveries-page #records-table th.actions-heading,
+body.gta-deliveries-page #records-table td.actions-cell{
+  border-left:1px solid #cadde6;
+  box-shadow:inset 1px 0 #e2edf2;
+}
+body.gta-deliveries-page #records-table th.actions-heading .delivery-column-grip-left{
+  left:-6px;right:auto;z-index:8;
+}
+body.gta-deliveries-page #records-table th.actions-heading .delivery-column-grip-left::after{
+  left:4px;background:#c1d8e2;
+}
+body.gta-deliveries-page #records-table th.actions-heading .delivery-column-grip-left:hover::after,
+body.gta-deliveries-page #records-table th.actions-heading .delivery-column-grip-left:focus-visible::after{
+  background:#0b9bb1;
+}
