@@ -585,14 +585,42 @@ deliveryHeadings.forEach((heading,index)=>{
   });
   heading.appendChild(grip);
 });
+// The Status/Actions boundary is also grabbable from the left edge of Actions.
+// Actions itself remains fixed; this handle delegates to the Status column.
+const statusActionsGrip=document.createElement("span");
+statusActionsGrip.className="delivery-column-grip delivery-status-actions-grip";
+statusActionsGrip.setAttribute("role","separator");
+statusActionsGrip.setAttribute("aria-orientation","vertical");
+statusActionsGrip.setAttribute("aria-label","Промени ширината на колона Статус");
+statusActionsGrip.setAttribute("tabindex","0");
+statusActionsGrip.addEventListener("pointerdown",event=>{
+  if(event.button!==0)return;
+  event.preventDefault();
+  event.stopPropagation();
+  startDeliveryResize(DELIVERY_ACTIONS_INDEX-1,event.clientX);
+  statusActionsGrip.setPointerCapture(event.pointerId);
+});
+statusActionsGrip.addEventListener("pointermove",event=>moveDeliveryResize(event.clientX));
+statusActionsGrip.addEventListener("pointerup",finishDeliveryResize);
+statusActionsGrip.addEventListener("pointercancel",finishDeliveryResize);
+statusActionsGrip.addEventListener("lostpointercapture",finishDeliveryResize);
+statusActionsGrip.addEventListener("keydown",event=>{
+  if(event.key!=="ArrowLeft"&&event.key!=="ArrowRight")return;
+  event.preventDefault();
+  deliveryColumnWidths=resizeDeliveryBoundary(deliveryColumnWidths,DELIVERY_ACTIONS_INDEX-1,
+    event.key==="ArrowRight"?10:-10,DELIVERY_COLUMN_MIN,DELIVERY_ACTIONS_INDEX);
+  applyDeliveryColumnWidths();
+  saveDeliveryWidths();
+});
+deliveryHeadings[DELIVERY_ACTIONS_INDEX].appendChild(statusActionsGrip);
 // A body-cell divider has the same meaning as its header counterpart.
 // Accept either side of the line so the neighboring cell cannot intercept it.
 function deliveryBoundaryAt(event){
   const cell=event.target.closest("td");
   if(!cell||!deliveryCells.contains(cell))return null;
   const rect=cell.getBoundingClientRect();
-  if(cell.cellIndex<DELIVERY_ACTIONS_INDEX&&event.clientX>=rect.right-8)return cell.cellIndex;
-  if(cell.cellIndex>0&&event.clientX<=rect.left+8)return cell.cellIndex-1;
+  if(cell.cellIndex<DELIVERY_ACTIONS_INDEX&&event.clientX>=rect.right-10)return cell.cellIndex;
+  if(cell.cellIndex>0&&event.clientX<=rect.left+(cell.cellIndex===DELIVERY_ACTIONS_INDEX?12:8))return cell.cellIndex-1;
   return null;
 }
 let hoveredResizeCell=null;
