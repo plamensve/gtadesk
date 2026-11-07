@@ -1048,3 +1048,22 @@ body.gta-deliveries-page #records-table th.actions-heading .delivery-column-grip
 body.gta-deliveries-page #records-table th.actions-heading .delivery-column-grip-left:focus-visible::after{
   background:#0b9bb1;
 }
+
+/* Status header paints over Notes' right edge; put the Notes drag handle
+   on Status' left edge and keep a fine, visible separator. */
+body.gta-deliveries-page #records-table thead th:nth-child(11){
+  border-left:1px solid #cadde6;
+}
+body.gta-deliveries-page #records-table thead th:nth-child(11) .delivery-column-grip-left{
+  left:-6px;
+  right:auto;
+  z-index:8;
+}
+body.gta-deliveries-page #records-table thead th:nth-child(11) .delivery-column-grip-left::after{
+  left:4px;
+  background:#c1d8e2;
+}
+body.gta-deliveries-page #records-table thead th:nth-child(11) .delivery-column-grip-left:hover::after,
+body.gta-deliveries-page #records-table thead th:nth-child(11) .delivery-column-grip-left:focus-visible::after{
+  background:#0b9bb1;
+}
