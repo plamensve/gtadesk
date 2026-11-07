@@ -260,7 +260,7 @@ test("Status labels keep space before the sticky row actions menu",()=>{
  const block=css.slice(css.lastIndexOf("/* Clearly separate status labels"));
  assert.ok(block.length>200);
  assert.match(block,/td\.usage-status-cell\{[\s\S]*?padding-right:20px/);
- assert.match(block,/th\.actions-heading,[\s\S]*?td\.actions-cell\{[\s\S]*?width:58px/);
+ assert.match(block,/th\.actions-heading,[\s\S]*?td\.actions-cell\{[\s\S]*?width:58px/);\n assert.match(css,/td\.actions-cell\{[\s\S]*?width:46px!important/);
 });
 
 test("Upload entry points share the blue document icon and pointer cursor",()=>{
