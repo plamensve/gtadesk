@@ -502,6 +502,79 @@ deliveryCellTooltip.setAttribute("role","tooltip");
 deliveryCellTooltip.hidden=true;
 document.body.appendChild(deliveryCellTooltip);
 const deliveryCells=$("records-body");
+const deliveryTable=$("records-table");
+const DELIVERY_COLUMN_KEY="gtadesk.delivery-columns.v1";
+const DELIVERY_COLUMN_RATIOS=[4,7.5,16.5,15,12,7,7,5,6.5,9,7.5,3];
+const DELIVERY_COLUMN_MIN=[65,85,170,135,145,95,95,75,105,110,105,58];
+const deliveryHeadings=[...deliveryTable.tHead.rows[0].cells];
+const deliveryColumnGroup=document.createElement("colgroup");
+const deliveryColumns=deliveryHeadings.map(()=>document.createElement("col"));
+deliveryColumnGroup.append(...deliveryColumns);
+deliveryTable.insertBefore(deliveryColumnGroup,deliveryTable.firstChild);
+let deliveryColumnWidths=[],deliveryResizing=null;
+function deliverySavedWidths(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(DELIVERY_COLUMN_KEY)||"null");
+    if(Array.isArray(saved)&&saved.length===deliveryColumns.length&&
+      saved.every((width,index)=>Number.isFinite(width)&&width>=DELIVERY_COLUMN_MIN[index]&&width<=2000))return saved;
+  }catch(_ignored){}
+  return null;
+}
+function applyDeliveryColumnWidths(){
+  deliveryColumns.forEach((column,index)=>{column.style.width=deliveryColumnWidths[index]+"px";});
+  const total=deliveryColumnWidths.reduce((sum,width)=>sum+width,0);
+  deliveryTable.style.width=total+"px";
+  deliveryTable.style.minWidth=total+"px";
+}
+function initializeDeliveryColumns(){
+  const saved=deliverySavedWidths();
+  const available=deliveryTable.parentElement.clientWidth;
+  deliveryColumnWidths=saved||DELIVERY_COLUMN_RATIOS.map((ratio,index)=>
+    Math.max(DELIVERY_COLUMN_MIN[index],Math.round(available*ratio/100)));
+  applyDeliveryColumnWidths();
+}
+function finishDeliveryResize(){
+  if(!deliveryResizing)return;
+  deliveryResizing=null;
+  document.body.classList.remove("delivery-column-dragging");
+  try{localStorage.setItem(DELIVERY_COLUMN_KEY,JSON.stringify(deliveryColumnWidths));}catch(_ignored){}
+}
+deliveryHeadings.forEach((heading,index)=>{
+  const grip=document.createElement("span");
+  grip.className="delivery-column-grip";
+  grip.setAttribute("role","separator");
+  grip.setAttribute("aria-orientation","vertical");
+  grip.setAttribute("aria-label","Промени ширината на колона "+heading.textContent.trim());
+  grip.setAttribute("tabindex","0");
+  grip.addEventListener("pointerdown",event=>{
+    if(event.button!==0)return;
+    event.preventDefault();
+    finishDeliveryResize();
+    deliveryResizing={index,startX:event.clientX,startWidth:deliveryColumnWidths[index]};
+    document.body.classList.add("delivery-column-dragging");
+    grip.setPointerCapture(event.pointerId);
+  });
+  grip.addEventListener("pointermove",event=>{
+    if(!deliveryResizing||deliveryResizing.index!==index)return;
+    deliveryColumnWidths[index]=Math.max(DELIVERY_COLUMN_MIN[index],
+      Math.min(2000,Math.round(deliveryResizing.startWidth+event.clientX-deliveryResizing.startX)));
+    applyDeliveryColumnWidths();
+  });
+  grip.addEventListener("pointerup",finishDeliveryResize);
+  grip.addEventListener("pointercancel",finishDeliveryResize);
+  grip.addEventListener("lostpointercapture",finishDeliveryResize);
+  grip.addEventListener("keydown",event=>{
+    if(event.key!=="ArrowLeft"&&event.key!=="ArrowRight")return;
+    event.preventDefault();
+    deliveryColumnWidths[index]=Math.max(DELIVERY_COLUMN_MIN[index],
+      Math.min(2000,deliveryColumnWidths[index]+(event.key==="ArrowRight"?10:-10)));
+    applyDeliveryColumnWidths();
+    try{localStorage.setItem(DELIVERY_COLUMN_KEY,JSON.stringify(deliveryColumnWidths));}catch(_ignored){}
+  });
+  heading.appendChild(grip);
+});
+initializeDeliveryColumns();
+
 const DELIVERY_TOOLTIP_DELAY=2100;
 let hoveredDeliveryCell=null,deliveryTooltipTimer=null,deliveryTooltipPoint=null;
 function deliveryCellText(cell){
