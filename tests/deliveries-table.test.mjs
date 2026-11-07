@@ -381,3 +381,13 @@ test("Delivery register has viewport tooltips and faint vertical dividers",()=>{
   assert.match(js, /field\?field\.value:cell\.textContent/);
   assert.match(js, /document\.body\.appendChild\(deliveryCellTooltip\)/);
 });
+
+test("Hover preview waits over two seconds and selection hint is removed",()=>{
+  assert.match(js,/DELIVERY_TOOLTIP_DELAY=2100/);
+  assert.match(js,/deliveryTooltipTimer=setTimeout\(/);
+  assert.match(js,/cell===hoveredDeliveryCell/);
+  assert.match(js,/clearTimeout\(deliveryTooltipTimer\)/);
+  assert.doesNotMatch(js,/title="Маркирай и копирай АРК номера"/);
+  assert.doesNotMatch(js,/title="Двоен клик: маркирай номер и дата на фактурата"/);
+  assert.doesNotMatch(js,/title="Избери доставка за митническия PDF"/);
+});
