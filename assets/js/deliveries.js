@@ -494,6 +494,52 @@ $("customs-export").addEventListener("click",async()=>{
   }catch(error){const message="Грешка при обединяване: "+error.message;status(message,true);progress.textContent=message;}
   finally{busy=false;updateCustomsSelectionUI();}
 });
+
+// A single viewport-positioned tooltip avoids clipping inside the scrollable table.
+const deliveryCellTooltip=document.createElement("div");
+deliveryCellTooltip.className="delivery-cell-tooltip";
+deliveryCellTooltip.setAttribute("role","tooltip");
+deliveryCellTooltip.hidden=true;
+document.body.appendChild(deliveryCellTooltip);
+const deliveryCells=$("records-body");
+function deliveryCellText(cell){
+  const field=cell.querySelector("input.inline-field");
+  return (field?field.value:cell.textContent).trim().replace(/\\s+/g," ");
+}
+function positionDeliveryTooltip(x,y){
+  const margin=10,offset=14,rect=deliveryCellTooltip.getBoundingClientRect();
+  deliveryCellTooltip.style.left=Math.max(margin,Math.min(x+offset,window.innerWidth-rect.width-margin))+"px";
+  deliveryCellTooltip.style.top=Math.max(margin,Math.min(y+offset,window.innerHeight-rect.height-margin))+"px";
+}
+function showDeliveryTooltip(cell,x,y){
+  if(!cell||cell.classList.contains("actions-cell")||cell.classList.contains("row-number")){hideDeliveryTooltip();return;}
+  const value=deliveryCellText(cell);
+  if(!value||value==="—"){hideDeliveryTooltip();return;}
+  deliveryCellTooltip.textContent=value;
+  deliveryCellTooltip.hidden=false;
+  positionDeliveryTooltip(x,y);
+}
+function hideDeliveryTooltip(){deliveryCellTooltip.hidden=true;}
+deliveryCells.addEventListener("pointermove",event=>{
+  if(event.pointerType==="touch"){hideDeliveryTooltip();return;}
+  showDeliveryTooltip(event.target.closest("td"),event.clientX,event.clientY);
+});
+deliveryCells.addEventListener("pointerleave",hideDeliveryTooltip);
+deliveryCells.addEventListener("focusin",event=>{
+  const cell=event.target.closest("td");
+  if(!cell)return;
+  const rect=cell.getBoundingClientRect();
+  showDeliveryTooltip(cell,rect.left+rect.width/2,rect.top);
+});
+deliveryCells.addEventListener("focusout",hideDeliveryTooltip);
+deliveryCells.addEventListener("input",event=>{
+  if(deliveryCellTooltip.hidden)return;
+  const cell=event.target.closest("td");
+  if(cell)deliveryCellTooltip.textContent=deliveryCellText(cell);
+});
+document.querySelector(".scroll[aria-label='Регистър доставки']").addEventListener("scroll",hideDeliveryTooltip);
+window.addEventListener("scroll",hideDeliveryTooltip,{passive:true});
+
 $("records-body").addEventListener("change",async event=>{
   const selected=event.target.closest("input[data-export-select]");
   if(selected){
