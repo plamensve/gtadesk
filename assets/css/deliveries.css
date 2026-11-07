@@ -280,10 +280,10 @@ body.gta-deliveries-page .group-status-slot .used-label-placeholder{visibility:h
 /* Let the rightmost actions column reach the table edge, including on horizontal scroll. */
 body.gta-deliveries-page .scroll{scrollbar-gutter:auto;scrollbar-width:thin;scrollbar-color:#aac5d1 transparent}
 #records-table th.actions-heading,#records-table td.actions-cell{
-  position:sticky;right:0;background:#fff;z-index:2;
+  position:static;right:auto;background:#fff;z-index:auto;
   border-left:1px solid #e3edf2;background-clip:padding-box;
 }
-#records-table thead th.actions-heading{background:#edf7fa;z-index:4}
+#records-table thead th.actions-heading{position:sticky;top:0;right:auto;background:#edf7fa;z-index:4}
 #records-table tbody tr:nth-child(even):not(.row-used):not(.row-shared) td.actions-cell{background:#fbfdfe}
 #records-table tbody tr.row-used td.actions-cell{background:#eaf7ef!important}
 #records-table tbody tr.row-shared td.actions-cell{background:#eaf2ff!important}
@@ -1067,4 +1067,18 @@ body.gta-deliveries-page #records-table thead th:nth-child(10) .delivery-column-
 }
 body.gta-deliveries-page #records-table thead th.actions-heading{
   z-index:10;
+}
+
+/* The action column participates in normal table layout: it must never
+   paint over Status or the real right border of Notes. */
+body.gta-deliveries-page #records-table tbody td.actions-cell{
+  position:static!important;
+  right:auto!important;
+  z-index:auto!important;
+}
+body.gta-deliveries-page #records-table thead th.actions-heading{
+  right:auto!important;
+}
+body.gta-deliveries-page #records-table tbody td:nth-child(10).notes-resize-edge{
+  cursor:col-resize!important;
 }
