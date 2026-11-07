@@ -1082,3 +1082,20 @@ body.gta-deliveries-page #records-table thead th.actions-heading{
 body.gta-deliveries-page #records-table tbody td:nth-child(10).notes-resize-edge{
   cursor:col-resize!important;
 }
+
+/* Compact Actions button column, with no wasted space or forced horizontal overflow. */
+body.gta-deliveries-page #records-table th.actions-heading,
+body.gta-deliveries-page #records-table td.actions-cell{
+  width:46px!important;
+  min-width:46px!important;
+  max-width:46px!important;
+  padding-inline:2px!important;
+  text-align:center;
+}
+body.gta-deliveries-page #records-table th.actions-heading{
+  font-size:18px;
+  letter-spacing:0;
+}
+body.gta-deliveries-page .scroll[aria-label="Регистър доставки"]{
+  overflow-x:auto;
+}
