@@ -1080,3 +1080,22 @@ body.delivery-column-dragging *{
   cursor:col-resize!important;
   user-select:none!important;
 }
+
+/* Accessible grab area on the Status/Actions seam, without resizing Actions. */
+body.gta-deliveries-page #records-table thead th.actions-heading{
+  overflow:visible;
+}
+body.gta-deliveries-page #records-table .delivery-status-actions-grip{
+  left:-7px;
+  right:auto;
+  width:15px;
+  z-index:8;
+}
+body.gta-deliveries-page #records-table .delivery-status-actions-grip::after{
+  left:6px;
+  right:auto;
+}
+body.gta-deliveries-page #records-table .delivery-status-actions-grip:hover::after,
+body.gta-deliveries-page #records-table .delivery-status-actions-grip:focus-visible::after{
+  left:6px;
+}
