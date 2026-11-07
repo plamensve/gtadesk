@@ -312,7 +312,9 @@ test("Document action buttons keep labels, icons and borders inside a consistent
  assert.match(block,/\.group-card-upload-label\{[\s\S]*?text-overflow:ellipsis/);
  assert.match(block,/\.document-view-icon\{[\s\S]*?flex:0 0 17px/);
  assert.match(block,/\.ark-doc-trigger,[\s\S]*?height:32px/);
- assert.match(block,/nth-child\(12\)\{width:4%!important\}/);
+ assert.match(js,/DELIVERY_COLUMN_MIN=\\[[^\\n]*58\\]/);
+  assert.match(js,/addDeliveryResizeGrip\\(heading,index\\)/);
+  assert.doesNotMatch(block,/nth-child\\(12\\)\\{width:4%!important\\}/);
 });
 
 test("Full Analysis label is never ellipsized and document buttons have sufficient width",()=>{
@@ -404,7 +406,7 @@ test("Delivery table supports draggable, saved column widths",()=>{
 test("Sticky Actions header exposes a visible resize handle for Status",()=>{
  const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
  assert.match(js,/addDeliveryResizeGrip\(deliveryHeadings\[11\],10,"left"\)/);
- assert.match(js,/if\(index!==10\)addDeliveryResizeGrip\(heading,index\)/);
+ assert.match(js,/if\(index!==9&&index!==10\)addDeliveryResizeGrip\(heading,index\)/);
  assert.match(css,/th\.actions-heading \.delivery-column-grip-left\{/);
  assert.match(css,/left:-6px;right:auto;z-index:8/);
  assert.match(css,/td\.actions-cell\{[\s\S]*?border-left:1px solid #cadde6/);
