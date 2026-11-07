@@ -61,3 +61,14 @@ test("Previously saved widths are scaled to viewport instead of causing overflow
  assert.ok(fitted[9]<350);
  assert.equal(fitted[11],46);
 });
+
+test("Default column widths keep Status, Notes and Actions visible at desktop sizes",()=>{
+ for(const width of [1250,1360,1536,1600,1920]){
+  const available=width-2; // reserve scroll container border
+  const fitted=fitDeliveryColumns(null,available,minimums,weights,11,46);
+  assert.ok(sum(fitted)<=available+0.001);
+  assert.ok(fitted[9]>=minimums[9]);
+  assert.ok(fitted[10]>=minimums[10]);
+  assert.equal(fitted[11],46);
+ }
+});
