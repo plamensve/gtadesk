@@ -1049,44 +1049,22 @@ body.gta-deliveries-page #records-table th.actions-heading .delivery-column-grip
   background:#0b9bb1;
 }
 
-/* Status header paints over Notes' right edge; put the Notes drag handle
-   on Status' left edge and keep a fine, visible separator. */
-body.gta-deliveries-page #records-table thead th:nth-child(11){
-  border-left:1px solid #cadde6;
+/* Keep the Notes resize handle directly on its real right-hand border.
+   Notes must paint above Status; Actions remains above Notes when sticky. */
+body.gta-deliveries-page #records-table thead th:nth-child(10){
+  z-index:5;
 }
-body.gta-deliveries-page #records-table thead th:nth-child(11) .delivery-column-grip-left{
-  left:-6px;
-  right:auto;
-  z-index:8;
+body.gta-deliveries-page #records-table thead th:nth-child(10) .delivery-column-grip{
+  right:-6px;
+  z-index:9;
 }
-body.gta-deliveries-page #records-table thead th:nth-child(11) .delivery-column-grip-left::after{
-  left:4px;
+body.gta-deliveries-page #records-table thead th:nth-child(10) .delivery-column-grip::after{
   background:#c1d8e2;
 }
-body.gta-deliveries-page #records-table thead th:nth-child(11) .delivery-column-grip-left:hover::after,
-body.gta-deliveries-page #records-table thead th:nth-child(11) .delivery-column-grip-left:focus-visible::after{
+body.gta-deliveries-page #records-table thead th:nth-child(10) .delivery-column-grip:hover::after,
+body.gta-deliveries-page #records-table thead th:nth-child(10) .delivery-column-grip:focus-visible::after{
   background:#0b9bb1;
 }
-
-/* Independent Notes/Status resize target above sticky table headers. */
-body.gta-deliveries-page .delivery-notes-resize-overlay{
-  position:fixed;
-  z-index:1001;
-  width:14px;
-  cursor:col-resize;
-  touch-action:none;
-  background:transparent;
-}
-body.gta-deliveries-page .delivery-notes-resize-overlay[hidden]{display:none}
-body.gta-deliveries-page .delivery-notes-resize-overlay::after{
-  content:"";
-  position:absolute;
-  top:0;bottom:0;left:6px;
-  width:1px;
-  background:#c1d8e2;
-  pointer-events:none;
-}
-body.gta-deliveries-page .delivery-notes-resize-overlay:hover::after,
-body.gta-deliveries-page .delivery-notes-resize-overlay:focus-visible::after{
-  width:2px;background:#0b9bb1;
+body.gta-deliveries-page #records-table thead th.actions-heading{
+  z-index:10;
 }
