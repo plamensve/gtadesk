@@ -18,7 +18,7 @@ let records=[], activeDeclaration="", currentPage=0, groupPage=0, editId=null, s
 let menuTarget=null,documents=[],invoiceDocuments=[],docsTarget=null,declarationDetails=new Map(),archiveBusy=false,deleteDeclarationTarget=null,cleanupTask=null;
 let pdfPreviewObjectUrl=null,pdfPreviewRequest=0,pdfDocumentBusy=false,activePreviewDocumentId=null;
 const selectedDeliveryIds=new Set();
-const createFields=["delivered_on","ark","declaration_no","counterparty","quantity_liters","invoice_no","invoice_date"];
+const createFields=["delivered_on","ark","declaration_no","destination","quantity_liters","invoice_no","invoice_date"];
 const csvFields=["delivered_on","document_date","ark","invoice_no","invoice_date","declaration_no","declaration_date","tractor","tanker","quantity_liters","counterparty","destination","notes","usage_status"];
 const status=(message,bad=false)=>{$("status").textContent=message;$("status").classList.toggle("bad",bad);};
 const syncDateDisplays=installDayMonthYearInputs(document);
@@ -45,7 +45,7 @@ function formReset(){
 function edit(record){
   if(record.is_locked){status("Редът е заключен. Отключи го от менюто ⋮, за да го редактираш.",true);return;}
   editId=record.id;
-  for(const key of createFields)$("delivery-form").elements[key].value=record[key]??"";
+  for(const key of createFields)$("delivery-form").elements[key].value=key==="destination"?(record.destination||record.counterparty||""):(record[key]??"");
   $("delivery-form").elements.declaration_date.value=declarationDateOf(record.declaration_no);
   syncDateDisplays();
   $("form-title").textContent="Редакция на доставка";
@@ -261,7 +261,7 @@ $("delivery-form").addEventListener("submit",async event=>{
   if(!form.reportValidity()||busy)return;
   const payload=Object.fromEntries(createFields.map(key=>[key,String(form.elements[key].value).trim()]));
   if(editId&&records.find(r=>r.id===editId)?.is_locked){$("form-status").textContent="Редът е заключен.";return;}
-  if(!payload.delivered_on||!payload.ark||!payload.declaration_no||!payload.counterparty)return;
+  if(!payload.delivered_on||!payload.ark||!payload.declaration_no||!payload.destination)return;
   if(Boolean(payload.invoice_no)!==Boolean(payload.invoice_date)){
     $("form-status").textContent="За фактура попълни едновременно номер и дата.";return;
   }
@@ -273,7 +273,7 @@ $("delivery-form").addEventListener("submit",async event=>{
   busy=true;$("save").disabled=true;$("form-status").textContent="Записване...";
   try{
     const query=editId?client.from("gta_deliveries").update(payload).eq("id",editId).select("id"):
-      client.from("gta_deliveries").insert({...payload,notes:""}).select("id");
+      client.from("gta_deliveries").insert({...payload,counterparty:payload.destination,notes:""}).select("id");
     const {data,error}=await query.single();
     if(error)throw error;if(!data)throw Error("Записът не беше потвърден.");
     if(declarationDate!==declarationDateOf(payload.declaration_no))await persistDeclarationDate(payload.declaration_no,declarationDate);
