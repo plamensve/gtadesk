@@ -628,7 +628,7 @@ window.addEventListener("resize",()=>{
     DELIVERY_COLUMN_RATIOS,DELIVERY_ACTIONS_INDEX,DELIVERY_ACTIONS_WIDTH);
   applyDeliveryColumnWidths();
 },{passive:true});
-initializeDeliveryColumns();
+// Initialize only after the protected app becomes visible: hidden containers report zero width.
 
 const DELIVERY_TOOLTIP_DELAY=2100;
 let hoveredDeliveryCell=null,deliveryTooltipTimer=null,deliveryTooltipPoint=null;
@@ -983,6 +983,7 @@ $("logout").addEventListener("click",async()=>{await client.auth.signOut();locat
 client.auth.onAuthStateChange(event=>{if(event==="SIGNED_OUT")location.replace("./");});
 try{
   await guard();
+  initializeDeliveryColumns();
   await load();
   void runQueuedFileCleanup().then(result=>{
     if(result.failed)status("Има "+result.failed+" PDF файла, чакащи повторно почистване.",true);
