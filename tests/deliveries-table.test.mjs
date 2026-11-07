@@ -400,3 +400,12 @@ test("Delivery table supports draggable, saved column widths",()=>{
  assert.match(css,/\.delivery-column-grip\{/);
  assert.doesNotMatch(css,/#records-table tr > :nth-child\(\d+\)\{width:[^\n]*!important/);
 });
+
+test("Sticky Actions header exposes a visible resize handle for Status",()=>{
+ const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
+ assert.match(js,/addDeliveryResizeGrip\(deliveryHeadings\[11\],10,"left"\)/);
+ assert.match(js,/if\(index!==10\)addDeliveryResizeGrip\(heading,index\)/);
+ assert.match(css,/th\.actions-heading \.delivery-column-grip-left\{/);
+ assert.match(css,/left:-6px;right:auto;z-index:8/);
+ assert.match(css,/td\.actions-cell\{[\s\S]*?border-left:1px solid #cadde6/);
+});
