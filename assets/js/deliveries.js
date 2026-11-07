@@ -504,7 +504,8 @@ deliveryCellTooltip.hidden=true;
 document.body.appendChild(deliveryCellTooltip);
 const deliveryCells=$("records-body");
 const deliveryTable=$("records-table");
-const DELIVERY_COLUMN_KEY="gtadesk.delivery-columns.v3";
+// Reset previously stretched user widths; the new default fits the viewport.
+const DELIVERY_COLUMN_KEY="gtadesk.delivery-columns.v4";
 const DELIVERY_COLUMN_RATIOS=[4,7.5,16.5,15,12,7,7,5,6.5,9,7.5,3];
 const DELIVERY_COLUMN_MIN=[60,82,190,155,140,78,78,65,90,90,113,46];
 const DELIVERY_ACTIONS_INDEX=11;
@@ -529,12 +530,18 @@ function saveDeliveryWidths(){
 function applyDeliveryColumnWidths(){
   deliveryColumns.forEach((column,index)=>{column.style.width=deliveryColumnWidths[index]+"px";});
   const total=deliveryColumnWidths.reduce((sum,value)=>sum+value,0);
-  deliveryTable.style.width=total+"px";
-  deliveryTable.style.minWidth=total+"px";
+  // The table is viewport-sized: fixed col widths redistribute its space,
+  // rather than establishing a wider scrollable content box.
+  deliveryTable.style.width="100%";
+  deliveryTable.style.minWidth="0";
+  deliveryTable.style.maxWidth="100%";
+}
+function deliveryAvailableWidth(){
+  return Math.max(0,deliveryTable.parentElement.clientWidth-2);
 }
 function initializeDeliveryColumns(){
   deliveryColumnWidths=fitDeliveryColumns(deliverySavedWidths(),
-    deliveryTable.parentElement.clientWidth,DELIVERY_COLUMN_MIN,
+    deliveryAvailableWidth(),DELIVERY_COLUMN_MIN,
     DELIVERY_COLUMN_RATIOS,DELIVERY_ACTIONS_INDEX,DELIVERY_ACTIONS_WIDTH);
   applyDeliveryColumnWidths();
 }
@@ -649,13 +656,18 @@ document.addEventListener("pointermove",event=>{
 document.addEventListener("pointerup",finishDeliveryResize);
 document.addEventListener("pointercancel",finishDeliveryResize);
 window.addEventListener("blur",finishDeliveryResize);
-window.addEventListener("resize",()=>{
-  if(deliveryResizing)return;
+function refitDeliveryColumns(){
+  if(deliveryResizing||!deliveryTable.parentElement.clientWidth)return;
   deliveryColumnWidths=fitDeliveryColumns(deliveryColumnWidths,
-    deliveryTable.parentElement.clientWidth,DELIVERY_COLUMN_MIN,
+    deliveryAvailableWidth(),DELIVERY_COLUMN_MIN,
     DELIVERY_COLUMN_RATIOS,DELIVERY_ACTIONS_INDEX,DELIVERY_ACTIONS_WIDTH);
   applyDeliveryColumnWidths();
-},{passive:true});
+}
+window.addEventListener("resize",refitDeliveryColumns,{passive:true});
+if(typeof ResizeObserver!=="undefined"){
+  const deliveryLayoutObserver=new ResizeObserver(refitDeliveryColumns);
+  deliveryLayoutObserver.observe(deliveryTable.parentElement);
+}
 // Initialize only after the protected app becomes visible: hidden containers report zero width.
 
 const DELIVERY_TOOLTIP_DELAY=2100;
