@@ -1011,3 +1011,17 @@ body.gta-deliveries-page .group-card-archive:hover{
   border-color:#63bdc7;
   background:#e4f3fa;
 }
+
+/* Subtle vertical guides for the delivery register; keep the sticky action column intact. */
+#records-table thead th:not(:last-child),
+#records-table tbody td:not(:last-child){border-right:1px solid #e2edf2}
+#records-table tbody tr.row-export-selected td:not(:last-child){border-right-color:#cce7dc}
+.delivery-cell-tooltip{
+  position:fixed;z-index:10000;pointer-events:none;
+  max-width:min(340px,calc(100vw - 20px));width:max-content;
+  white-space:normal;overflow-wrap:anywhere;
+  padding:7px 11px;border:1px solid #c8dfe7;border-radius:8px;
+  background:#fff;color:#173d52;box-shadow:0 6px 22px rgba(23,61,82,.13);
+  font:500 12px/1.45 system-ui,sans-serif;
+}
+.delivery-cell-tooltip[hidden]{display:none}

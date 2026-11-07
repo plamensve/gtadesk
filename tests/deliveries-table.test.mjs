@@ -369,3 +369,15 @@ test("Delivery origin uses the displayed destination field in edit and save",()=
   assert.match(js, /insert\(\{\.\.\.payload,counterparty:payload\.destination,notes:""\}\)/);
   assert.match(js, /safe\(r\.destination\|\|"—"\)/);
 });
+
+test("Delivery register has viewport tooltips and faint vertical dividers",()=>{
+  const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
+  assert.match(css, /#records-table thead th:not\(:last-child\)/);
+  assert.match(css, /#records-table tbody td:not\(:last-child\)/);
+  assert.match(css, /\.delivery-cell-tooltip\[hidden\]\{display:none\}/);
+  assert.match(js, /deliveryCells\.addEventListener\("pointermove"/);
+  assert.match(js, /deliveryCells\.addEventListener\("focusin"/);
+  assert.match(js, /deliveryCells\.addEventListener\("pointerleave",hideDeliveryTooltip\)/);
+  assert.match(js, /field\?field\.value:cell\.textContent/);
+  assert.match(js, /document\.body\.appendChild\(deliveryCellTooltip\)/);
+});
