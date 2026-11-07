@@ -299,7 +299,7 @@ test("Uploaded documents use an eye icon, while empty controls use the yellow fo
 test("Delivery table has fixed layout with horizontal scrolling for resized columns",()=>{
   const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
   assert.match(css,/table-layout:fixed/);
-  assert.match(css,/\.scroll\[aria-label="Регистър доставки"\]\{overflow-x:auto/);
+  assert.match(css,/\.scroll\[aria-label="Регистър доставки"\]\{\s*overflow-x:auto/);
   assert.match(js,/DELIVERY_COLUMN_RATIOS=\[4,7\.5,16\.5,15,12,7,7,5,6\.5,9,7\.5,3\]/);
   assert.doesNotMatch(css,/#records-table tr > :nth-child\(\d+\)\{width:[^\n]*!important/);
 });
