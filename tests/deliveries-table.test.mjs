@@ -359,3 +359,13 @@ test("ZIP archive download button has its own WinRAR-style vector icon and keeps
  assert.match(icon,/#2869B4/i);
  assert.match(icon,/#38B69E/i);
 });
+
+test("Delivery origin uses the displayed destination field in edit and save",()=>{
+  assert.match(html, /id="field-destination" name="destination"/);
+  assert.doesNotMatch(html, /name="counterparty"/);
+  assert.match(js, /const createFields=\[[^\n]*"destination"/);
+  assert.match(js, /key==="destination"\?\(record\.destination\|\|record\.counterparty\|\|""\)/);
+  assert.match(js, /!payload\.destination/);
+  assert.match(js, /insert\(\{\.\.\.payload,counterparty:payload\.destination,notes:""\}\)/);
+  assert.match(js, /safe\(r\.destination\|\|"—"\)/);
+});
