@@ -504,7 +504,7 @@ document.body.appendChild(deliveryCellTooltip);
 const deliveryCells=$("records-body");
 function deliveryCellText(cell){
   const field=cell.querySelector("input.inline-field");
-  return (field?field.value:cell.textContent).trim().replace(/\\s+/g," ");
+  return (field?field.value:cell.textContent).trim().replace(/\s+/g," ");
 }
 function positionDeliveryTooltip(x,y){
   const margin=10,offset=14,rect=deliveryCellTooltip.getBoundingClientRect();
