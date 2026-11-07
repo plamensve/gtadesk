@@ -574,10 +574,13 @@ function addDeliveryResizeGrip(heading,index,edge="right"){
   heading.appendChild(grip);
 }
 deliveryHeadings.forEach((heading,index)=>{
-  if(index!==10)addDeliveryResizeGrip(heading,index);
+  // Boundaries next to another header can be covered by that header's paint layer.
+  // Place the Notes handle on the visible left edge of Status instead.
+  if(index!==9&&index!==10)addDeliveryResizeGrip(heading,index);
 });
 // The sticky Actions heading covers the right edge of Status. Put its resize
 // handle on the visible left edge of Actions, targeting the Status width.
+addDeliveryResizeGrip(deliveryHeadings[10],9,"left");
 addDeliveryResizeGrip(deliveryHeadings[11],10,"left");
 initializeDeliveryColumns();
 
