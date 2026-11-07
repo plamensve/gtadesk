@@ -525,7 +525,6 @@ function applyDeliveryColumnWidths(){
   const total=deliveryColumnWidths.reduce((sum,width)=>sum+width,0);
   deliveryTable.style.width=total+"px";
   deliveryTable.style.minWidth=total+"px";
-  if(typeof positionNotesResizeOverlay==="function")positionNotesResizeOverlay();
 }
 function initializeDeliveryColumns(){
   const saved=deliverySavedWidths();
@@ -579,61 +578,12 @@ deliveryHeadings.forEach((heading,index)=>{
   // Place the Notes handle on the visible left edge of Status instead.
   if(index!==9&&index!==10)addDeliveryResizeGrip(heading,index);
 });
-// The sticky Actions heading covers the right edge of Status. Put its resize
-// handle on the visible left edge of Actions, targeting the Status width.
-// The Notes/Status divider must not be a child of a sticky <th>: other sticky
-// header paint layers intercept pointer events. Give it its own viewport layer.
-const notesResizeOverlay=document.createElement("span");
-notesResizeOverlay.className="delivery-notes-resize-overlay";
-notesResizeOverlay.setAttribute("role","separator");
-notesResizeOverlay.setAttribute("aria-orientation","vertical");
-notesResizeOverlay.setAttribute("aria-label","Промени ширината на колона Бележки");
-notesResizeOverlay.setAttribute("tabindex","0");
-document.body.appendChild(notesResizeOverlay);
-function positionNotesResizeOverlay(){
-  const statusHeader=deliveryHeadings[10].getBoundingClientRect();
-  const viewport=deliveryTable.parentElement.getBoundingClientRect();
-  const top=Math.max(viewport.top,statusHeader.top);
-  const bottom=Math.min(viewport.bottom,statusHeader.bottom);
-  const x=statusHeader.left;
-  const visible=bottom>top&&x>=viewport.left&&x<=viewport.right;
-  notesResizeOverlay.hidden=!visible;
-  if(!visible)return;
-  notesResizeOverlay.style.left=(x-7)+"px";
-  notesResizeOverlay.style.top=top+"px";
-  notesResizeOverlay.style.height=(bottom-top)+"px";
-}
-function setNotesColumnWidth(width){
-  deliveryColumnWidths[9]=Math.max(DELIVERY_COLUMN_MIN[9],Math.min(2000,Math.round(width)));
-  applyDeliveryColumnWidths();
-}
-notesResizeOverlay.addEventListener("pointerdown",event=>{
-  if(event.button!==0)return;
-  event.preventDefault();
-  finishDeliveryResize();
-  deliveryResizing={index:9,startX:event.clientX,startWidth:deliveryColumnWidths[9]};
-  document.body.classList.add("delivery-column-dragging");
-  notesResizeOverlay.setPointerCapture(event.pointerId);
-});
-notesResizeOverlay.addEventListener("pointermove",event=>{
-  if(!deliveryResizing||deliveryResizing.index!==9)return;
-  setNotesColumnWidth(deliveryResizing.startWidth+event.clientX-deliveryResizing.startX);
-});
-for(const type of ["pointerup","pointercancel","lostpointercapture"]){
-  notesResizeOverlay.addEventListener(type,finishDeliveryResize);
-}
-notesResizeOverlay.addEventListener("keydown",event=>{
-  if(event.key!=="ArrowLeft"&&event.key!=="ArrowRight")return;
-  event.preventDefault();
-  setNotesColumnWidth(deliveryColumnWidths[9]+(event.key==="ArrowRight"?10:-10));
-  try{localStorage.setItem(DELIVERY_COLUMN_KEY,JSON.stringify(deliveryColumnWidths));}catch(_ignored){}
-});
-deliveryTable.parentElement.addEventListener("scroll",positionNotesResizeOverlay,{passive:true});
-window.addEventListener("resize",positionNotesResizeOverlay,{passive:true});
-
+// Use the actual right boundary of Notes for resizing, not a floating line.
+// Raise the Notes header above Status so this grip receives pointer events.
+addDeliveryResizeGrip(deliveryHeadings[9],9);
+// Keep Status resize on the visible left edge of the sticky Actions column.
 addDeliveryResizeGrip(deliveryHeadings[11],10,"left");
 initializeDeliveryColumns();
-positionNotesResizeOverlay();
 
 const DELIVERY_TOOLTIP_DELAY=2100;
 let hoveredDeliveryCell=null,deliveryTooltipTimer=null,deliveryTooltipPoint=null;
