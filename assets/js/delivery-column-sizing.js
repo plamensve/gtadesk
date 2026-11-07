@@ -25,9 +25,10 @@ export function resizeDeliveryBoundary(widths, index, requestedDelta, minimums, 
   if(requestedDelta>0){
     // Usually take space from columns to the right. For the final editable
     // Status column, take from the left without changing Actions.
-    const donors=index===actionsIndex-1
-      ?Array.from({length:index},(_,i)=>index-1-i)
-      :Array.from({length:actionsIndex-index-1},(_,i)=>index+1+i);
+    const donors=[
+      ...Array.from({length:actionsIndex-index-1},(_,i)=>index+1+i),
+      ...Array.from({length:index},(_,i)=>index-1-i)
+    ];
     let pending=requestedDelta;
     for(const donor of donors){
       const taken=Math.min(pending,Math.max(0,next[donor]-minimums[donor]));
