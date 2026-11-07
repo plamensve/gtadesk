@@ -391,3 +391,15 @@ test("Hover preview waits over two seconds and selection hint is removed",()=>{
   assert.doesNotMatch(js,/title="Двоен клик: маркирай номер и дата на фактурата"/);
   assert.doesNotMatch(js,/title="Избери доставка за митническия PDF"/);
 });
+
+test("Delivery table supports draggable, saved column widths",()=>{
+ const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
+ assert.match(js,/DELIVERY_COLUMN_KEY="gtadesk.delivery-columns.v1"/);
+ assert.match(js,/document.createElement\("colgroup"\)/);
+ assert.match(js,/grip.setPointerCapture\(event.pointerId\)/);
+ assert.match(js,/grip.addEventListener\("keydown"/);
+ assert.match(js,/localStorage.setItem\(DELIVERY_COLUMN_KEY/);
+ assert.match(css,/\.scroll\[aria-label="Регистър доставки"\]\{overflow-x:auto/);
+ assert.match(css,/\.delivery-column-grip\{/);
+ assert.doesNotMatch(css,/#records-table tr > :nth-child\(\d+\)\{width:[^\n]*!important/);
+});
