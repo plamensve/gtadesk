@@ -395,7 +395,7 @@ test("Hover preview waits over two seconds and selection hint is removed",()=>{
 
 test("Delivery table supports draggable, saved column widths",()=>{
  const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
- assert.match(js,/DELIVERY_COLUMN_KEY="gtadesk.delivery-columns.v1"/);
+ assert.match(js,/DELIVERY_COLUMN_KEY="gtadesk.delivery-columns.v2"/);
  assert.match(js,/document.createElement\("colgroup"\)/);
  assert.match(js,/grip.setPointerCapture\(event.pointerId\)/);
  assert.match(js,/grip.addEventListener\("keydown"/);
@@ -446,4 +446,35 @@ test("Actions are compact and column widths fit within the available space",()=>
  assert.match(js,/applyDeliveryColumnWidths\(index\)/);
  assert.match(js,/applyDeliveryColumnWidths\(9\)/);
  assert.match(css,/th\.actions-heading,[\s\S]*?td\.actions-cell\{[\s\S]*?width:46px!important/);
+});
+
+test("Column sizing keeps ARK and invoice readable and distributes unused space",()=>{
+ assert.match(js,/DELIVERY_COLUMN_MIN=\[65,85,210,170,150/);
+ assert.doesNotMatch(js,/deliveryColumnWidths\[9\]\+=available-total/);
+ const beginning=js.indexOf("function fitDeliveryColumnWidths(priorityIndex=null){");
+ const ending=js.indexOf("function applyDeliveryColumnWidths(",beginning);
+ assert.ok(beginning>=0&&ending>beginning);
+ const layout=js.slice(beginning,ending);
+ const weights=[4,7.5,16.5,15,12,7,7,5,6.5,9,7.5,3];
+ const mins=[65,85,210,170,150,90,90,70,100,105,120,46];
+ const run=(widths,available,active=null)=>{
+  const context={deliveryColumnWidths:[...widths],deliveryTable:{parentElement:{clientWidth:available}},DELIVERY_COLUMN_RATIOS:weights,DELIVERY_COLUMN_MIN:mins,DELIVERY_ACTIONS_INDEX:11,DELIVERY_ACTIONS_WIDTH:46};
+  const fit=runInNewContext(layout+";fitDeliveryColumnWidths",context);
+  fit(active);
+  return context.deliveryColumnWidths;
+ };
+ const baseline=weights.map((w,i)=>Math.max(mins[i],1600*w/100));
+ const normal=run(baseline,1600);
+ assert.ok(Math.abs(normal.reduce((a,b)=>a+b,0)-1600)<0.01);
+ assert.ok(normal[9]<210,"Notes must never absorb all spare width");
+ assert.ok(normal[2]>=210&&normal[3]>=170);
+ assert.equal(normal[11],46);
+ // Previously saved disproportionate widths are normalized instead of crushing ARK.
+ const damaged=[65,85,210,170,150,90,90,70,100,490,120,46];
+ const repaired=run(damaged,1600);
+ assert.ok(repaired[9]<490&&repaired[2]>=210);
+ assert.ok(Math.abs(repaired.reduce((a,b)=>a+b,0)-1600)<0.01);
+ const drag=run(normal.map((w,i)=>i===9?w+70:w),1600,9);
+ assert.ok(drag[9]>normal[9],"Notes remains draggable");
+ assert.ok(Math.abs(drag.reduce((a,b)=>a+b,0)-1600)<0.01);
 });

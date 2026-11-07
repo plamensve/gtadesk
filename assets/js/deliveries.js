@@ -503,9 +503,9 @@ deliveryCellTooltip.hidden=true;
 document.body.appendChild(deliveryCellTooltip);
 const deliveryCells=$("records-body");
 const deliveryTable=$("records-table");
-const DELIVERY_COLUMN_KEY="gtadesk.delivery-columns.v1";
+const DELIVERY_COLUMN_KEY="gtadesk.delivery-columns.v2"; // Discard widths corrupted by previous auto-expansion.
 const DELIVERY_COLUMN_RATIOS=[4,7.5,16.5,15,12,7,7,5,6.5,9,7.5,3];
-const DELIVERY_COLUMN_MIN=[58,75,150,125,130,80,80,65,85,90,105,46];
+const DELIVERY_COLUMN_MIN=[65,85,210,170,150,90,90,70,100,105,120,46];
 const DELIVERY_ACTIONS_INDEX=11;
 const DELIVERY_ACTIONS_WIDTH=46;
 const deliveryHeadings=[...deliveryTable.tHead.rows[0].cells];
@@ -523,23 +523,41 @@ function deliverySavedWidths(){
   return null;
 }
 function fitDeliveryColumnWidths(priorityIndex=null){
-  const available=Math.floor(deliveryTable.parentElement.clientWidth);
+  const available=Math.max(0,Math.floor(deliveryTable.parentElement.clientWidth));
   deliveryColumnWidths[DELIVERY_ACTIONS_INDEX]=DELIVERY_ACTIONS_WIDTH;
-  let excess=deliveryColumnWidths.reduce((sum,width)=>sum+width,0)-available;
-  // Preserve the column the user is dragging. Shrink other columns first.
-  const order=deliveryColumnWidths.map((_,index)=>index)
-    .filter(index=>index!==DELIVERY_ACTIONS_INDEX&&index!==priorityIndex)
-    .sort((a,b)=>(deliveryColumnWidths[b]-DELIVERY_COLUMN_MIN[b])-
-                 (deliveryColumnWidths[a]-DELIVERY_COLUMN_MIN[a]));
-  if(priorityIndex!==null)order.push(priorityIndex);
-  for(const index of order){
-    if(excess<=0)break;
-    const shrink=Math.min(excess,deliveryColumnWidths[index]-DELIVERY_COLUMN_MIN[index]);
-    if(shrink>0){deliveryColumnWidths[index]-=shrink;excess-=shrink;}
+  const minTotal=DELIVERY_COLUMN_MIN.reduce((sum,width)=>sum+width,0);
+  const target=Math.max(available,minTotal);
+  const total=()=>deliveryColumnWidths.reduce((sum,width)=>sum+width,0);
+  // Distribute the reduction proportionally, never sacrifice one column alone.
+  // During a drag keep the active width unless all other columns reach minimum.
+  let excess=total()-target;
+  if(excess>0){
+    const groups=[
+      deliveryColumnWidths.map((_,i)=>i).filter(i=>i!==DELIVERY_ACTIONS_INDEX&&i!==priorityIndex),
+      ...(priorityIndex!==null?[ [priorityIndex] ]:[])
+    ];
+    for(const group of groups){
+      if(excess<=0)break;
+      const room=group.reduce((sum,i)=>sum+Math.max(0,deliveryColumnWidths[i]-DELIVERY_COLUMN_MIN[i]),0);
+      if(room<=0)continue;
+      const reduction=Math.min(excess,room);
+      for(const i of group){
+        const capacity=Math.max(0,deliveryColumnWidths[i]-DELIVERY_COLUMN_MIN[i]);
+        deliveryColumnWidths[i]-=reduction*capacity/room;
+      }
+      excess-=reduction;
+    }
   }
-  // Only screens narrower than all minimum widths can need horizontal scrolling.
-  const total=deliveryColumnWidths.reduce((sum,width)=>sum+width,0);
-  if(total<available)deliveryColumnWidths[9]+=available-total;
+  // Distribute any free space across columns by their design weights.
+  // Previously all spare pixels were assigned to Notes, breaking the table.
+  const free=target-total();
+  if(free>0.01){
+    const recipients=deliveryColumnWidths.map((_,i)=>i)
+      .filter(i=>i!==DELIVERY_ACTIONS_INDEX&&i!==priorityIndex);
+    if(!recipients.length)return;
+    const weight=recipients.reduce((sum,i)=>sum+DELIVERY_COLUMN_RATIOS[i],0);
+    for(const i of recipients)deliveryColumnWidths[i]+=free*DELIVERY_COLUMN_RATIOS[i]/weight;
+  }
 }
 function applyDeliveryColumnWidths(priorityIndex=null){
   fitDeliveryColumnWidths(priorityIndex);
