@@ -395,7 +395,7 @@ test("Hover preview waits over two seconds and selection hint is removed",()=>{
 
 test("Every column except Actions has one right-side resize grip",()=>{
  const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
- assert.match(js,/DELIVERY_COLUMN_KEY="gtadesk.delivery-columns.v3"/);
+ assert.match(js,/DELIVERY_COLUMN_KEY="gtadesk.delivery-columns.v4"/);
  assert.match(js,/if\(index===DELIVERY_ACTIONS_INDEX\)return/);
  assert.match(js,/heading.appendChild\(grip\)/);
  assert.match(js,/grip.setPointerCapture\(event.pointerId\)/);
