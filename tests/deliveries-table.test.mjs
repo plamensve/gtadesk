@@ -261,6 +261,7 @@ test("Status labels keep space before the sticky row actions menu",()=>{
  assert.ok(block.length>200);
  assert.match(block,/td\.usage-status-cell\{[\s\S]*?padding-right:20px/);
  assert.match(block,/th\.actions-heading,[\s\S]*?td\.actions-cell\{[\s\S]*?width:58px/);
+ assert.match(css,/td\.actions-cell\{[\s\S]*?width:46px!important/);
 });
 
 test("Upload entry points share the blue document icon and pointer cursor",()=>{
@@ -313,7 +314,7 @@ test("Document action buttons keep labels, icons and borders inside a consistent
  assert.match(block,/\.group-card-upload-label\{[\s\S]*?text-overflow:ellipsis/);
  assert.match(block,/\.document-view-icon\{[\s\S]*?flex:0 0 17px/);
  assert.match(block,/\.ark-doc-trigger,[\s\S]*?height:32px/);
-  assert.ok(js.includes("DELIVERY_COLUMN_MIN=[65,85,170,135,145,95,95,75,105,110,105,58]"));
+  assert.ok(js.includes("DELIVERY_ACTIONS_WIDTH=46"));
   assert.ok(js.includes("addDeliveryResizeGrip(heading,index)"));
   assert.ok(!block.includes("nth-child(12){width:4%!important}"));
 });
@@ -407,7 +408,7 @@ test("Delivery table supports draggable, saved column widths",()=>{
 test("Sticky Actions header exposes a visible resize handle for Status",()=>{
  const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
  assert.match(js,/addDeliveryResizeGrip\(deliveryHeadings\[11\],10,"left"\)/);
- assert.match(js,/if\(index!==9&&index!==10\)addDeliveryResizeGrip\(heading,index\)/);
+ assert.match(js,/if\(index!==9&&index!==10&&index!==DELIVERY_ACTIONS_INDEX\)addDeliveryResizeGrip\(heading,index\)/);
  assert.match(css,/th\.actions-heading \.delivery-column-grip-left\{/);
  assert.match(css,/left:-6px;right:auto;z-index:8/);
  assert.match(css,/td\.actions-cell\{[\s\S]*?border-left:1px solid #cadde6/);
@@ -434,4 +435,15 @@ test("Notes cells allow resizing by dragging their real right border",()=>{
  assert.match(js,/document\.addEventListener\("pointerup",finishNotesCellDrag\)/);
  assert.match(css,/td:nth-child\(10\)\.notes-resize-edge/);
  assert.doesNotMatch(js,/notesResizeOverlay/);
+});
+
+test("Actions are compact and column widths fit within the available space",()=>{
+ const css=readFileSync(new URL("../assets/css/deliveries.css",import.meta.url),"utf8");
+ assert.match(html,/class="actions-heading" aria-label="Действия" title="Действия">⋮/);
+ assert.match(js,/DELIVERY_ACTIONS_WIDTH=46/);
+ assert.match(js,/function fitDeliveryColumnWidths\(priorityIndex=null\)/);
+ assert.match(js,/deliveryColumnWidths\[DELIVERY_ACTIONS_INDEX\]=DELIVERY_ACTIONS_WIDTH/);
+ assert.match(js,/applyDeliveryColumnWidths\(index\)/);
+ assert.match(js,/applyDeliveryColumnWidths\(9\)/);
+ assert.match(css,/th\.actions-heading,[\s\S]*?td\.actions-cell\{[\s\S]*?width:46px!important/);
 });
